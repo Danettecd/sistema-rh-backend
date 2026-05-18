@@ -1,6 +1,6 @@
-import empleado1 from './assets/fotos/danettecd.jpg'
-import empleado2 from './assets/fotos/betty.jpg'
-import empleado3 from './assets/fotos/CARLOS.jpg'
+import empleado1 from './assets/fotos/CARLOS.jpg'
+import empleado2 from './assets/fotos/danettecd.jpg'
+import empleado3 from './assets/fotos/betty.jpg'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
@@ -32,6 +32,7 @@ export default function App() {
 
   const [showEmpleadoModal, setShowEmpleadoModal] = useState(false)
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null)
+
 
   const [nuevoEmpleado, setNuevoEmpleado] = useState({
     nombre: '',
@@ -182,6 +183,29 @@ export default function App() {
 
   }
 
+  const editarEmpleado = async (id, empleadoEditado) => {
+
+    try {
+
+      const token = localStorage.getItem('token')
+
+      await axios.put(
+        `http://localhost:3000/empleados/${id}`,
+        empleadoEditado,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      obtenerEmpleados()
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const logout = () => {
 
     localStorage.removeItem('token')
@@ -222,12 +246,18 @@ export default function App() {
   ]
 
   const birthdays = [
-    'María López',
-    'José Ramírez',
-    'Ana Martínez',
-    'Carlos García',
-    'Luis Hernández',
-    'Sofía Pérez'
+    {
+      nombre: 'Carlos Joers',
+      foto: empleado1
+    },
+    {
+      nombre: 'Danette Centeno',
+      foto: empleado2
+    },
+    {
+      nombre: 'Betty Morales',
+      foto: empleado3
+    }
   ]
 
   if (isLogged) {
@@ -383,19 +413,27 @@ export default function App() {
                 Cumpleaños del mes
               </h3>
 
-              <div className="grid grid-cols-6 gap-5">
+              <div className="grid grid-cols-3 gap-6">
 
                 {birthdays.map((person) => (
 
                   <div
-                    key={person}
-                    className="border border-slate-200 rounded-2xl p-4 flex flex-col items-center"
+                    key={person.nombre}
+                    className="border border-slate-200 rounded-3xl p-6 flex flex-col items-center bg-[#f8fbff]"
                   >
 
-                    <div className="w-20 h-20 rounded-full bg-slate-300 mb-4"></div>
+                    <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
 
-                    <h4 className="text-center font-medium text-slate-700">
-                      {person}
+                      <img
+                        src={person.foto}
+                        alt={person.nombre}
+                        className="w-full h-full object-cover"
+                      />
+
+                    </div>
+
+                    <h4 className="text-center font-medium text-slate-700 text-lg">
+                      {person.nombre}
                     </h4>
 
                     <p className="text-sm text-slate-400 mt-1">
@@ -405,7 +443,6 @@ export default function App() {
                   </div>
 
                 ))}
-
               </div>
 
             </div>
@@ -494,6 +531,13 @@ export default function App() {
                             <div className="flex gap-3">
 
                               <button
+                                onClick={() => {
+
+                                  setShowEmpleadoModal(false)
+
+                                  setEmpleadoSeleccionado(empleado)
+
+                                }}
                                 className="bg-[#07355E] hover:bg-[#1B2A38] hover:-translate-y-1 shadow-md text-white px-4 py-2 rounded-xl transition-all duration-300"
                               >
                                 Editar
@@ -639,27 +683,29 @@ export default function App() {
 
                     </div>
                     <input
+                      type="text"
                       placeholder="Nombre"
-                      value={nuevoEmpleado.nombre}
+                      value={empleadoSeleccionado.nombre}
                       onChange={(e) =>
-                        setNuevoEmpleado({
-                          ...nuevoEmpleado,
+                        setEmpleadoSeleccionado({
+                          ...empleadoSeleccionado,
                           nombre: e.target.value
                         })
                       }
-                      className="border border-slate-300 rounded-2xl px-5 py-4"
+                      className="border border-slate-300 rounded-2xl px-5 py-4 w-full mb-4"
                     />
 
                     <input
+                      type="text"
                       placeholder="Puesto"
-                      value={nuevoEmpleado.puesto}
+                      value={empleadoSeleccionado.puesto}
                       onChange={(e) =>
-                        setNuevoEmpleado({
-                          ...nuevoEmpleado,
+                        setEmpleadoSeleccionado({
+                          ...empleadoSeleccionado,
                           puesto: e.target.value
                         })
                       }
-                      className="border border-slate-300 rounded-2xl px-5 py-4"
+                      className="border border-slate-300 rounded-2xl px-5 py-4 w-full mb-8"
                     />
 
                     <input
@@ -709,16 +755,18 @@ export default function App() {
                 <div className="bg-white w-[650px] rounded-[35px] p-10 shadow-2xl relative">
 
                   <button
-                    onClick={() => setEmpleadoSeleccionado(null)}
-                    className="absolute top-6 right-8 text-3xl text-slate-400"
+                    onClick={() => {
+                      setEmpleadoSeleccionado(null)
+                      setShowEmpleadoModal(false)
+                    }}
                   >
                     ×
                   </button>
 
-                  <div className="flex gap-8">
+                  <div className="flex gap-8 items-start">
 
                     {/* FOTO */}
-                    <div className="w-44 h-44 rounded-3xl overflow-hidden bg-slate-300 flex-shrink-0">
+                    <div className="w-36 h-44 rounded-3xl overflow-hidden bg-slate-300 flex-shrink-0">
 
                       {
                         empleadoSeleccionado.foto ? (
@@ -737,13 +785,29 @@ export default function App() {
                     {/* INFO */}
                     <div className="flex-1">
 
-                      <h2 className="text-4xl font-medium text-[#001b70] font-['Cooper'] mb-2">
-                        {empleadoSeleccionado.nombre}
-                      </h2>
+                      <input
+                        type="text"
+                        value={empleadoSeleccionado.nombre}
+                        onChange={(e) =>
+                          setEmpleadoSeleccionado({
+                            ...empleadoSeleccionado,
+                            nombre: e.target.value
+                          })
+                        }
+                        className="border border-slate-300 rounded-2xl px-5 py-4 w-full mb-4 text-lg"
+                      />
 
-                      <p className="text-xl text-slate-500 mb-8">
-                        {empleadoSeleccionado.puesto}
-                      </p>
+                      <input
+                        type="text"
+                        value={empleadoSeleccionado.puesto}
+                        onChange={(e) =>
+                          setEmpleadoSeleccionado({
+                            ...empleadoSeleccionado,
+                            puesto: e.target.value
+                          })
+                        }
+                        className="w-full border border-slate-300 rounded-xl px-3 py-2 mb-8"
+                      />
 
                       <div className="grid grid-cols-2 gap-5">
 
@@ -752,9 +816,17 @@ export default function App() {
                             Correo
                           </p>
 
-                          <p className="text-slate-700">
-                            {empleadoSeleccionado.email}
-                          </p>
+                          <input
+                            type="email"
+                            value={empleadoSeleccionado.email}
+                            onChange={(e) =>
+                              setEmpleadoSeleccionado({
+                                ...empleadoSeleccionado,
+                                email: e.target.value
+                              })
+                            }
+                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
+                          />
                         </div>
 
                         <div>
@@ -762,9 +834,17 @@ export default function App() {
                             Teléfono
                           </p>
 
-                          <p className="text-slate-700">
-                            {empleadoSeleccionado.telefono}
-                          </p>
+                          <input
+                            type="text"
+                            value={empleadoSeleccionado.telefono}
+                            onChange={(e) =>
+                              setEmpleadoSeleccionado({
+                                ...empleadoSeleccionado,
+                                telefono: e.target.value
+                              })
+                            }
+                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
+                          />
                         </div>
 
                         <div>
@@ -772,9 +852,17 @@ export default function App() {
                             RFC
                           </p>
 
-                          <p className="text-slate-700">
-                            {empleadoSeleccionado.rfc || 'No registrado'}
-                          </p>
+                          <input
+                            type="text"
+                            value={empleadoSeleccionado.rfc || ''}
+                            onChange={(e) =>
+                              setEmpleadoSeleccionado({
+                                ...empleadoSeleccionado,
+                                rfc: e.target.value
+                              })
+                            }
+                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
+                          />
                         </div>
 
                         <div>
@@ -782,13 +870,37 @@ export default function App() {
                             CURP
                           </p>
 
-                          <p className="text-slate-700">
-                            {empleadoSeleccionado.curp || 'No registrado'}
-                          </p>
+                          <input
+                            type="text"
+                            value={empleadoSeleccionado.curp || ''}
+                            onChange={(e) =>
+                              setEmpleadoSeleccionado({
+                                ...empleadoSeleccionado,
+                                curp: e.target.value
+                              })
+                            }
+                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
+                          />
                         </div>
 
                       </div>
+                      <button
+                        onClick={() => {
 
+                          editarEmpleado(
+                            empleadoSeleccionado.id,
+                            empleadoSeleccionado
+                          )
+
+                          setEmpleadoSeleccionado(null)
+
+                          setShowEmpleadoModal(false)
+
+                        }}
+                        className="mt-8 w-full bg-[#07355E] hover:bg-[#1B2A38] text-white py-4 rounded-2xl transition-all"
+                      >
+                        Guardar cambios
+                      </button>
                     </div>
 
                   </div>
