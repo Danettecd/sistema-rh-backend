@@ -33,6 +33,9 @@ export default function App() {
   const [showEmpleadoModal, setShowEmpleadoModal] = useState(false)
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null)
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [empleadoAEliminar, setEmpleadoAEliminar] = useState(null)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const [nuevoEmpleado, setNuevoEmpleado] = useState({
     nombre: '',
@@ -206,6 +209,46 @@ export default function App() {
     }
   }
 
+  const eliminarEmpleado = async () => {
+
+    try {
+
+      const token = localStorage.getItem('token')
+
+      await axios.delete(
+        `http://localhost:3000/empleados/${empleadoAEliminar.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      setEmpleados(
+        empleados.filter(
+          empleado => empleado.id !== empleadoAEliminar.id
+        )
+      )
+
+      setShowDeleteModal(false)
+
+      setEmpleadoAEliminar(null)
+
+      setShowSuccessModal(true)
+
+      setTimeout(() => {
+        setShowSuccessModal(false)
+      }, 2000)
+
+    } catch (error) {
+
+      console.log(error)
+
+      alert('Error al eliminar empleado')
+
+    }
+
+  }
   const logout = () => {
 
     localStorage.removeItem('token')
@@ -544,7 +587,11 @@ export default function App() {
                               </button>
 
                               <button
-                                className="bg-[#6B0F29] hover:bg-[#4F0117] hover:-translate-y-1 shadow-md text-white px-4 py-2 rounded-xl transition-all duration-300"
+                                onClick={() => {
+                                  setEmpleadoAEliminar(empleado)
+                                  setShowDeleteModal(true)
+                                }}
+                                className="bg-red-500 hover:bg-red-600 hover:-translate-y-1 shadow-md text-white px-4 py-2 rounded-xl transition-all duration-300"
                               >
                                 Eliminar
                               </button>
@@ -911,6 +958,69 @@ export default function App() {
 
             )
           }
+
+          {showDeleteModal && (
+
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+
+              <div className="bg-white rounded-3xl shadow-2xl p-8 w-[90%] max-w-md border border-slate-100 animate-scaleIn">
+
+                <div className="flex flex-col items-center text-center">
+
+                  <h2 className="text-2xl font-bold text-[#07355E] mb-3">
+                    Eliminar empleado
+                  </h2>
+
+                  <p className="text-slate-500 leading-relaxed mb-8">
+                    ¿Deseas eliminar a
+                    <span className="font-semibold text-[#07355E]">
+                      {' '}{empleadoAEliminar?.nombre}
+                    </span>?
+                  </p>
+
+                  <div className="flex gap-4 w-full">
+
+                    <button
+                      onClick={eliminarEmpleado}
+                      className="flex-1 bg-[#07355E] hover:bg-[#1B2A38] text-white py-3 rounded-2xl font-medium shadow-lg hover:-translate-y-1 transition-all duration-300"
+                    >
+                      Eliminar
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setShowDeleteModal(false)
+                        setEmpleadoAEliminar(null)
+                      }}
+                      className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-2xl font-medium transition-all duration-300"
+                    >
+                      Cancelar
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          )}
+          {showSuccessModal && (
+
+            <div className="fixed inset-0 flex items-center justify-center z-50 animate-fadeIn">
+
+              <div className="bg-[#07355E] text-white px-10 py-6 rounded-3xl shadow-2xl animate-scaleIn">
+
+                <p className="font-medium text-xl">
+                  Empleado eliminado correctamente 
+                </p>
+
+              </div>
+
+            </div>
+
+          )}
         </main>
 
       </div >
@@ -1042,6 +1152,8 @@ export default function App() {
         </div>
 
       )}
+
+
 
     </div>
   )
