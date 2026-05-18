@@ -1,6 +1,12 @@
+import DashboardCard from './components/DashboardCard'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import Empleados from './pages/Empleados';
+
+
 import empleado1 from './assets/fotos/CARLOS.jpg'
 import empleado2 from './assets/fotos/danettecd.jpg'
 import empleado3 from './assets/fotos/betty.jpg'
+import adminFoto from './assets/fotos/danettecd.jpg'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
@@ -25,6 +31,7 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false)
   const [isLogged, setIsLogged] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [activeSection, setActiveSection] = useState('dashboard')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -293,10 +300,7 @@ export default function App() {
       nombre: 'Carlos Joers',
       foto: empleado1
     },
-    {
-      nombre: 'Danette Centeno',
-      foto: empleado2
-    },
+
     {
       nombre: 'Betty Morales',
       foto: empleado3
@@ -329,11 +333,24 @@ export default function App() {
 
                 {menuItems.map((item, index) => (
 
-                  <div
+                  <button
                     key={item.title}
-                    className={`flex items-center px-4 py-2 rounded-xl cursor-pointer transition-all border border-transparent
 
-          ${index === 0
+                    onClick={() => {
+
+                      if (item.title === 'Dashboard') {
+                        setActiveSection('dashboard')
+                      }
+
+                      if (item.title === 'Empleados') {
+                        setActiveSection('empleados')
+                      }
+
+                    }}
+
+                    className={`w-full flex items-center px-4 py-2 rounded-xl cursor-pointer transition-all border border-transparent
+
+  ${activeSection === item.title.toLowerCase()
                         ? 'bg-[#BFE0FF] text-[#0b2447] shadow-sm'
                         : 'hover:bg-white/10 text-white'
                       }`}
@@ -343,7 +360,7 @@ export default function App() {
                       {item.title}
                     </span>
 
-                  </div>
+                  </button>
 
                 ))}
 
@@ -393,7 +410,15 @@ export default function App() {
 
               <div className="flex items-center gap-4">
 
-                <div className="w-14 h-14 rounded-full bg-slate-300"></div>
+                <div className="w-14 h-14 rounded-full overflow-hidden">
+
+                  <img
+                    src={adminFoto}
+                    alt="Administrador"
+                    className="w-full h-full object-cover"
+                  />
+
+                </div>
 
                 <div>
                   <p className="font-semibold text-slate-800">
@@ -412,251 +437,147 @@ export default function App() {
           </header>
 
           {/* CONTENT */}
-          <div className="p-8">
-
-            {/* CARDS */}
-            <div className="grid grid-cols-5 gap-6 mb-8">
-
-              <DashboardCard
-                title="Empleados"
-                value="128"
-                icon={<FaUsers />}
-              />
-
-              <DashboardCard
-                title="Cumpleaños del mes"
-                value="8"
-                icon={<FaBirthdayCake />}
-              />
-
-              <DashboardCard
-                title="Vehículos"
-                value="24"
-                icon={<FaTruck />}
-              />
-
-              <DashboardCard
-                title="Incidencias"
-                value="15"
-                icon={<FaExclamationTriangle />}
-              />
-
-              <DashboardCard
-                title="Faltas"
-                value="27"
-                icon={<FaCalendarCheck />}
-              />
-
-            </div>
-
-            {/* BIRTHDAYS */}
-            <div className="bg-white rounded-3xl p-8 shadow-sm mb-8">
-
-              <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
-                Cumpleaños del mes
-              </h3>
-
-              <div className="grid grid-cols-3 gap-6">
-
-                {birthdays.map((person) => (
-
-                  <div
-                    key={person.nombre}
-                    className="border border-slate-200 rounded-3xl p-6 flex flex-col items-center bg-[#f8fbff]"
-                  >
-
-                    <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
-
-                      <img
-                        src={person.foto}
-                        alt={person.nombre}
-                        className="w-full h-full object-cover"
-                      />
-
-                    </div>
-
-                    <h4 className="text-center font-medium text-slate-700 text-lg">
-                      {person.nombre}
-                    </h4>
-
-                    <p className="text-sm text-slate-400 mt-1">
-                      03 Mayo
-                    </p>
-
-                  </div>
-
-                ))}
-              </div>
-
-            </div>
-
-            {/* EMPLEADOS */}
-
-            <div className="bg-white rounded-3xl p-8 shadow-sm mb-8">
-
-              <div className="flex items-center justify-between mb-8">
-
-                <h3 className="text-2xl font-medium text-slate-800 font-['Cooper']">
-                  Empleados
-                </h3>
-
-                <button
-                  onClick={() => setShowEmpleadoModal(true)}
-                  className="bg-[#0b2447] hover:bg-[#16325c] text-white px-5 py-3 rounded-xl transition-all"
-                >
-                  + Nuevo empleado
-                </button>
-
-              </div>
-
-              <div className="overflow-x-auto">
-
-                <table className="w-full">
-
-                  <thead>
-
-
-                    <tr className="border-b border-slate-200 text-slate-500">
-
-                      <th className="text-left pb-4">Nombre</th>
-                      <th className="text-left pb-4">Correo</th>
-                      <th className="text-left pb-4">Puesto</th>
-                      <th className="text-left pb-4">Teléfono</th>
-                      <th className="text-left pb-4">Acciones</th>
-                    </tr>
-
-                  </thead>
-
-                  <tbody>
-
-                    {empleados.map((empleado) => {
-
-                      const fotoRandom =
-                        fotosDemo[empleado.id % fotosDemo.length]
-
-                      return (
-
-                        <tr
-                          key={empleado.id}
-                          className="border-b border-slate-100 hover:bg-slate-50 transition-all"
-                        >
-
-                          <td className="py-5">
-
-                            <button
-                              onClick={() =>
-                                setEmpleadoSeleccionado({
-                                  ...empleado,
-                                  foto: fotoRandom
-                                })
-                              }
-                              className="font-medium text-[#07355E] hover:underline hover:text-[#1B2A38] transition-all"
-                            >
-                              {empleado.nombre}
-                            </button>
-
-                          </td>
-
-                          <td className="py-5 text-slate-500">
-                            {empleado.email}
-                          </td>
-
-                          <td className="py-5 text-slate-500">
-                            {empleado.puesto}
-                          </td>
-
-                          <td className="py-5 text-slate-500">
-                            {empleado.telefono}
-                          </td>
-
-                          <td className="py-5">
-
-                            <div className="flex gap-3">
-
-                              <button
-                                onClick={() => {
-
-                                  setShowEmpleadoModal(false)
-
-                                  setEmpleadoSeleccionado(empleado)
-
-                                }}
-                                className="bg-[#07355E] hover:bg-[#1B2A38] hover:-translate-y-1 shadow-md text-white px-4 py-2 rounded-xl transition-all duration-300"
-                              >
-                                Editar
-                              </button>
-
-                              <button
-                                onClick={() => {
-                                  setEmpleadoAEliminar(empleado)
-                                  setShowDeleteModal(true)
-                                }}
-                                className="bg-red-500 hover:bg-red-600 hover:-translate-y-1 shadow-md text-white px-4 py-2 rounded-xl transition-all duration-300"
-                              >
-                                Eliminar
-                              </button>
-
-                            </div>
-
-                          </td>
-
-                        </tr>
-
-                      )
-
-                    })}
-
-                  </tbody>
-
-                </table>
-
-              </div>
-
-            </div>
-
-            {/* BOTTOM */}
-            <div className="grid grid-cols-3 gap-6">
-
-              <div className="bg-white rounded-3xl p-8 shadow-sm col-span-2">
-
-                <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
-                  Resumen del mes
-                </h3>
-
-                <div className="h-[250px] bg-slate-100 rounded-2xl"></div>
-
-              </div>
-
-              <div className="bg-white rounded-3xl p-8 shadow-sm">
-
-                <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
-                  Incidencias recientes
-                </h3>
-
-                <div className="space-y-6">
-
-                  <Incident
-                    title="Retraso"
-                    employee="María López"
+          {
+            activeSection === 'dashboard' && (
+              <div className="p-8">
+
+                {/* CARDS */}
+                <div className="grid grid-cols-5 gap-6 mb-8">
+
+                  <DashboardCard
+                    title="Empleados"
+                    value="128"
+                    icon={<FaUsers />}
                   />
 
-                  <Incident
-                    title="Falta"
-                    employee="José Ramírez"
+                  <DashboardCard
+                    title="Cumpleaños del mes"
+                    value="8"
+                    icon={<FaBirthdayCake />}
                   />
 
-                  <Incident
-                    title="Salida anticipada"
-                    employee="Ana Martínez"
+                  <DashboardCard
+                    title="Vehículos"
+                    value="24"
+                    icon={<FaTruck />}
+                  />
+
+                  <DashboardCard
+                    title="Incidencias"
+                    value="15"
+                    icon={<FaExclamationTriangle />}
+                  />
+
+                  <DashboardCard
+                    title="Faltas"
+                    value="27"
+                    icon={<FaCalendarCheck />}
                   />
 
                 </div>
 
+                {/* BIRTHDAYS */}
+                <div className="bg-white rounded-3xl p-8 shadow-sm mb-8">
+
+                  <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
+                    Cumpleaños del mes
+                  </h3>
+
+                  <div className="grid grid-cols-3 gap-6">
+
+                    {birthdays.map((person) => (
+
+                      <div
+                        key={person.nombre}
+                        className="border border-slate-200 rounded-3xl p-6 flex flex-col items-center bg-[#f8fbff]"
+                      >
+
+                        <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
+
+                          <img
+                            src={person.foto}
+                            alt={person.nombre}
+                            className="w-full h-full object-cover"
+                          />
+
+                        </div>
+
+                        <h4 className="text-center font-medium text-slate-700 text-lg">
+                          {person.nombre}
+                        </h4>
+
+                        <p className="text-sm text-slate-400 mt-1">
+                          03 Mayo
+                        </p>
+
+                      </div>
+
+                    ))}
+                  </div>
+
+                </div>
+
+                {/* BOTTOM */}
+                <div className="grid grid-cols-3 gap-6">
+
+                  <div className="bg-white rounded-3xl p-8 shadow-sm col-span-2">
+
+                    <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
+                      Resumen del mes
+                    </h3>
+
+                    <div className="h-[250px] bg-slate-100 rounded-2xl"></div>
+
+                  </div>
+
+                  <div className="bg-white rounded-3xl p-8 shadow-sm">
+
+                    <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
+                      Incidencias recientes
+                    </h3>
+
+                    <div className="space-y-6">
+
+                      <Incident
+                        title="Retraso"
+                        employee="María López"
+                      />
+
+                      <Incident
+                        title="Falta"
+                        employee="José Ramírez"
+                      />
+
+                      <Incident
+                        title="Salida anticipada"
+                        employee="Ana Martínez"
+                      />
+
+                    </div>
+
+                  </div>
+
+                </div>
+
               </div>
+            )
+          }
 
-            </div>
 
-          </div>
+          {
+            activeSection === 'empleados' && (
+
+              <Empleados
+                empleados={empleados}
+                fotosDemo={fotosDemo}
+                setEmpleadoSeleccionado={setEmpleadoSeleccionado}
+                setEmpleadoAEliminar={setEmpleadoAEliminar}
+                setShowDeleteModal={setShowDeleteModal}
+                setShowEmpleadoModal={setShowEmpleadoModal}
+              />
+
+            )
+          }
           {
             showEmpleadoModal && (
 
@@ -732,10 +653,10 @@ export default function App() {
                     <input
                       type="text"
                       placeholder="Nombre"
-                      value={empleadoSeleccionado.nombre}
+                      value={nuevoEmpleado.nombre}
                       onChange={(e) =>
-                        setEmpleadoSeleccionado({
-                          ...empleadoSeleccionado,
+                        setNuevoEmpleado({
+                          ...nuevoEmpleado,
                           nombre: e.target.value
                         })
                       }
@@ -745,10 +666,10 @@ export default function App() {
                     <input
                       type="text"
                       placeholder="Puesto"
-                      value={empleadoSeleccionado.puesto}
+                      value={nuevoEmpleado.puesto}
                       onChange={(e) =>
-                        setEmpleadoSeleccionado({
-                          ...empleadoSeleccionado,
+                        setNuevoEmpleado({
+                          ...nuevoEmpleado,
                           puesto: e.target.value
                         })
                       }
@@ -1010,10 +931,10 @@ export default function App() {
 
             <div className="fixed inset-0 flex items-center justify-center z-50 animate-fadeIn">
 
-              <div className="bg-[#07355E] text-white px-10 py-6 rounded-3xl shadow-2xl animate-scaleIn">
+              <div className="bg-gray-500 text-white px-10 py-6 rounded-3xl shadow-2xl animate-scaleIn">
 
                 <p className="font-medium text-xl">
-                  Empleado eliminado correctamente 
+                  Empleado eliminado correctamente
                 </p>
 
               </div>
@@ -1159,29 +1080,7 @@ export default function App() {
   )
 }
 
-function DashboardCard({ title, value, icon }) {
-  return (
-    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex items-center justify-between">
 
-      <div>
-
-        <p className="text-slate-500 mb-3 font-['Cooper'] text-lg tracking-tight">
-          {title}
-        </p>
-
-        <h3 className="text-5xl font-semibold text-[#0b2447] tracking-tight">
-          {value}
-        </h3>
-
-      </div>
-
-      <div className="text-4xl text-[#BFE0FF]">
-        {icon}
-      </div>
-
-    </div>
-  )
-}
 
 function Incident({ title, employee }) {
   return (
