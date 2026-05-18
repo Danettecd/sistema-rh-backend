@@ -1,3 +1,6 @@
+import empleado1 from './assets/fotos/danettecd.jpg'
+import empleado2 from './assets/fotos/betty.jpg'
+import empleado3 from './assets/fotos/CARLOS.jpg'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
@@ -13,7 +16,11 @@ import {
   FaBars,
   FaBirthdayCake
 } from 'react-icons/fa'
-
+const fotosDemo = [
+  empleado1,
+  empleado2,
+  empleado3
+]
 export default function App() {
   const [showLogin, setShowLogin] = useState(false)
   const [isLogged, setIsLogged] = useState(false)
@@ -24,6 +31,7 @@ export default function App() {
   const [empleados, setEmpleados] = useState([])
 
   const [showEmpleadoModal, setShowEmpleadoModal] = useState(false)
+  const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null)
 
   const [nuevoEmpleado, setNuevoEmpleado] = useState({
     nombre: '',
@@ -35,7 +43,8 @@ export default function App() {
     curp: '',
     nss: '',
     fechaIngreso: '',
-    fechaNacimiento: ''
+    fechaNacimiento: '',
+    foto: ''
   })
 
   useEffect(() => {
@@ -61,7 +70,6 @@ export default function App() {
     try {
 
       setError('')
-
       const response = await axios.post(
         'http://localhost:3000/api/login',
         {
@@ -96,11 +104,13 @@ export default function App() {
 
       const token = localStorage.getItem('token')
 
+      console.log('TOKEN:', token)
+
       const response = await axios.get(
         'http://localhost:3000/empleados',
         {
           headers: {
-            Authorization: `Bearer ${token}`
+            authorization: `Bearer ${token}`
           }
         }
       )
@@ -118,17 +128,30 @@ export default function App() {
   }
 
   const crearEmpleado = async () => {
-
+    console.log('CLICK CREAR EMPLEADO')
     try {
 
       const token = localStorage.getItem('token')
 
+      console.log(nuevoEmpleado)
+      const empleadoSinFoto = {
+        nombre: nuevoEmpleado.nombre,
+        puesto: nuevoEmpleado.puesto,
+        telefono: nuevoEmpleado.telefono,
+        direccion: nuevoEmpleado.direccion,
+        email: nuevoEmpleado.email,
+        rfc: nuevoEmpleado.rfc,
+        curp: nuevoEmpleado.curp,
+        nss: nuevoEmpleado.nss,
+        fechaIngreso: nuevoEmpleado.fechaIngreso,
+        fechaNacimiento: nuevoEmpleado.fechaNacimiento
+      }
       await axios.post(
         'http://localhost:3000/empleados',
-        nuevoEmpleado,
+        empleadoSinFoto,
         {
           headers: {
-            Authorization: `Bearer ${token}`
+            authorization: `Bearer ${token}`
           }
         }
       )
@@ -146,15 +169,24 @@ export default function App() {
         rfc: '',
         curp: '',
         nss: '',
-        fechaIngreso: null,
-        fechaNacimiento: null
+        fechaIngreso: '',
+        fechaNacimiento: '',
+        foto: ''
       })
 
     } catch (error) {
 
-      console.error(error)
+      console.error(error.response?.data || error)
 
     }
+
+  }
+
+  const logout = () => {
+
+    localStorage.removeItem('token')
+
+    setIsLogged(false)
 
   }
 
@@ -247,14 +279,8 @@ export default function App() {
           </div>
 
           <button
-            onClick={() => {
-
-              localStorage.removeItem('token')
-
-              setIsLogged(false)
-
-            }}
-            className={`${!sidebarOpen && 'opacity-0'} flex items-center gap-3 text-lg transition-all duration-200`}
+            className="bg-[#07355E] hover:bg-[#1B2A38] text-white py-3 px-5 rounded-2xl cursor-pointer transition-all duration-300 hover:-translate-y-1 font-semibold shadow-md"
+            onClick={logout}
           >
             Cerrar sesión
           </button>
@@ -409,45 +435,85 @@ export default function App() {
 
                   <thead>
 
+
                     <tr className="border-b border-slate-200 text-slate-500">
 
                       <th className="text-left pb-4">Nombre</th>
                       <th className="text-left pb-4">Correo</th>
                       <th className="text-left pb-4">Puesto</th>
                       <th className="text-left pb-4">Teléfono</th>
-
+                      <th className="text-left pb-4">Acciones</th>
                     </tr>
 
                   </thead>
 
                   <tbody>
 
-                    {empleados.map((empleado) => (
+                    {empleados.map((empleado) => {
 
-                      <tr
-                        key={empleado.id}
-                        className="border-b border-slate-100 hover:bg-slate-50 transition-all"
-                      >
+                      const fotoRandom =
+                        fotosDemo[empleado.id % fotosDemo.length]
 
-                        <td className="py-5 font-medium text-slate-700">
-                          {empleado.nombre}
-                        </td>
+                      return (
 
-                        <td className="py-5 text-slate-500">
-                          {empleado.email}
-                        </td>
+                        <tr
+                          key={empleado.id}
+                          className="border-b border-slate-100 hover:bg-slate-50 transition-all"
+                        >
 
-                        <td className="py-5 text-slate-500">
-                          {empleado.puesto}
-                        </td>
+                          <td className="py-5">
 
-                        <td className="py-5 text-slate-500">
-                          {empleado.telefono}
-                        </td>
+                            <button
+                              onClick={() =>
+                                setEmpleadoSeleccionado({
+                                  ...empleado,
+                                  foto: fotoRandom
+                                })
+                              }
+                              className="font-medium text-[#07355E] hover:underline hover:text-[#1B2A38] transition-all"
+                            >
+                              {empleado.nombre}
+                            </button>
 
-                      </tr>
+                          </td>
 
-                    ))}
+                          <td className="py-5 text-slate-500">
+                            {empleado.email}
+                          </td>
+
+                          <td className="py-5 text-slate-500">
+                            {empleado.puesto}
+                          </td>
+
+                          <td className="py-5 text-slate-500">
+                            {empleado.telefono}
+                          </td>
+
+                          <td className="py-5">
+
+                            <div className="flex gap-3">
+
+                              <button
+                                className="bg-[#07355E] hover:bg-[#1B2A38] hover:-translate-y-1 shadow-md text-white px-4 py-2 rounded-xl transition-all duration-300"
+                              >
+                                Editar
+                              </button>
+
+                              <button
+                                className="bg-[#6B0F29] hover:bg-[#4F0117] hover:-translate-y-1 shadow-md text-white px-4 py-2 rounded-xl transition-all duration-300"
+                              >
+                                Eliminar
+                              </button>
+
+                            </div>
+
+                          </td>
+
+                        </tr>
+
+                      )
+
+                    })}
 
                   </tbody>
 
@@ -522,8 +588,56 @@ export default function App() {
 
                   </div>
 
-                  <div className="grid grid-cols-2 gap-5">
+                  <div className="grid grid-cols-2 gap-5 items-start">
+                    <div className="flex flex-col items-center mb-8">
 
+                      <div className="w-32 h-32 rounded-3xl bg-slate-200 overflow-hidden mb-4">
+
+                        {
+                          nuevoEmpleado.foto ? (
+
+                            <img
+                              src={nuevoEmpleado.foto}
+                              alt="Empleado"
+                              className="w-full h-full object-cover"
+                            />
+
+                          ) : null
+                        }
+
+                      </div>
+
+                      <input
+                        type="file"
+                        className="hidden"
+                        id="foto"
+                        accept="image/*"
+                        onChange={(e) => {
+
+                          const file = e.target.files[0]
+
+                          if (file) {
+
+                            const imageUrl = URL.createObjectURL(file)
+
+                            setNuevoEmpleado({
+                              ...nuevoEmpleado,
+                              foto: imageUrl
+                            })
+
+                          }
+
+                        }}
+                      />
+
+                      <label
+                        htmlFor="foto"
+                        className="bg-[#07355E] hover:bg-[#1B2A38] text-white px-4 py-2 rounded-xl cursor-pointer transition-all"
+                      >
+                        Seleccionar foto
+                      </label>
+
+                    </div>
                     <input
                       placeholder="Nombre"
                       value={nuevoEmpleado.nombre}
@@ -576,7 +690,7 @@ export default function App() {
 
                   <button
                     onClick={crearEmpleado}
-                    className="mt-8 bg-[#0b2447] hover:bg-[#16325c] text-white px-8 py-4 rounded-2xl transition-all"
+                    className="mt-8 w-full bg-[#0b2447] hover:bg-[#16325c] text-white px-8 py-4 rounded-2xl transition-all"
                   >
                     Guardar empleado
                   </button>
@@ -587,7 +701,104 @@ export default function App() {
 
             )
           }
+          {
+            empleadoSeleccionado && (
 
+              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+
+                <div className="bg-white w-[650px] rounded-[35px] p-10 shadow-2xl relative">
+
+                  <button
+                    onClick={() => setEmpleadoSeleccionado(null)}
+                    className="absolute top-6 right-8 text-3xl text-slate-400"
+                  >
+                    ×
+                  </button>
+
+                  <div className="flex gap-8">
+
+                    {/* FOTO */}
+                    <div className="w-44 h-44 rounded-3xl overflow-hidden bg-slate-300 flex-shrink-0">
+
+                      {
+                        empleadoSeleccionado.foto ? (
+
+                          <img
+                            src={empleadoSeleccionado.foto}
+                            alt="Empleado"
+                            className="w-full h-full object-cover"
+                          />
+
+                        ) : null
+                      }
+
+                    </div>
+
+                    {/* INFO */}
+                    <div className="flex-1">
+
+                      <h2 className="text-4xl font-medium text-[#001b70] font-['Cooper'] mb-2">
+                        {empleadoSeleccionado.nombre}
+                      </h2>
+
+                      <p className="text-xl text-slate-500 mb-8">
+                        {empleadoSeleccionado.puesto}
+                      </p>
+
+                      <div className="grid grid-cols-2 gap-5">
+
+                        <div>
+                          <p className="text-slate-400 text-sm">
+                            Correo
+                          </p>
+
+                          <p className="text-slate-700">
+                            {empleadoSeleccionado.email}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-slate-400 text-sm">
+                            Teléfono
+                          </p>
+
+                          <p className="text-slate-700">
+                            {empleadoSeleccionado.telefono}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-slate-400 text-sm">
+                            RFC
+                          </p>
+
+                          <p className="text-slate-700">
+                            {empleadoSeleccionado.rfc || 'No registrado'}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-slate-400 text-sm">
+                            CURP
+                          </p>
+
+                          <p className="text-slate-700">
+                            {empleadoSeleccionado.curp || 'No registrado'}
+                          </p>
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            )
+          }
         </main>
 
       </div >
