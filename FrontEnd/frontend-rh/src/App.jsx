@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 import {
   FaUsers,
@@ -17,6 +18,145 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false)
   const [isLogged, setIsLogged] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [empleados, setEmpleados] = useState([])
+
+  const [showEmpleadoModal, setShowEmpleadoModal] = useState(false)
+
+  const [nuevoEmpleado, setNuevoEmpleado] = useState({
+    nombre: '',
+    puesto: '',
+    telefono: '',
+    direccion: '',
+    email: '',
+    rfc: '',
+    curp: '',
+    nss: '',
+    fechaIngreso: '',
+    fechaNacimiento: ''
+  })
+
+  useEffect(() => {
+
+    const token = localStorage.getItem('token')
+
+    if (token) {
+      setIsLogged(true)
+    }
+
+  }, [])
+
+  useEffect(() => {
+
+    if (isLogged) {
+      obtenerEmpleados()
+    }
+
+  }, [isLogged])
+
+  const handleLogin = async () => {
+
+    try {
+
+      setError('')
+
+      const response = await axios.post(
+        'http://localhost:3000/api/login',
+        {
+          email,
+          password
+        }
+      )
+
+      localStorage.setItem(
+        'token',
+        response.data.token
+      )
+
+      setIsLogged(true)
+
+    } catch (error) {
+
+      console.error(error)
+
+      setError(
+        error.response?.data?.message ||
+        'Error al iniciar sesión'
+      )
+
+    }
+
+  }
+
+  const obtenerEmpleados = async () => {
+
+    try {
+
+      const token = localStorage.getItem('token')
+
+      const response = await axios.get(
+        'http://localhost:3000/empleados',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      setEmpleados(response.data)
+
+      console.log(response.data)
+
+    } catch (error) {
+
+      console.error(error)
+
+    }
+
+  }
+
+  const crearEmpleado = async () => {
+
+    try {
+
+      const token = localStorage.getItem('token')
+
+      await axios.post(
+        'http://localhost:3000/empleados',
+        nuevoEmpleado,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      obtenerEmpleados()
+
+      setShowEmpleadoModal(false)
+
+      setNuevoEmpleado({
+        nombre: '',
+        puesto: '',
+        telefono: '',
+        direccion: '',
+        email: '',
+        rfc: '',
+        curp: '',
+        nss: '',
+        fechaIngreso: null,
+        fechaNacimiento: null
+      })
+
+    } catch (error) {
+
+      console.error(error)
+
+    }
+
+  }
 
   const menuItems = [
     {
@@ -75,8 +215,8 @@ export default function App() {
 
           <div>
 
-            <h1 className= {`${!sidebarOpen && 'opacity-0'} text-5xl font-semibold text-white font-['Cooper'] mb-14 tracking-tight transition-all duration-200`}>
-            
+            <h1 className={`${!sidebarOpen && 'opacity-0'} text-5xl font-semibold text-white font-['Cooper'] mb-14 tracking-tight transition-all duration-200`}>
+
               SIGPA
             </h1>
             <div className="w-full">
@@ -106,7 +246,16 @@ export default function App() {
             </div>
           </div>
 
-          <button className={`${!sidebarOpen && 'opacity-0'} flex items-center gap-3 text-lg transition-all duration-200`}>
+          <button
+            onClick={() => {
+
+              localStorage.removeItem('token')
+
+              setIsLogged(false)
+
+            }}
+            className={`${!sidebarOpen && 'opacity-0'} flex items-center gap-3 text-lg transition-all duration-200`}
+          >
             Cerrar sesión
           </button>
 
@@ -235,6 +384,79 @@ export default function App() {
 
             </div>
 
+            {/* EMPLEADOS */}
+
+            <div className="bg-white rounded-3xl p-8 shadow-sm mb-8">
+
+              <div className="flex items-center justify-between mb-8">
+
+                <h3 className="text-2xl font-medium text-slate-800 font-['Cooper']">
+                  Empleados
+                </h3>
+
+                <button
+                  onClick={() => setShowEmpleadoModal(true)}
+                  className="bg-[#0b2447] hover:bg-[#16325c] text-white px-5 py-3 rounded-xl transition-all"
+                >
+                  + Nuevo empleado
+                </button>
+
+              </div>
+
+              <div className="overflow-x-auto">
+
+                <table className="w-full">
+
+                  <thead>
+
+                    <tr className="border-b border-slate-200 text-slate-500">
+
+                      <th className="text-left pb-4">Nombre</th>
+                      <th className="text-left pb-4">Correo</th>
+                      <th className="text-left pb-4">Puesto</th>
+                      <th className="text-left pb-4">Teléfono</th>
+
+                    </tr>
+
+                  </thead>
+
+                  <tbody>
+
+                    {empleados.map((empleado) => (
+
+                      <tr
+                        key={empleado.id}
+                        className="border-b border-slate-100 hover:bg-slate-50 transition-all"
+                      >
+
+                        <td className="py-5 font-medium text-slate-700">
+                          {empleado.nombre}
+                        </td>
+
+                        <td className="py-5 text-slate-500">
+                          {empleado.email}
+                        </td>
+
+                        <td className="py-5 text-slate-500">
+                          {empleado.puesto}
+                        </td>
+
+                        <td className="py-5 text-slate-500">
+                          {empleado.telefono}
+                        </td>
+
+                      </tr>
+
+                    ))}
+
+                  </tbody>
+
+                </table>
+
+              </div>
+
+            </div>
+
             {/* BOTTOM */}
             <div className="grid grid-cols-3 gap-6">
 
@@ -278,6 +500,93 @@ export default function App() {
             </div>
 
           </div>
+          {
+            showEmpleadoModal && (
+
+              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+
+                <div className="bg-white w-[700px] rounded-[35px] p-10 shadow-2xl">
+
+                  <div className="flex items-center justify-between mb-8">
+
+                    <h2 className="text-4xl font-medium text-[#001b70] font-['Cooper']">
+                      Nuevo Empleado
+                    </h2>
+
+                    <button
+                      onClick={() => setShowEmpleadoModal(false)}
+                      className="text-3xl text-slate-400"
+                    >
+                      ×
+                    </button>
+
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-5">
+
+                    <input
+                      placeholder="Nombre"
+                      value={nuevoEmpleado.nombre}
+                      onChange={(e) =>
+                        setNuevoEmpleado({
+                          ...nuevoEmpleado,
+                          nombre: e.target.value
+                        })
+                      }
+                      className="border border-slate-300 rounded-2xl px-5 py-4"
+                    />
+
+                    <input
+                      placeholder="Puesto"
+                      value={nuevoEmpleado.puesto}
+                      onChange={(e) =>
+                        setNuevoEmpleado({
+                          ...nuevoEmpleado,
+                          puesto: e.target.value
+                        })
+                      }
+                      className="border border-slate-300 rounded-2xl px-5 py-4"
+                    />
+
+                    <input
+                      placeholder="Teléfono"
+                      value={nuevoEmpleado.telefono}
+                      onChange={(e) =>
+                        setNuevoEmpleado({
+                          ...nuevoEmpleado,
+                          telefono: e.target.value
+                        })
+                      }
+                      className="border border-slate-300 rounded-2xl px-5 py-4"
+                    />
+
+                    <input
+                      placeholder="Correo"
+                      value={nuevoEmpleado.email}
+                      onChange={(e) =>
+                        setNuevoEmpleado({
+                          ...nuevoEmpleado,
+                          email: e.target.value
+                        })
+                      }
+                      className="border border-slate-300 rounded-2xl px-5 py-4"
+                    />
+
+                  </div>
+
+                  <button
+                    onClick={crearEmpleado}
+                    className="mt-8 bg-[#0b2447] hover:bg-[#16325c] text-white px-8 py-4 rounded-2xl transition-all"
+                  >
+                    Guardar empleado
+                  </button>
+
+                </div>
+
+              </div>
+
+            )
+          }
 
         </main>
 
@@ -377,17 +686,27 @@ export default function App() {
               <input
                 type="email"
                 placeholder="Ingresa tu correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-slate-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500"
               />
 
               <input
                 type="password"
                 placeholder="Ingresa tu contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full border border-slate-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500"
               />
-
+              {
+                error && (
+                  <p className="text-red-500 text-sm text-center">
+                    {error}
+                  </p>
+                )
+              }
               <button
-                onClick={() => setIsLogged(true)}
+                onClick={handleLogin}
                 className="bg-[#0b2447] hover:bg-[#16325c] hover:scale-105 text-white py-3 px-10 rounded-xl text-lg font-medium transition-all duration-300 mx-auto block mt-4"
               >
                 INICIAR SESIÓN

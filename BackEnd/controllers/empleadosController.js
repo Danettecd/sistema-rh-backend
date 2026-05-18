@@ -94,8 +94,8 @@ const crearEmpleado = async (req, res) => {
       rfc,
       curp,
       nss,
-      fechaIngreso,
-      fechaNacimiento
+      fechaIngreso: null,
+  fechaNacimiento: null
     });
 
     res.status(201).json({
