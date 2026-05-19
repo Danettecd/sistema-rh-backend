@@ -8,6 +8,11 @@ const Vehiculo = sequelize.define('Vehiculo', {
     allowNull: false
   },
 
+  fotoVehiculo: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+
   marca: {
     type: DataTypes.STRING,
     allowNull: false

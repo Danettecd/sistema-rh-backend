@@ -58,6 +58,7 @@ const createVehiculo = async (req, res) => {
 
     const {
       numeroVehiculo,
+      fotoVehiculo,
       marca,
       modelo,
       anio,
@@ -90,6 +91,7 @@ const createVehiculo = async (req, res) => {
 
     const vehiculo = await Vehiculo.create({
       numeroVehiculo,
+      fotoVehiculo,
       marca,
       modelo,
       anio,
@@ -138,6 +140,7 @@ const updateVehiculo = async (req, res) => {
 
     const {
       numeroVehiculo,
+      fotoVehiculo,
       marca,
       modelo,
       anio,
@@ -170,6 +173,7 @@ const updateVehiculo = async (req, res) => {
 
     await vehiculo.update({
       numeroVehiculo,
+      fotoVehiculo,
       marca,
       modelo,
       anio,

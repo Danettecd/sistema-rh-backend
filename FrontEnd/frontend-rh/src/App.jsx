@@ -1,6 +1,10 @@
 import DashboardCard from './components/DashboardCard'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Empleados from './pages/Empleados';
+import Asistencia from './pages/Asistencia'
+import Incidencias from './pages/Incidencias'
+import Uniformes from './pages/Uniformes'
+import Vehiculos from './pages/Vehiculos'
+import FeedbackToast from './components/FeedbackToast'
 
 
 import empleado1 from './assets/fotos/CARLOS.jpg'
@@ -43,6 +47,7 @@ export default function App() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [empleadoAEliminar, setEmpleadoAEliminar] = useState(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [feedback, setFeedback] = useState(null)
 
   const [nuevoEmpleado, setNuevoEmpleado] = useState({
     nombre: '',
@@ -171,6 +176,7 @@ export default function App() {
       obtenerEmpleados()
 
       setShowEmpleadoModal(false)
+      showFeedback('Empleado registrado correctamente')
 
       setNuevoEmpleado({
         nombre: '',
@@ -211,9 +217,11 @@ export default function App() {
       )
 
       obtenerEmpleados()
+      showFeedback('Empleado actualizado correctamente')
 
     } catch (error) {
       console.log(error)
+      showFeedback('Error al actualizar empleado', 'error')
     }
   }
 
@@ -252,9 +260,21 @@ export default function App() {
 
       console.log(error)
 
-      alert('Error al eliminar empleado')
+      showFeedback('Error al eliminar empleado', 'error')
 
     }
+
+  }
+  const showFeedback = (message, type = 'success') => {
+
+    setFeedback({
+      message,
+      type
+    })
+
+    setTimeout(() => {
+      setFeedback(null)
+    }, 2200)
 
   }
   const logout = () => {
@@ -267,34 +287,45 @@ export default function App() {
 
   const menuItems = [
     {
+      key: 'dashboard',
       title: 'Dashboard',
       icon: <FaChartPie />
     },
     {
+      key: 'empleados',
       title: 'Empleados',
       icon: <FaUsers />
     },
     {
+      key: 'asistencia',
       title: 'Asistencia',
       icon: <FaCalendarCheck />
     },
     {
+      key: 'incidencias',
       title: 'Incidencias',
       icon: <FaExclamationTriangle />
     },
     {
+      key: 'uniformes',
       title: 'Uniformes',
       icon: <FaTshirt />
     },
     {
+      key: 'vehiculos',
       title: 'Vehículos',
       icon: <FaTruck />
     },
     {
+      key: 'salud',
       title: 'Salud',
       icon: <FaHeartbeat />
     }
   ]
+
+  const activeTitle = menuItems.find(
+    item => item.key === activeSection
+  )?.title || 'Dashboard'
 
   const birthdays = [
     {
@@ -332,30 +363,24 @@ export default function App() {
             <div className="w-full">
               <nav className={`${!sidebarOpen && 'opacity-0'} space-y-3 transition-all duration-200`}>
 
-                {menuItems.map((item, index) => (
+                {menuItems.map((item) => (
 
                   <button
                     key={item.title}
 
-                    onClick={() => {
-
-                      if (item.title === 'Dashboard') {
-                        setActiveSection('dashboard')
-                      }
-
-                      if (item.title === 'Empleados') {
-                        setActiveSection('empleados')
-                      }
-
-                    }}
+                    onClick={() => setActiveSection(item.key)}
 
                     className={`w-full flex items-center px-4 py-2 rounded-xl cursor-pointer transition-all border border-transparent
 
-  ${activeSection === item.title.toLowerCase()
+  ${activeSection === item.key
                         ? 'bg-[#BFE0FF] text-[#0b2447] shadow-sm'
                         : 'hover:bg-white/10 text-white'
                       }`}
                   >
+
+                    <span className="text-lg mr-3">
+                      {item.icon}
+                    </span>
 
                     <span className="text-lg">
                       {item.title}
@@ -394,7 +419,7 @@ export default function App() {
               )}
 
               <h2 className="text-[30px] font-medium tracking-tight text-[#001b70] font-['Cooper']">
-                Dashboard
+                {activeTitle}
               </h2>
 
             </div>
@@ -577,6 +602,35 @@ export default function App() {
                 setShowEmpleadoModal={setShowEmpleadoModal}
               />
 
+            )
+          }
+          {
+            activeSection === 'asistencia' && (
+              <Asistencia empleados={empleados} />
+            )
+          }
+          {
+            activeSection === 'incidencias' && (
+              <Incidencias empleados={empleados} />
+            )
+          }
+          {
+            activeSection === 'uniformes' && (
+              <Uniformes empleados={empleados} />
+            )
+          }
+          {
+            activeSection === 'vehiculos' && (
+              <Vehiculos />
+            )
+          }
+          {
+            activeSection === 'salud' && (
+              <div className="p-8">
+                <div className="bg-white rounded-3xl p-8 shadow-sm text-slate-500">
+                  Módulo Salud listo para continuar con el mismo diseño.
+                </div>
+              </div>
             )
           }
           {
@@ -943,6 +997,7 @@ export default function App() {
             </div>
 
           )}
+          <FeedbackToast message={feedback?.message} type={feedback?.type} />
         </main>
 
       </div >

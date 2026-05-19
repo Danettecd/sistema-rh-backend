@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: 'Cooper';
-  src: url('./assets/fonts/CooperMedium.otf') format('opentype');
+  src: url('./assets/fonts/cooper-bt-medium.otf') format('opentype');
 }
 
 @import "tailwindcss";
