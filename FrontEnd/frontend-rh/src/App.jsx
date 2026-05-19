@@ -155,7 +155,8 @@ export default function App() {
         curp: nuevoEmpleado.curp,
         nss: nuevoEmpleado.nss,
         fechaIngreso: nuevoEmpleado.fechaIngreso,
-        fechaNacimiento: nuevoEmpleado.fechaNacimiento
+        fechaNacimiento: nuevoEmpleado.fechaNacimiento,
+        
       }
       await axios.post(
         'http://localhost:3000/empleados',

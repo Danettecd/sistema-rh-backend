@@ -58,8 +58,8 @@ export default function Empleados({
 
               {empleados.map((empleado) => {
 
-                const fotoRandom =
-                  fotosDemo[empleado.id % fotosDemo.length]
+              const fotoRandom =
+  fotosDemo[empleado.id % fotosDemo.length]
 
                 return (
 
@@ -74,7 +74,7 @@ export default function Empleados({
                         onClick={() =>
                           setEmpleadoSeleccionado({
                             ...empleado,
-                            foto: fotoRandom
+                           foto: fotoRandom
                           })
                         }
                         className="font-medium text-[#07355E] hover:underline hover:text-[#1B2A38] transition-all"
