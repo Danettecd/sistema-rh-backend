@@ -29,6 +29,18 @@ import {
   FaClipboardCheck
 } from 'react-icons/fa'
 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Cell,
+  PieChart,
+  Pie,
+  CartesianGrid
+} from 'recharts'
+
 const fotosDemo = [
   empleado1,
   empleado2,
@@ -69,6 +81,37 @@ export default function App() {
     foto: ''
   })
 
+      const coloresBarras = [
+      '#93C5FD',
+      '#C4B5FD',
+      '#86EFAC',
+      '#FDE68A',
+      '#FCA5A5',
+      '#67E8F9',
+      '#FDBA74',
+      '#A5B4FC',
+      '#F9A8D4',
+      '#5EEAD4'
+    ]
+    
+  const empleadosPorPuesto = empleados.reduce((acc, empleado) => {
+    const puesto = empleado.puesto || "Sin puesto";
+
+    const existente = acc.find(item => item.puesto === puesto);
+
+    if (existente) {
+      existente.total += 1;
+    } else {
+      acc.push({
+        puesto,
+        total: 1,
+      });
+    }
+
+    return acc;
+  }, []);
+
+
   useEffect(() => {
 
     const token = localStorage.getItem('token')
@@ -79,16 +122,16 @@ export default function App() {
 
   }, [])
 
- useEffect(() => {
+  useEffect(() => {
 
-if (isLogged) {
-  obtenerEmpleados()
-  obtenerVehiculos()
-  obtenerIncidencias()
-  obtenerAsistencias()
-}
+    if (isLogged) {
+      obtenerEmpleados()
+      obtenerVehiculos()
+      obtenerIncidencias()
+      obtenerAsistencias()
+    }
 
-}, [isLogged])
+  }, [isLogged])
 
   const handleLogin = async () => {
 
@@ -154,80 +197,80 @@ if (isLogged) {
 
   const obtenerVehiculos = async () => {
 
-  try {
+    try {
 
-    const token = localStorage.getItem('token')
+      const token = localStorage.getItem('token')
 
-    const response = await axios.get(
-      'http://localhost:3000/vehiculos',
-      {
-        headers: {
-          authorization: `Bearer ${token}`
+      const response = await axios.get(
+        'http://localhost:3000/vehiculos',
+        {
+          headers: {
+            authorization: `Bearer ${token}`
+          }
         }
-      }
-    )
+      )
 
-    setVehiculos(response.data)
+      setVehiculos(response.data)
 
-  } catch (error) {
+    } catch (error) {
 
-    console.error(error)
+      console.error(error)
+
+    }
 
   }
 
-}
+  const obtenerIncidencias = async () => {
 
-const obtenerIncidencias = async () => {
+    try {
 
-  try {
+      const token = localStorage.getItem('token')
 
-    const token = localStorage.getItem('token')
-
-    const response = await axios.get(
-      'http://localhost:3000/incidencias',
-      {
-        headers: {
-          authorization: `Bearer ${token}`
+      const response = await axios.get(
+        'http://localhost:3000/incidencias',
+        {
+          headers: {
+            authorization: `Bearer ${token}`
+          }
         }
-      }
-    )
+      )
 
-    setIncidencias(response.data)
+      setIncidencias(response.data)
 
-  } catch (error) {
+    } catch (error) {
 
-    console.error(error)
+      console.error(error)
+
+    }
 
   }
 
-}
+  const obtenerAsistencias = async () => {
 
-const obtenerAsistencias = async () => {
+    try {
 
-  try {
+      const token = localStorage.getItem('token')
 
-    const token = localStorage.getItem('token')
-
-    const response = await axios.get(
-      'http://localhost:3000/asistencia',
-      {
-        headers: {
-          authorization: `Bearer ${token}`
+      const response = await axios.get(
+        'http://localhost:3000/asistencia',
+        {
+          headers: {
+            authorization: `Bearer ${token}`
+          }
         }
-      }
-    )
+      )
 
-    console.log(response.data)
+      console.log(response.data)
 
-setAsistencias(response.data)
+      setAsistencias(response.data)
 
-  } catch (error) {
+    } catch (error) {
 
-    console.error(error)
+      console.error(error)
+
+    }
 
   }
-
-}
 
   const crearEmpleado = async () => {
     console.log('CLICK CREAR EMPLEADO')
@@ -247,7 +290,7 @@ setAsistencias(response.data)
         nss: nuevoEmpleado.nss,
         fechaIngreso: nuevoEmpleado.fechaIngreso,
         fechaNacimiento: nuevoEmpleado.fechaNacimiento,
-        
+
       }
       await axios.post(
         'http://localhost:3000/empleados',
@@ -415,26 +458,72 @@ setAsistencias(response.data)
 
   const currentMonth = new Date().getMonth()
 
-const birthdays = empleados.filter((empleado) => {
+  const birthdays = empleados.filter((empleado) => {
 
-  if (!empleado.fechaNacimiento) {
-    return false
-  }
+    if (!empleado.fechaNacimiento) {
+      return false
+    }
 
-  const birthMonth = new Date(
-    empleado.fechaNacimiento
-  ).getMonth()
+    const birthMonth = new Date(
+      empleado.fechaNacimiento
+    ).getMonth()
 
-  return birthMonth === currentMonth
+    return birthMonth === currentMonth
 
-})
+  })
 
-const totalFaltas = asistencias.filter(
-  (asistencia) =>
-    asistencia.type?.toLowerCase().trim() === 'falta'
-).length
+  const totalFaltas = asistencias.filter(
+    (asistencia) =>
+      asistencia.type?.toLowerCase().trim() === 'falta'
+  ).length
 
   if (isLogged) {
+
+    const puestosData = [
+      {
+        puesto: 'Ing. Civil',
+        empleados: 8
+      },
+      {
+        puesto: 'Supervisor',
+        empleados: 5
+      },
+      {
+        puesto: 'RH',
+        empleados: 2
+      },
+      {
+        puesto: 'Eléctrico',
+        empleados: 6
+      }
+    ]
+
+    const COLORS = [
+      '#93C5FD',
+      '#fdee6c',
+      '#fcb94d',
+      '#83fbaf'
+    ]
+
+    const incidenciasData = [
+      {
+        name: 'Retardos',
+        value: 10
+      },
+      {
+        name: 'Faltas',
+        value: 4
+      },
+      {
+        name: 'Permisos',
+        value: 2
+      },
+      {
+        name: 'Accidentes',
+        value: 1
+      }
+    ]
+
     return (
       <div className="min-h-screen bg-[#f4f7fb] flex">
 
@@ -565,11 +654,11 @@ const totalFaltas = asistencias.filter(
                 {/* CARDS */}
                 <div className="grid grid-cols-5 gap-6 mb-8">
 
-                 <DashboardCard
-  title="Empleados"
-  value={empleados.length}
-  icon={<FaUsers size={50} />}
-/>
+                  <DashboardCard
+                    title="Empleados"
+                    value={empleados.length}
+                    icon={<FaUsers size={50} />}
+                  />
 
                   <DashboardCard
                     title="Cumpleaños del mes"
@@ -578,10 +667,10 @@ const totalFaltas = asistencias.filter(
                   />
 
                   <DashboardCard
-  title="Vehículos"
-  value={vehiculos.length}
- icon={<FaTruck size={50} />}
-/>
+                    title="Vehículos"
+                    value={vehiculos.length}
+                    icon={<FaTruck size={50} />}
+                  />
 
                   <DashboardCard
                     title="Incidencias"
@@ -592,7 +681,7 @@ const totalFaltas = asistencias.filter(
                   <DashboardCard
                     title="Faltas"
                     value={totalFaltas}
-                   icon={<FaClipboardCheck size={50} />}
+                    icon={<FaClipboardCheck size={50} />}
                   />
 
                 </div>
@@ -600,12 +689,12 @@ const totalFaltas = asistencias.filter(
                 {/* BIRTHDAYS */}
                 <div className="bg-white rounded-3xl p-8 shadow-sm mb-8">
 
-                  
-<div className="flex items-center justify-between mb-6">
 
-  <h3
-    className="
-      text-4xl
+                  <div className="flex items-center justify-between mb-6">
+
+                    <h3
+                      className="
+      text-5xl
       font-black
       bg-gradient-to-r
       from-pink-400
@@ -615,15 +704,15 @@ const totalFaltas = asistencias.filter(
       bg-clip-text
       tracking-wide
     "
-  >
-    HAPPY BIRTHDAY 🎈
-  </h3>
+                    >
+                      HAPPY BIRTHDAY
+                    </h3>
 
-  <div className="text-5xl">
-    🎂🎈
-  </div>
+                    <div className="text-5xl">
+                      🎂🎈
+                    </div>
 
-</div>
+                  </div>
                   <div className="flex justify-center gap-6 flex-wrap">
                     {birthdays.map((person) => (
 
@@ -635,7 +724,7 @@ const totalFaltas = asistencias.filter(
                         <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
 
                           <img
-                           src={fotosDemo[person.id % fotosDemo.length]}
+                            src={fotosDemo[person.id % fotosDemo.length]}
                             alt={person.nombre}
                             className="w-full h-full object-cover"
                           />
@@ -647,12 +736,12 @@ const totalFaltas = asistencias.filter(
                         </h4>
 
                         <p className="text-sm text-slate-400 mt-1">
-  {new Date(person.fechaNacimiento + 'T00:00:00')
-    .toLocaleDateString('es-MX', {
-      day: '2-digit',
-      month: 'long'
-    })}
-</p>
+                          {new Date(person.fechaNacimiento + 'T00:00:00')
+                            .toLocaleDateString('es-MX', {
+                              day: '2-digit',
+                              month: 'long'
+                            })}
+                        </p>
 
                       </div>
 
@@ -662,6 +751,8 @@ const totalFaltas = asistencias.filter(
                 </div>
 
                 {/* BOTTOM */}
+
+
                 <div className="grid grid-cols-3 gap-6">
 
                   <div className="bg-white rounded-3xl p-8 shadow-sm col-span-2">
@@ -670,7 +761,59 @@ const totalFaltas = asistencias.filter(
                       Resumen del mes
                     </h3>
 
-                    <div className="h-[250px] bg-slate-100 rounded-2xl"></div>
+                    <div className="w-full h-[300px]">
+
+                      <BarChart
+                        width={750}
+                        height={420}
+                        data={empleadosPorPuesto}
+                        layout="vertical"
+                        barSize={18}
+                        margin={{
+                          top: 20,
+                          right: 40,
+                          left: 40,
+                          bottom: 20
+                        }}
+                      >
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="#e2e8f0"
+                        />
+
+                        <XAxis
+                          type="number"
+                          tick={{
+                            fill: '#64748b'
+                          }}
+                        />
+
+                        <YAxis
+                          type="category"
+                          dataKey="puesto"
+                          width={140}
+                          tick={{
+                            fill: '#64748b',
+                            fontSize: 15
+                          }}
+                        />
+
+                        <Tooltip />
+
+                        <Bar
+                          dataKey="total"
+                          radius={[0, 10, 10, 0]}
+                        >
+                          {empleadosPorPuesto.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={coloresBarras[index % coloresBarras.length]}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+
+                    </div>
 
                   </div>
 
@@ -679,19 +822,48 @@ const totalFaltas = asistencias.filter(
                     <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
                       Incidencias recientes
                     </h3>
+                    {/*grafica de pastel*/}
+                    <div className="w-full h-[300px] flex justify-center">
 
-                    <div className="space-y-6">
+                      <PieChart width={430} height={430}>
 
-                      {incidencias.slice(0, 3).map((incidencia) => (
+                        <Pie
+                          data={incidenciasData}
+                          dataKey="value"
+                          nameKey="name"
+                          outerRadius={160}
+                          label
+                        >
 
-  <Incident
-    key={incidencia.id}
-    title={incidencia.tipo}
-    employee={incidencia.empleado}
-  />
+                          {incidenciasData.map((entry, index) => (
 
-))}
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={COLORS[index % COLORS.length]}
+                            />
 
+                          ))}
+
+                        </Pie>
+
+                        <Tooltip />
+
+                      </PieChart>
+
+                    </div>
+                    <div className="incidencias-legend">
+                      {incidenciasData.map((item, index) => (
+                        <div key={index} className="legend-item">
+                          <span
+                            className="legend-color"
+                            style={{ backgroundColor: item.color }}
+                          ></span>
+
+                          <span className="legend-text">
+                            {item.name}: {item.value}
+                          </span>
+                        </div>
+                      ))}
                     </div>
 
                   </div>
@@ -732,14 +904,14 @@ const totalFaltas = asistencias.filter(
               <Uniformes empleados={empleados} />
             )
           }
-         {
-  activeSection === 'vehiculos' && (
-    <Vehiculos
-      vehiculos={vehiculos}
-      setVehiculos={setVehiculos}
-    />
-  )
-}
+          {
+            activeSection === 'vehiculos' && (
+              <Vehiculos
+                vehiculos={vehiculos}
+                setVehiculos={setVehiculos}
+              />
+            )
+          }
           {
             activeSection === 'salud' && (
               <Salud empleados={empleados} />
@@ -944,126 +1116,126 @@ const totalFaltas = asistencias.filter(
                         className="w-full border border-slate-300 rounded-xl px-3 py-2 mb-8"
                       />
 
-                <div className="grid grid-cols-2 gap-5">
+                      <div className="grid grid-cols-2 gap-5">
 
-  {/* CORREO */}
-  <div>
-    <p className="text-slate-400 text-sm">
-      Correo
-    </p>
+                        {/* CORREO */}
+                        <div>
+                          <p className="text-slate-400 text-sm">
+                            Correo
+                          </p>
 
-    <input
-      type="email"
-      value={empleadoSeleccionado.email}
-      onChange={(e) =>
-        setEmpleadoSeleccionado({
-          ...empleadoSeleccionado,
-          email: e.target.value
-        })
-      }
-      className="w-full border border-slate-300 rounded-xl px-3 py-2"
-    />
-  </div>
+                          <input
+                            type="email"
+                            value={empleadoSeleccionado.email}
+                            onChange={(e) =>
+                              setEmpleadoSeleccionado({
+                                ...empleadoSeleccionado,
+                                email: e.target.value
+                              })
+                            }
+                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
+                          />
+                        </div>
 
-  {/* TELEFONO */}
-  <div>
-    <p className="text-slate-400 text-sm">
-      Teléfono
-    </p>
+                        {/* TELEFONO */}
+                        <div>
+                          <p className="text-slate-400 text-sm">
+                            Teléfono
+                          </p>
 
-    <input
-      type="text"
-      value={empleadoSeleccionado.telefono}
-      onChange={(e) =>
-        setEmpleadoSeleccionado({
-          ...empleadoSeleccionado,
-          telefono: e.target.value
-        })
-      }
-      className="w-full border border-slate-300 rounded-xl px-3 py-2"
-    />
-  </div>
+                          <input
+                            type="text"
+                            value={empleadoSeleccionado.telefono}
+                            onChange={(e) =>
+                              setEmpleadoSeleccionado({
+                                ...empleadoSeleccionado,
+                                telefono: e.target.value
+                              })
+                            }
+                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
+                          />
+                        </div>
 
-  {/* RFC */}
-  <div>
-    <p className="text-slate-400 text-sm">
-      RFC
-    </p>
+                        {/* RFC */}
+                        <div>
+                          <p className="text-slate-400 text-sm">
+                            RFC
+                          </p>
 
-    <input
-      type="text"
-      value={empleadoSeleccionado.rfc || ''}
-      onChange={(e) =>
-        setEmpleadoSeleccionado({
-          ...empleadoSeleccionado,
-          rfc: e.target.value
-        })
-      }
-      className="w-full border border-slate-300 rounded-xl px-3 py-2"
-    />
-  </div>
+                          <input
+                            type="text"
+                            value={empleadoSeleccionado.rfc || ''}
+                            onChange={(e) =>
+                              setEmpleadoSeleccionado({
+                                ...empleadoSeleccionado,
+                                rfc: e.target.value
+                              })
+                            }
+                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
+                          />
+                        </div>
 
-</div>
+                      </div>
 
-{/* CURP FULL WIDTH */}
-<div className="mt-5">
-  <p className="text-slate-400 text-sm">
-    CURP
-  </p>
+                      {/* CURP FULL WIDTH */}
+                      <div className="mt-5">
+                        <p className="text-slate-400 text-sm">
+                          CURP
+                        </p>
 
-  <input
-    type="text"
-    value={empleadoSeleccionado.curp || ''}
-    onChange={(e) =>
-      setEmpleadoSeleccionado({
-        ...empleadoSeleccionado,
-        curp: e.target.value
-      })
-    }
-    className="w-full border border-slate-300 rounded-xl px-3 py-2"
-  />
-</div>
+                        <input
+                          type="text"
+                          value={empleadoSeleccionado.curp || ''}
+                          onChange={(e) =>
+                            setEmpleadoSeleccionado({
+                              ...empleadoSeleccionado,
+                              curp: e.target.value
+                            })
+                          }
+                          className="w-full border border-slate-300 rounded-xl px-3 py-2"
+                        />
+                      </div>
 
-{/* FECHAS */}
-<div className="grid grid-cols-2 gap-5 mt-5">
+                      {/* FECHAS */}
+                      <div className="grid grid-cols-2 gap-5 mt-5">
 
-  <div>
-    <p className="text-slate-400 text-sm">
-      Fecha de nacimiento
-    </p>
+                        <div>
+                          <p className="text-slate-400 text-sm">
+                            Fecha de nacimiento
+                          </p>
 
-    <input
-      type="date"
-      value={empleadoSeleccionado.fechaNacimiento || ''}
-      onChange={(e) =>
-        setEmpleadoSeleccionado({
-          ...empleadoSeleccionado,
-          fechaNacimiento: e.target.value
-        })
-      }
-      className="w-full border border-slate-300 rounded-xl px-3 py-2"
-    />
-  </div>
+                          <input
+                            type="date"
+                            value={empleadoSeleccionado.fechaNacimiento || ''}
+                            onChange={(e) =>
+                              setEmpleadoSeleccionado({
+                                ...empleadoSeleccionado,
+                                fechaNacimiento: e.target.value
+                              })
+                            }
+                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
+                          />
+                        </div>
 
-  <div>
-    <p className="text-slate-400 text-sm">
-      Fecha de ingreso
-    </p>
+                        <div>
+                          <p className="text-slate-400 text-sm">
+                            Fecha de ingreso
+                          </p>
 
-    <input
-      type="date"
-      value={empleadoSeleccionado.fechaIngreso || ''}
-      onChange={(e) =>
-        setEmpleadoSeleccionado({
-          ...empleadoSeleccionado,
-          fechaIngreso: e.target.value
-        })
-      }
-      className="w-full border border-slate-300 rounded-xl px-3 py-2"
-    />
-  </div>
+                          <input
+                            type="date"
+                            value={empleadoSeleccionado.fechaIngreso || ''}
+                            onChange={(e) =>
+                              setEmpleadoSeleccionado({
+                                ...empleadoSeleccionado,
+                                fechaIngreso: e.target.value
+                              })
+                            }
+                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
+                          />
+                        </div>
 
-</div>
+                      </div>
 
 
                       <button

@@ -231,10 +231,7 @@ const filteredVehicles = useMemo(() => {
     <div className="p-8">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
-          <h1 className="text-4xl font-medium text-[#001b70] font-['Cooper']">
-            Vehículos
-          </h1>
-
+          
           <p className="text-slate-500 mt-2">
             Control de unidades, pólizas y tarjetas de circulación
           </p>

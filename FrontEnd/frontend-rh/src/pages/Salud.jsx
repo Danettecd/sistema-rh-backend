@@ -436,9 +436,7 @@ export default function Salud({ empleados = [] }) {
     <div className="p-8">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
-          <h1 className="text-4xl font-medium text-[#001b70] font-['Cooper']">
-            Salud
-          </h1>
+          
 
           <p className="text-slate-500 mt-2">
             Seguimiento a estado de salud de empleados, citas, incapacidades y monitoreo de presión

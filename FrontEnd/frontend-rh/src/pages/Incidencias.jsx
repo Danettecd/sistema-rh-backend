@@ -9,7 +9,7 @@ const statusOptions = [
 export default function Incidencias({ empleados }) {
   return (
     <RhCrudPage
-      title="Incidencias"
+      
       subtitle="Da seguimiento a incidencias internas y su estado de resolución"
       endpoint="/incidencias"
       empleados={empleados}

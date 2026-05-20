@@ -9,8 +9,7 @@ const tipoOptions = [
 export default function Asistencia({ empleados }) {
   return (
     <RhCrudPage
-      title="Asistencia"
-      subtitle="Registra retardos, faltas y horas extra del equipo"
+            subtitle="Registra retardos, faltas y horas extra del equipo"
       endpoint="/asistencia"
       empleados={empleados}
       searchPlaceholder="Buscar por empleado"

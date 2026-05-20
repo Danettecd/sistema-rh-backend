@@ -15,10 +15,6 @@ export default function Empleados({
 
         <div>
 
-          <h1 className="text-4xl font-medium text-[#001b70] font-['Cooper']">
-            Empleados
-          </h1>
-
           <p className="text-slate-500 mt-2">
             Gestiona la información de los colaboradores
           </p>
