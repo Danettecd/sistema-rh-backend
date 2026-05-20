@@ -25,8 +25,10 @@ import {
   FaChartPie,
   FaBell,
   FaBars,
-  FaBirthdayCake
+  FaBirthdayCake,
+  FaClipboardCheck
 } from 'react-icons/fa'
+
 const fotosDemo = [
   empleado1,
   empleado2,
@@ -42,6 +44,8 @@ export default function App() {
   const [error, setError] = useState('')
   const [empleados, setEmpleados] = useState([])
   const [vehiculos, setVehiculos] = useState([])
+  const [incidencias, setIncidencias] = useState([])
+  const [asistencias, setAsistencias] = useState([])
 
   const [showEmpleadoModal, setShowEmpleadoModal] = useState(false)
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null)
@@ -77,10 +81,12 @@ export default function App() {
 
  useEffect(() => {
 
-  if (isLogged) {
-    obtenerEmpleados()
-    obtenerVehiculos()
-  }
+if (isLogged) {
+  obtenerEmpleados()
+  obtenerVehiculos()
+  obtenerIncidencias()
+  obtenerAsistencias()
+}
 
 }, [isLogged])
 
@@ -162,6 +168,58 @@ export default function App() {
     )
 
     setVehiculos(response.data)
+
+  } catch (error) {
+
+    console.error(error)
+
+  }
+
+}
+
+const obtenerIncidencias = async () => {
+
+  try {
+
+    const token = localStorage.getItem('token')
+
+    const response = await axios.get(
+      'http://localhost:3000/incidencias',
+      {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      }
+    )
+
+    setIncidencias(response.data)
+
+  } catch (error) {
+
+    console.error(error)
+
+  }
+
+}
+
+const obtenerAsistencias = async () => {
+
+  try {
+
+    const token = localStorage.getItem('token')
+
+    const response = await axios.get(
+      'http://localhost:3000/asistencia',
+      {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      }
+    )
+
+    console.log(response.data)
+
+setAsistencias(response.data)
 
   } catch (error) {
 
@@ -355,17 +413,26 @@ export default function App() {
     item => item.key === activeSection
   )?.title || 'Dashboard'
 
-  const birthdays = [
-    {
-      nombre: 'Carlos Joers',
-      foto: empleado1
-    },
+  const currentMonth = new Date().getMonth()
 
-    {
-      nombre: 'Betty Morales',
-      foto: empleado3
-    }
-  ]
+const birthdays = empleados.filter((empleado) => {
+
+  if (!empleado.fechaNacimiento) {
+    return false
+  }
+
+  const birthMonth = new Date(
+    empleado.fechaNacimiento
+  ).getMonth()
+
+  return birthMonth === currentMonth
+
+})
+
+const totalFaltas = asistencias.filter(
+  (asistencia) =>
+    asistencia.type?.toLowerCase().trim() === 'falta'
+).length
 
   if (isLogged) {
     return (
@@ -501,31 +568,31 @@ export default function App() {
                  <DashboardCard
   title="Empleados"
   value={empleados.length}
-  icon={<FaUsers />}
+  icon={<FaUsers size={50} />}
 />
 
                   <DashboardCard
                     title="Cumpleaños del mes"
-                    value="8"
-                    icon={<FaBirthdayCake />}
+                    value={birthdays.length}
+                    icon={<FaBirthdayCake size={50} />}
                   />
 
                   <DashboardCard
   title="Vehículos"
   value={vehiculos.length}
-  icon={<FaTruck />}
+ icon={<FaTruck size={50} />}
 />
 
                   <DashboardCard
                     title="Incidencias"
-                    value="15"
-                    icon={<FaExclamationTriangle />}
+                    value={incidencias.length}
+                    icon={<FaExclamationTriangle size={50} />}
                   />
 
                   <DashboardCard
                     title="Faltas"
-                    value="27"
-                    icon={<FaCalendarCheck />}
+                    value={totalFaltas}
+                   icon={<FaClipboardCheck size={50} />}
                   />
 
                 </div>
@@ -533,23 +600,42 @@ export default function App() {
                 {/* BIRTHDAYS */}
                 <div className="bg-white rounded-3xl p-8 shadow-sm mb-8">
 
-                  <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
-                    Cumpleaños del mes
-                  </h3>
+                  
+<div className="flex items-center justify-between mb-6">
 
-                  <div className="grid grid-cols-3 gap-6">
+  <h3
+    className="
+      text-4xl
+      font-black
+      bg-gradient-to-r
+      from-pink-400
+      via-yellow-400
+      to-blue-400
+      text-transparent
+      bg-clip-text
+      tracking-wide
+    "
+  >
+    HAPPY BIRTHDAY 🎈
+  </h3>
 
+  <div className="text-5xl">
+    🎂🎈
+  </div>
+
+</div>
+                  <div className="flex justify-center gap-6 flex-wrap">
                     {birthdays.map((person) => (
 
                       <div
                         key={person.nombre}
-                        className="border border-slate-200 rounded-3xl p-6 flex flex-col items-center bg-[#f8fbff]"
+                        className="border border-slate-200 rounded-3xl p-6 flex flex-col items-center bg-[#f8fbff] w-[260px]"
                       >
 
                         <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
 
                           <img
-                            src={person.foto}
+                           src={fotosDemo[person.id % fotosDemo.length]}
                             alt={person.nombre}
                             className="w-full h-full object-cover"
                           />
@@ -561,8 +647,12 @@ export default function App() {
                         </h4>
 
                         <p className="text-sm text-slate-400 mt-1">
-                          03 Mayo
-                        </p>
+  {new Date(person.fechaNacimiento + 'T00:00:00')
+    .toLocaleDateString('es-MX', {
+      day: '2-digit',
+      month: 'long'
+    })}
+</p>
 
                       </div>
 
@@ -592,20 +682,15 @@ export default function App() {
 
                     <div className="space-y-6">
 
-                      <Incident
-                        title="Retraso"
-                        employee="María López"
-                      />
+                      {incidencias.slice(0, 3).map((incidencia) => (
 
-                      <Incident
-                        title="Falta"
-                        employee="José Ramírez"
-                      />
+  <Incident
+    key={incidencia.id}
+    title={incidencia.tipo}
+    employee={incidencia.empleado}
+  />
 
-                      <Incident
-                        title="Salida anticipada"
-                        employee="Ana Martínez"
-                      />
+))}
 
                     </div>
 
