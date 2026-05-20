@@ -74,12 +74,11 @@ function getExpiryState(dateValue) {
   }
 }
 
-function vehicleTitle(vehicle) {
-  return `${vehicle.marca || ''} ${vehicle.modelo || ''}`.trim() || 'Vehículo'
-}
+export default function Vehiculos({
+  vehiculos = [],
+  setVehiculos
+}) {
 
-export default function Vehiculos() {
-  const [vehiculos, setVehiculos] = useState([])
   const [selectedId, setSelectedId] = useState(null)
   const [showFormModal, setShowFormModal] = useState(false)
   const [editingVehicle, setEditingVehicle] = useState(null)
@@ -99,24 +98,31 @@ export default function Vehiculos() {
 
   const loadVehiculos = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_URL}/vehiculos`, {
-        headers: getTokenHeaders()
-      })
+   const response = await axios.get(`${API_URL}/vehiculos`, {
+  headers: getTokenHeaders()
+})
+
+console.log(response.data)
+console.log(Array.isArray(response.data))
 
       setVehiculos(response.data)
-      setSelectedId((currentId) => currentId || response.data[0]?.id || null)
+
+setSelectedId(
+  (currentId) =>
+    currentId || response.data[0]?.id || null
+)
     } catch (requestError) {
       console.error(requestError)
       showFeedback('No se pudieron cargar los vehículos', 'error')
     }
-  }, [showFeedback])
+  }, [showFeedback, setVehiculos])
 
   useEffect(() => {
     loadVehiculos()
   }, [loadVehiculos])
 
-  const filteredVehicles = useMemo(() => {
-    return vehiculos.filter((vehiculo) => {
+const filteredVehicles = useMemo(() => {
+  return (vehiculos || []).filter((vehiculo) => {
       const text = [
         vehiculo.marca,
         vehiculo.modelo,
@@ -129,6 +135,7 @@ export default function Vehiculos() {
   }, [vehiculos, search])
 
   const selectedVehicle = vehiculos.find((vehiculo) => vehiculo.id === selectedId) || filteredVehicles[0]
+  console.log('VEHICULOS:', vehiculos)
 
   const openCreateModal = () => {
     setError('')
@@ -382,7 +389,9 @@ export default function Vehiculos() {
     </div>
   )
 }
-
+function vehicleTitle(vehiculo) {
+  return `${vehiculo.marca} ${vehiculo.modelo}`
+}
 function VehicleDetail({ vehiculo, onEdit, onDelete }) {
   const polizaState = getExpiryState(vehiculo.vigenciaPoliza)
   const tarjetaState = getExpiryState(vehiculo.vigenciaTarjeta)

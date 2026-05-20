@@ -41,6 +41,7 @@ export default function App() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [empleados, setEmpleados] = useState([])
+  const [vehiculos, setVehiculos] = useState([])
 
   const [showEmpleadoModal, setShowEmpleadoModal] = useState(false)
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null)
@@ -74,13 +75,14 @@ export default function App() {
 
   }, [])
 
-  useEffect(() => {
+ useEffect(() => {
 
-    if (isLogged) {
-      obtenerEmpleados()
-    }
+  if (isLogged) {
+    obtenerEmpleados()
+    obtenerVehiculos()
+  }
 
-  }, [isLogged])
+}, [isLogged])
 
   const handleLogin = async () => {
 
@@ -143,6 +145,31 @@ export default function App() {
     }
 
   }
+
+  const obtenerVehiculos = async () => {
+
+  try {
+
+    const token = localStorage.getItem('token')
+
+    const response = await axios.get(
+      'http://localhost:3000/vehiculos',
+      {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      }
+    )
+
+    setVehiculos(response.data)
+
+  } catch (error) {
+
+    console.error(error)
+
+  }
+
+}
 
   const crearEmpleado = async () => {
     console.log('CLICK CREAR EMPLEADO')
@@ -471,11 +498,11 @@ export default function App() {
                 {/* CARDS */}
                 <div className="grid grid-cols-5 gap-6 mb-8">
 
-                  <DashboardCard
-                    title="Empleados"
-                    value="128"
-                    icon={<FaUsers />}
-                  />
+                 <DashboardCard
+  title="Empleados"
+  value={empleados.length}
+  icon={<FaUsers />}
+/>
 
                   <DashboardCard
                     title="Cumpleaños del mes"
@@ -484,10 +511,10 @@ export default function App() {
                   />
 
                   <DashboardCard
-                    title="Vehículos"
-                    value="24"
-                    icon={<FaTruck />}
-                  />
+  title="Vehículos"
+  value={vehiculos.length}
+  icon={<FaTruck />}
+/>
 
                   <DashboardCard
                     title="Incidencias"
@@ -620,11 +647,14 @@ export default function App() {
               <Uniformes empleados={empleados} />
             )
           }
-          {
-            activeSection === 'vehiculos' && (
-              <Vehiculos />
-            )
-          }
+         {
+  activeSection === 'vehiculos' && (
+    <Vehiculos
+      vehiculos={vehiculos}
+      setVehiculos={setVehiculos}
+    />
+  )
+}
           {
             activeSection === 'salud' && (
               <Salud empleados={empleados} />
@@ -829,81 +859,128 @@ export default function App() {
                         className="w-full border border-slate-300 rounded-xl px-3 py-2 mb-8"
                       />
 
-                      <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-5">
 
-                        <div>
-                          <p className="text-slate-400 text-sm">
-                            Correo
-                          </p>
+  {/* CORREO */}
+  <div>
+    <p className="text-slate-400 text-sm">
+      Correo
+    </p>
 
-                          <input
-                            type="email"
-                            value={empleadoSeleccionado.email}
-                            onChange={(e) =>
-                              setEmpleadoSeleccionado({
-                                ...empleadoSeleccionado,
-                                email: e.target.value
-                              })
-                            }
-                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
-                          />
-                        </div>
+    <input
+      type="email"
+      value={empleadoSeleccionado.email}
+      onChange={(e) =>
+        setEmpleadoSeleccionado({
+          ...empleadoSeleccionado,
+          email: e.target.value
+        })
+      }
+      className="w-full border border-slate-300 rounded-xl px-3 py-2"
+    />
+  </div>
 
-                        <div>
-                          <p className="text-slate-400 text-sm">
-                            Teléfono
-                          </p>
+  {/* TELEFONO */}
+  <div>
+    <p className="text-slate-400 text-sm">
+      Teléfono
+    </p>
 
-                          <input
-                            type="text"
-                            value={empleadoSeleccionado.telefono}
-                            onChange={(e) =>
-                              setEmpleadoSeleccionado({
-                                ...empleadoSeleccionado,
-                                telefono: e.target.value
-                              })
-                            }
-                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
-                          />
-                        </div>
+    <input
+      type="text"
+      value={empleadoSeleccionado.telefono}
+      onChange={(e) =>
+        setEmpleadoSeleccionado({
+          ...empleadoSeleccionado,
+          telefono: e.target.value
+        })
+      }
+      className="w-full border border-slate-300 rounded-xl px-3 py-2"
+    />
+  </div>
 
-                        <div>
-                          <p className="text-slate-400 text-sm">
-                            RFC
-                          </p>
+  {/* RFC */}
+  <div>
+    <p className="text-slate-400 text-sm">
+      RFC
+    </p>
 
-                          <input
-                            type="text"
-                            value={empleadoSeleccionado.rfc || ''}
-                            onChange={(e) =>
-                              setEmpleadoSeleccionado({
-                                ...empleadoSeleccionado,
-                                rfc: e.target.value
-                              })
-                            }
-                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
-                          />
-                        </div>
+    <input
+      type="text"
+      value={empleadoSeleccionado.rfc || ''}
+      onChange={(e) =>
+        setEmpleadoSeleccionado({
+          ...empleadoSeleccionado,
+          rfc: e.target.value
+        })
+      }
+      className="w-full border border-slate-300 rounded-xl px-3 py-2"
+    />
+  </div>
 
-                        <div>
-                          <p className="text-slate-400 text-sm">
-                            CURP
-                          </p>
+</div>
 
-                          <input
-                            type="text"
-                            value={empleadoSeleccionado.curp || ''}
-                            onChange={(e) =>
-                              setEmpleadoSeleccionado({
-                                ...empleadoSeleccionado,
-                                curp: e.target.value
-                              })
-                            }
-                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
-                          />
-                        </div>
+{/* CURP FULL WIDTH */}
+<div className="mt-5">
+  <p className="text-slate-400 text-sm">
+    CURP
+  </p>
 
-                      </div>
+  <input
+    type="text"
+    value={empleadoSeleccionado.curp || ''}
+    onChange={(e) =>
+      setEmpleadoSeleccionado({
+        ...empleadoSeleccionado,
+        curp: e.target.value
+      })
+    }
+    className="w-full border border-slate-300 rounded-xl px-3 py-2"
+  />
+</div>
+
+{/* FECHAS */}
+<div className="grid grid-cols-2 gap-5 mt-5">
+
+  <div>
+    <p className="text-slate-400 text-sm">
+      Fecha de nacimiento
+    </p>
+
+    <input
+      type="date"
+      value={empleadoSeleccionado.fechaNacimiento || ''}
+      onChange={(e) =>
+        setEmpleadoSeleccionado({
+          ...empleadoSeleccionado,
+          fechaNacimiento: e.target.value
+        })
+      }
+      className="w-full border border-slate-300 rounded-xl px-3 py-2"
+    />
+  </div>
+
+  <div>
+    <p className="text-slate-400 text-sm">
+      Fecha de ingreso
+    </p>
+
+    <input
+      type="date"
+      value={empleadoSeleccionado.fechaIngreso || ''}
+      onChange={(e) =>
+        setEmpleadoSeleccionado({
+          ...empleadoSeleccionado,
+          fechaIngreso: e.target.value
+        })
+      }
+      className="w-full border border-slate-300 rounded-xl px-3 py-2"
+    />
+  </div>
+
+</div>
+
+
                       <button
                         onClick={() => {
 
