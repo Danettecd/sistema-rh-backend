@@ -74,7 +74,8 @@ const createCita = async (req, res) => {
       fecha,
       hora,
       especialidad,
-      comentarios
+      comentarios,
+      motivo
     } = req.body;
 
     // VALIDACIONES
@@ -110,7 +111,7 @@ const createCita = async (req, res) => {
       fecha,
       hora,
       especialidad,
-      comentarios
+      comentarios: comentarios || motivo
     });
 
     res.status(201).json({
@@ -150,7 +151,8 @@ const updateCita = async (req, res) => {
       fecha,
       hora,
       especialidad,
-      comentarios
+      comentarios,
+      motivo
     } = req.body;
 
     // VALIDACIONES
@@ -186,7 +188,7 @@ const updateCita = async (req, res) => {
       fecha,
       hora,
       especialidad,
-      comentarios
+      comentarios: comentarios || motivo
     });
 
     res.status(200).json({

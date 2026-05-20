@@ -120,11 +120,12 @@ const createIncapacidad = async (req, res) => {
     if (
       !empleado_id ||
       !fecha_inicio ||
+      !fecha_fin ||
       !motivo
     ) {
 
       return res.status(400).json({
-        message: 'empleado_id, fecha_inicio y motivo son obligatorios'
+        message: 'empleado_id, fecha_inicio, fecha_fin y motivo son obligatorios'
       });
 
     }
@@ -143,18 +144,18 @@ const createIncapacidad = async (req, res) => {
 
     // CALCULAR DÍAS
 
-    let dias = null;
+    const inicio = new Date(fecha_inicio);
+    const fin = new Date(fecha_fin);
 
-    if (fecha_inicio && fecha_fin) {
-
-      const inicio = new Date(fecha_inicio);
-      const fin = new Date(fecha_fin);
-
-      dias = Math.ceil(
-        (fin - inicio) / (1000 * 60 * 60 * 24)
-      ) + 1;
-
+    if (fin < inicio) {
+      return res.status(400).json({
+        message: 'La fecha de terminacion no puede ser menor a la fecha de inicio'
+      });
     }
+
+    const dias = Math.ceil(
+      (fin - inicio) / (1000 * 60 * 60 * 24)
+    ) + 1;
 
     // CREAR REGISTRO
 
@@ -168,7 +169,7 @@ const createIncapacidad = async (req, res) => {
     res.status(201).json({
       message: 'Incapacidad registrada correctamente',
       incapacidad: {
-        ...incapacidad.toJSON(),
+        ...nuevaIncapacidad.toJSON(),
         dias
       }
     });
@@ -212,11 +213,12 @@ const updateIncapacidad = async (req, res) => {
     if (
       !empleado_id ||
       !fecha_inicio ||
+      !fecha_fin ||
       !motivo
     ) {
 
       return res.status(400).json({
-        message: 'empleado_id, fecha_inicio y motivo son obligatorios'
+        message: 'empleado_id, fecha_inicio, fecha_fin y motivo son obligatorios'
       });
 
     }
@@ -235,18 +237,18 @@ const updateIncapacidad = async (req, res) => {
 
     // CALCULAR DÍAS
 
-    let dias = null;
+    const inicio = new Date(fecha_inicio);
+    const fin = new Date(fecha_fin);
 
-    if (fecha_inicio && fecha_fin) {
-
-      const inicio = new Date(fecha_inicio);
-      const fin = new Date(fecha_fin);
-
-      dias = Math.ceil(
-        (fin - inicio) / (1000 * 60 * 60 * 24)
-      ) + 1;
-
+    if (fin < inicio) {
+      return res.status(400).json({
+        message: 'La fecha de terminacion no puede ser menor a la fecha de inicio'
+      });
     }
+
+    const dias = Math.ceil(
+      (fin - inicio) / (1000 * 60 * 60 * 24)
+    ) + 1;
 
     // ACTUALIZAR
 

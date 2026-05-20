@@ -7,17 +7,25 @@ app.use(express.json());
 const empleadosRoutes = require('./routes/empleadosRoutes');
 const asistenciaRoutes = require("./routes/asistenciaRoutes");
 const saludRoutes = require("./routes/saludRoutes");
+const presionRoutes = require("./routes/presionRoutes");
+const incapacidadRoutes = require("./routes/incapacidadRoutes");
+const citaRoutes = require("./routes/citaRoutes");
 const uniformesRoutes = require("./routes/uniformesRoutes");
 const vehiculosRoutes = require("./routes/vehiculosRoutes");
 const incidenciasRoutes = require('./routes/incidenciasRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 
 app.use('/empleados', empleadosRoutes);
 app.use("/asistencia", asistenciaRoutes);
 app.use("/salud", saludRoutes);
+app.use("/presiones", presionRoutes);
+app.use("/incapacidades", incapacidadRoutes);
+app.use("/citas", citaRoutes);
 app.use("/uniformes", uniformesRoutes);
 app.use("/incidencias", incidenciasRoutes);
 app.use("/vehiculos", vehiculosRoutes);
+app.use('/api', authRoutes);
 
 console.log("Consultando en la base de datos...");
 console.log("SaludRoutes:", saludRoutes);

@@ -4,6 +4,7 @@ import Asistencia from './pages/Asistencia'
 import Incidencias from './pages/Incidencias'
 import Uniformes from './pages/Uniformes'
 import Vehiculos from './pages/Vehiculos'
+import Salud from './pages/Salud'
 import FeedbackToast from './components/FeedbackToast'
 
 
@@ -626,11 +627,7 @@ export default function App() {
           }
           {
             activeSection === 'salud' && (
-              <div className="p-8">
-                <div className="bg-white rounded-3xl p-8 shadow-sm text-slate-500">
-                  Módulo Salud listo para continuar con el mismo diseño.
-                </div>
-              </div>
+              <Salud empleados={empleados} />
             )
           }
           {
