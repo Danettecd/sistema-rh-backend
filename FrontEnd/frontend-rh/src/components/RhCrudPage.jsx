@@ -237,10 +237,10 @@ export default function RhCrudPage({
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
-          <h1 className="text-4xl font-medium text-[#001b70] font-['Cooper']">
+          <h1 className="text-3xl md:text-4xl font-medium text-[#001b70] font-['Cooper']">
             {title}
           </h1>
 
@@ -252,7 +252,7 @@ export default function RhCrudPage({
         <button
           type="button"
           onClick={openCreateModal}
-          className="bg-[#0b2447] hover:bg-[#16325c] text-white px-5 py-3 rounded-xl transition-all shadow-md hover:-translate-y-1"
+          className="bg-[#0b2447] hover:bg-[#16325c] text-white px-5 py-3 rounded-xl transition-all shadow-md hover:-translate-y-1 w-full sm:w-auto"
         >
           + Nuevo registro
         </button>
@@ -285,7 +285,7 @@ export default function RhCrudPage({
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[720px]">
             <thead>
               <tr className="border-b border-slate-200 text-slate-500">
                 {columns.map((column) => (
@@ -316,7 +316,7 @@ export default function RhCrudPage({
                   })}
 
                   <td className="py-5">
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 whitespace-nowrap">
                       <button
                         type="button"
                         onClick={() => openEditModal(item)}

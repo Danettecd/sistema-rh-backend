@@ -437,7 +437,7 @@ export default function Salud({ empleados = [] }) {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
 
@@ -449,13 +449,13 @@ export default function Salud({ empleados = [] }) {
 
       </div>
 
-      <section className="bg-white rounded-3xl p-6 md:p-8 shadow-sm">
+      <section className="bg-white rounded-3xl p-4 md:p-8 shadow-sm">
         <div className="mb-8 max-w-[780px]">
           <p className="mb-3 text-[15px] font-medium text-[#00578b]">
             Seleccione el nombre del empleado para registrar y/o editar su expediente de salud.
           </p>
 
-          <div className="relative max-w-[430px]">
+          <div className="relative w-full max-w-[430px]">
             <input
               type="text"
               value={employeeSearch}
@@ -500,7 +500,7 @@ export default function Salud({ empleados = [] }) {
         </div>
 
         <div className="w-full max-w-[840px] mx-auto pt-1">
-          <div className="flex items-end gap-1">
+          <div className="flex items-end gap-1 overflow-x-auto pb-1">
             {tabConfig.map((tab) => {
               const Icon = tab.icon
               const active = activeTab === tab.key
@@ -513,13 +513,13 @@ export default function Salud({ empleados = [] }) {
                     setActiveTab(tab.key)
                     setError('')
                   }}
-                  className={`w-[136px] h-[100px] rounded-t-[16px] flex flex-col items-center justify-center gap-1 border border-[#00598f] transition-all ${active
+                  className={`w-[112px] sm:w-[136px] h-[88px] sm:h-[100px] flex-shrink-0 rounded-t-[16px] flex flex-col items-center justify-center gap-1 border border-[#00598f] transition-all ${active
                     ? 'bg-[#cff4fb] text-[#00578b] shadow-sm'
                     : 'bg-[#00578b] text-white hover:bg-[#064b7a]'
                     }`}
                 >
-                  <Icon size={36} strokeWidth={1.8} />
-                  <span className="text-[13px] leading-tight font-bold underline underline-offset-2">
+                  <Icon size={30} strokeWidth={1.8} />
+                  <span className="text-[12px] sm:text-[13px] leading-tight font-bold underline underline-offset-2">
                     {tab.label}
                   </span>
                 </button>
@@ -527,7 +527,7 @@ export default function Salud({ empleados = [] }) {
             })}
           </div>
 
-          <div className="min-h-[280px] border-[7px] border-[#cff4fb] rounded-b-[16px] rounded-tr-[16px] bg-white p-6 md:p-9 relative shadow-md">
+          <div className="min-h-[280px] border-[5px] md:border-[7px] border-[#cff4fb] rounded-b-[16px] rounded-tr-[16px] bg-white p-4 md:p-9 relative shadow-md">
             {!hasSelectedEmployee ? (
               <InitialHealthPanel />
             ) : activeTab === 'salud' ? (
@@ -735,11 +735,11 @@ export default function Salud({ empleados = [] }) {
 function InitialHealthPanel() {
   return (
     <div className="flex min-h-[205px] flex-col items-center justify-center text-center">
-      <h2 className="font-['Cooper'] text-[40px] leading-tight text-[#00578b] md:text-[46px]">
+      <h2 className="font-['Cooper'] text-3xl leading-tight text-[#00578b] md:text-[46px]">
         Seguimiento médico
       </h2>
 
-      <p className="mt-2 text-[17px] text-slate-500">
+      <p className="mt-2 text-sm md:text-[17px] text-slate-500">
         Tu Salud es muy importante para nosotros
       </p>
     </div>
@@ -758,10 +758,10 @@ function SaludPanel({ empleado, record, onEdit }) {
   ]
 
   return (
-    <div className="h-full pb-10">
+    <div className="h-full pb-16 sm:pb-10">
       <InfoRows rows={rows} />
 
-      <div className="absolute bottom-3 right-4">
+      <div className="absolute bottom-3 left-4 right-4 sm:left-auto">
         <GrayButton onClick={onEdit}>
           Editar
         </GrayButton>
@@ -772,13 +772,13 @@ function SaludPanel({ empleado, record, onEdit }) {
 
 function RecordPanel({ config, record, onEdit, onHistory }) {
   return (
-    <div className="h-full pb-10">
+    <div className="h-full pb-20 sm:pb-10">
       <InfoRows rows={config.display.map((item) => ({
         label: item.label,
         value: formatValue(record?.[item.key])
       }))} />
 
-      <div className="absolute bottom-3 right-4 flex gap-2">
+      <div className="absolute bottom-3 left-4 right-4 sm:left-auto flex flex-col sm:flex-row gap-2">
         <GrayButton onClick={onEdit}>
           Editar
         </GrayButton>
@@ -813,7 +813,7 @@ function GrayButton({ children, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="min-w-[90px] bg-[#8b8e93] hover:bg-[#74777c] text-white px-4 py-2 rounded-lg text-[14px] leading-tight font-bold transition-all"
+      className="w-full sm:w-auto min-w-[90px] bg-[#8b8e93] hover:bg-[#74777c] text-white px-4 py-2 rounded-lg text-[14px] leading-tight font-bold transition-all"
     >
       {children}
     </button>

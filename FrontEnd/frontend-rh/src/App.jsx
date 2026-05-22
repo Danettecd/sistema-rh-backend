@@ -35,7 +35,8 @@ import {
   Cell,
   PieChart,
   Pie,
-  CartesianGrid
+  CartesianGrid,
+  ResponsiveContainer
 } from 'recharts'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
@@ -158,6 +159,7 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false)
   const [isLogged, setIsLogged] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [menuAbierto, setMenuAbierto] = useState(false)
   const [activeSection, setActiveSection] = useState('dashboard')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -621,27 +623,108 @@ export default function App() {
     ]
 
     return (
-      <div className="min-h-screen bg-[#f4f7fb] flex">
+      <div className="min-h-screen bg-[#f4f7fb] flex flex-col lg:flex-row overflow-x-hidden">
+
+        <header className="lg:hidden sticky top-0 z-30 bg-[#071a36] text-white px-4 py-3 flex items-center justify-between shadow-md">
+          <h1 className="text-2xl font-bold font-['Cooper']">
+            SIGPA
+          </h1>
+
+          <button
+            type="button"
+            onClick={() => setMenuAbierto(true)}
+            className="text-3xl leading-none"
+            aria-label="Abrir menú"
+          >
+            ☰
+          </button>
+        </header>
+
+        {menuAbierto && (
+          <div
+            className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+            onClick={() => setMenuAbierto(false)}
+          />
+        )}
+
+        <aside
+          className={`fixed top-0 left-0 h-full w-72 bg-gradient-to-b from-[#081225] to-[#102544] text-white z-50 transform transition-transform duration-300 lg:hidden ${
+            menuAbierto ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="flex items-center justify-between p-5 border-b border-white/10">
+            <h1 className="text-3xl font-bold font-['Cooper']">
+              SIGPA
+            </h1>
+
+            <button
+              type="button"
+              onClick={() => setMenuAbierto(false)}
+              className="text-3xl leading-none"
+              aria-label="Cerrar menú"
+            >
+              ×
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-2 p-4">
+            {menuItems.map((item) => (
+              <button
+                key={item.title}
+                type="button"
+                onClick={() => {
+                  setActiveSection(item.key)
+                  setMenuAbierto(false)
+                }}
+                className={`w-full flex items-center px-4 py-3 rounded-xl cursor-pointer transition-all border border-transparent ${
+                  activeSection === item.key
+                    ? 'bg-[#BFE0FF] text-[#0b2447] shadow-sm'
+                    : 'hover:bg-white/10 text-white'
+                }`}
+              >
+                <span className="text-lg mr-3">
+                  {item.icon}
+                </span>
+
+                <span className="text-lg">
+                  {item.title}
+                </span>
+              </button>
+            ))}
+          </nav>
+
+          <div className="p-4 mt-auto">
+            <button
+              className="w-full bg-[#07355E] hover:bg-[#1B2A38] text-white py-3 px-5 rounded-2xl cursor-pointer transition-all duration-300 font-semibold shadow-md"
+              onClick={() => {
+                setMenuAbierto(false)
+                logout()
+              }}
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        </aside>
 
         {/* SIDEBAR */}
         {/* SIDEBAR */}
-        <aside className={`${sidebarOpen ? 'w-[250px]' : 'w-[18px] overflow-x-hidden'} relative bg-gradient-to-b from-[#081225] to-[#102544] text-white flex flex-col justify-between py-8 px-6 transition-all duration-300 whitespace-nowrap`}>
+        <aside className={`${sidebarOpen ? 'lg:w-[250px]' : 'lg:w-[18px] lg:overflow-x-hidden'} hidden lg:flex lg:min-h-screen relative bg-gradient-to-b from-[#081225] to-[#102544] text-white flex-col justify-between py-8 px-6 transition-all duration-300 whitespace-nowrap`}>
 
           <button
             onClick={() => setSidebarOpen(false)}
-            className="absolute -right-4 top-1/2 -translate-y-1/2 bg-white shadow-md w-10 h-10 rounded-full text-slate-700"
+            className="hidden lg:block absolute -right-4 top-1/2 -translate-y-1/2 bg-white shadow-md w-10 h-10 rounded-full text-slate-700"
           >
             &lt;
           </button>
 
           <div>
 
-            <h1 className={`${!sidebarOpen && 'opacity-0'} text-5xl font-semibold text-white font-['Cooper'] mb-14 tracking-tight transition-all duration-200`}>
+            <h1 className={`${!sidebarOpen && 'lg:opacity-0'} text-4xl lg:text-5xl font-semibold text-white font-['Cooper'] mb-5 lg:mb-14 tracking-tight transition-all duration-200`}>
 
               SIGPA
             </h1>
             <div className="w-full">
-              <nav className={`${!sidebarOpen && 'opacity-0'} space-y-3 transition-all duration-200`}>
+              <nav className={`${!sidebarOpen && 'lg:opacity-0'} block space-y-3 transition-all duration-200`}>
 
                 {menuItems.map((item) => (
 
@@ -675,7 +758,7 @@ export default function App() {
           </div>
 
           <button
-            className="bg-[#07355E] hover:bg-[#1B2A38] text-white py-3 px-5 rounded-2xl cursor-pointer transition-all duration-300 hover:-translate-y-1 font-semibold shadow-md"
+            className="mt-4 lg:mt-0 bg-[#07355E] hover:bg-[#1B2A38] text-white py-3 px-5 rounded-2xl cursor-pointer transition-all duration-300 hover:-translate-y-1 font-semibold shadow-md"
             onClick={logout}
           >
             Cerrar sesión
@@ -684,10 +767,10 @@ export default function App() {
         </aside>
 
         {/* MAIN */}
-        <main className="flex-1">
+        <main className="flex-1 min-w-0">
 
           {/* TOPBAR */}
-          <header className="bg-white h-24 flex items-center justify-between px-10 border-b border-slate-200">
+          <header className="bg-white min-h-20 lg:h-24 hidden lg:flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 md:px-6 lg:px-10 py-4 border-b border-slate-200">
 
             <div className="flex items-center gap-6">
 
@@ -698,13 +781,13 @@ export default function App() {
                 />
               )}
 
-              <h2 className="text-[30px] font-medium tracking-tight text-[#001b70] font-['Cooper']">
+              <h2 className="text-2xl md:text-[30px] font-medium tracking-tight text-[#001b70] font-['Cooper']">
                 {activeTitle}
               </h2>
 
             </div>
 
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4 md:gap-8 w-full sm:w-auto justify-between sm:justify-end">
 
               <div className="relative">
                 <FaBell className="text-2xl text-slate-700" />
@@ -745,10 +828,10 @@ export default function App() {
           {/* CONTENT */}
           {
             activeSection === 'dashboard' && (
-              <div className="p-8">
+              <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
 
                 {/* CARDS */}
-                <div className="grid grid-cols-5 gap-6 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 md:gap-6 mb-8">
 
                   <DashboardCard
                     title="Empleados"
@@ -783,14 +866,15 @@ export default function App() {
                 </div>
 
                 {/* BIRTHDAYS */}
-                <div className="bg-white rounded-3xl p-8 shadow-sm mb-8">
+                <div className="bg-white rounded-3xl p-4 md:p-8 shadow-sm mb-8">
 
 
-                  <div className="flex items-center justify-between mb-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
 
                     <h3
                       className="
-      text-5xl
+      text-3xl
+      md:text-5xl
       font-black
       bg-gradient-to-r
       from-pink-400
@@ -804,7 +888,7 @@ export default function App() {
                       HAPPY BIRTHDAY
                     </h3>
 
-                    <div className="text-5xl">
+                    <div className="text-4xl md:text-5xl">
                       🎂🎈
                     </div>
 
@@ -814,7 +898,7 @@ export default function App() {
 
                       <div
                         key={person.nombre}
-                        className="border border-slate-200 rounded-3xl p-6 flex flex-col items-center bg-[#f8fbff] w-[260px]"
+                        className="border border-slate-200 rounded-3xl p-6 flex flex-col items-center bg-[#f8fbff] w-full sm:w-[260px]"
                       >
 
                         <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
@@ -847,19 +931,18 @@ export default function App() {
                 {/* BOTTOM */}
 
 
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
 
-                  <div className="bg-white rounded-3xl p-8 shadow-sm col-span-2">
+                  <div className="bg-white rounded-3xl p-4 md:p-8 shadow-sm xl:col-span-2 min-w-0">
 
                     <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
                       Resumen de empleados por puesto
                     </h3>
 
-                    <div className="w-full h-[300px]">
+                    <div className="w-full h-[300px] min-w-0">
 
+                      <ResponsiveContainer width="100%" height="100%">
                       <BarChart
-                        width={750}
-                        height={420}
                         data={empleadosPorPuesto}
                         layout="vertical"
                         barSize={18}
@@ -906,26 +989,28 @@ export default function App() {
                           ))}
                         </Bar>
                       </BarChart>
+                      </ResponsiveContainer>
 
                     </div>
 
                   </div>
 
-                  <div className="bg-white rounded-3xl p-8 shadow-sm">
+                  <div className="bg-white rounded-3xl p-4 md:p-8 shadow-sm min-w-0">
 
                     <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
                       Incidencias recientes
                     </h3>
                     {/*grafica de pastel*/}
-                    <div className="w-full h-[300px] flex justify-center">
+                    <div className="w-full h-[300px] flex justify-center min-w-0">
 
-                      <PieChart width={430} height={430}>
+                      <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
 
                         <Pie
                           data={incidenciasData}
                           dataKey="value"
                           nameKey="name"
-                          outerRadius={160}
+                          outerRadius="75%"
                           label
                         >
 
@@ -943,6 +1028,7 @@ export default function App() {
                         <Tooltip />
 
                       </PieChart>
+                      </ResponsiveContainer>
 
                     </div>
                     <div className="incidencias-legend">
@@ -1013,13 +1099,13 @@ export default function App() {
           {
             showEmpleadoModal && (
 
-              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-                <div className="bg-white w-[700px] rounded-[35px] p-10 shadow-2xl">
+                <div className="bg-white w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-[28px] md:rounded-[35px] p-5 md:p-10 shadow-2xl">
 
                   <div className="flex items-center justify-between mb-8">
 
-                    <h2 className="text-4xl font-medium text-[#001b70] font-['Cooper']">
+                    <h2 className="text-3xl md:text-4xl font-medium text-[#001b70] font-['Cooper']">
                       Nuevo Empleado
                     </h2>
 
@@ -1032,7 +1118,7 @@ export default function App() {
 
                   </div>
 
-                  <div className="grid grid-cols-2 gap-5 items-start">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
                     <div className="flex flex-col items-center mb-8">
 
                       <div className="w-32 h-32 rounded-full bg-slate-200 overflow-hidden mb-4">
@@ -1144,9 +1230,9 @@ export default function App() {
           {
             empleadoSeleccionado && (
 
-              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-                <div className="bg-white w-[650px] rounded-[35px] p-10 shadow-2xl relative">
+                <div className="bg-white w-full max-w-[650px] max-h-[90vh] overflow-y-auto rounded-[28px] md:rounded-[35px] p-5 md:p-10 shadow-2xl relative">
 
                   <button
                     onClick={() => {
@@ -1157,10 +1243,10 @@ export default function App() {
                     ×
                   </button>
 
-                  <div className="flex gap-8 items-start">
+                  <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start">
 
                     {/* FOTO */}
-                    <div className="flex w-40 flex-shrink-0 flex-col items-center">
+                    <div className="flex w-full md:w-40 flex-shrink-0 flex-col items-center">
                       <div className="w-36 h-36 rounded-full overflow-hidden bg-slate-300 shadow-sm">
                         <EmpleadoFoto
                           foto={empleadoSeleccionado.foto}
@@ -1196,7 +1282,7 @@ export default function App() {
                     </div>
 
                     {/* INFO */}
-                    <div className="flex-1">
+                    <div className="flex-1 w-full">
                       <input
                         type="text"
                         value={empleadoSeleccionado.nombre}
@@ -1221,7 +1307,7 @@ export default function App() {
                         className="w-full border border-slate-300 rounded-xl px-3 py-2 mb-8"
                       />
 
-                      <div className="grid grid-cols-2 gap-5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
                         {/* CORREO */}
                         <div>
@@ -1302,7 +1388,7 @@ export default function App() {
                       </div>
 
                       {/* FECHAS */}
-                      <div className="grid grid-cols-2 gap-5 mt-5">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
 
                         <div>
                           <p className="text-slate-400 text-sm">
@@ -1373,7 +1459,7 @@ export default function App() {
 
           {showDeleteModal && (
 
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn p-4">
 
               <div className="bg-white rounded-3xl shadow-2xl p-8 w-[90%] max-w-md border border-slate-100 animate-scaleIn">
 
@@ -1420,9 +1506,9 @@ export default function App() {
           )}
           {showSuccessModal && (
 
-            <div className="fixed inset-0 flex items-center justify-center z-50 animate-fadeIn">
+            <div className="fixed inset-0 flex items-center justify-center z-50 animate-fadeIn p-4">
 
-              <div className="bg-gray-500 text-white px-10 py-6 rounded-3xl shadow-2xl animate-scaleIn">
+              <div className="bg-gray-500 text-white px-6 md:px-10 py-5 md:py-6 rounded-3xl shadow-2xl animate-scaleIn text-center">
 
                 <p className="font-medium text-xl">
                   Empleado eliminado correctamente
@@ -1441,11 +1527,11 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#eef3ff] relative overflow-hidden">
+    <div className="min-h-screen bg-[#eef3ff] relative overflow-x-hidden">
 
       {/* TOPBAR */}
-      <header className="h-24 bg-white flex items-center justify-between px-12">
-        <div className="flex items-center gap-8 self-center">
+      <header className="min-h-20 md:h-24 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 md:px-12 py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8 self-center sm:self-auto text-center sm:text-left">
 
           <h1 className="text-3xl leading-none mb-1 font-semibold text-[#0a237a] font-['Cooper'] tracking-tight">
             SIGPA
@@ -1467,23 +1553,23 @@ export default function App() {
       </header>
 
       {/* HERO */}
-      <section className="flex flex-col items-center pt-24">
+      <section className="flex flex-col items-center px-4 pt-12 md:pt-24">
 
-        <h2 className="text-[80px] font-medium tracking-tight text-[#001b70] font-['Cooper']">
+        <h2 className="text-5xl md:text-[80px] font-medium tracking-tight text-[#001b70] font-['Cooper']">
           SIGPA
         </h2>
 
-        <p className="text-3xl text-slate-600 mb-16">
+        <p className="text-xl md:text-3xl text-slate-600 mb-10 md:mb-16 text-center">
           Sistema Global de Personal y Activos
         </p>
 
-        <div className="grid grid-cols-7 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 md:gap-6 w-full max-w-7xl">
 
           {menuItems.map((item) => (
 
             <div
               key={item.title}
-              className="bg-white w-[160px] h-[160px] rounded-3xl shadow-md flex flex-col items-center justify-center gap-5 hover:shadow-xl transition-all"
+              className="bg-white w-full aspect-square min-h-[130px] max-h-[160px] rounded-3xl shadow-md flex flex-col items-center justify-center gap-4 md:gap-5 hover:shadow-xl transition-all"
             >
 
               <div className="text-[#0b2447] text-5xl">
@@ -1512,9 +1598,9 @@ export default function App() {
       {/* LOGIN MODAL */}
       {showLogin && (
 
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-          <div className="bg-white w-[500px] rounded-[35px] p-10 relative shadow-2xl">
+          <div className="bg-white w-full max-w-[500px] max-h-[90vh] overflow-y-auto rounded-[28px] md:rounded-[35px] p-6 md:p-10 relative shadow-2xl">
 
             <button
               onClick={() => setShowLogin(false)}
@@ -1523,7 +1609,7 @@ export default function App() {
               ×
             </button>
 
-            <h2 className="text-4xl font-bold text-center text-[#001b70] mb-10 font-['Cormorant_Garamond']">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-[#001b70] mb-8 md:mb-10 font-['Cormorant_Garamond']">
               Iniciar Sesión
             </h2>
 

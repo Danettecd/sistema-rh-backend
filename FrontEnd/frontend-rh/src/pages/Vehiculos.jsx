@@ -287,7 +287,7 @@ const filteredVehicles = useMemo(() => {
   ]
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
           
@@ -299,14 +299,14 @@ const filteredVehicles = useMemo(() => {
         <button
           type="button"
           onClick={openCreateModal}
-          className="bg-[#0b2447] hover:bg-[#16325c] text-white px-5 py-3 rounded-xl transition-all shadow-md hover:-translate-y-1"
+          className="bg-[#0b2447] hover:bg-[#16325c] text-white px-5 py-3 rounded-xl transition-all shadow-md hover:-translate-y-1 w-full sm:w-auto"
         >
           + Nuevo vehículo
         </button>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-6">
-        <section className="bg-white rounded-3xl p-6 shadow-sm">
+        <section className="bg-white rounded-3xl p-4 md:p-6 shadow-sm min-w-0">
           <input
             type="text"
             placeholder="Buscar por marca, modelo o placas"
@@ -315,7 +315,7 @@ const filteredVehicles = useMemo(() => {
             className="border border-slate-200 bg-[#f8fbff] rounded-2xl px-5 py-3 w-full outline-none focus:ring-2 focus:ring-[#BFE0FF] mb-5"
           />
 
-          <div className="space-y-3 max-h-[650px] overflow-y-auto pr-1">
+          <div className="space-y-3 max-h-[420px] xl:max-h-[650px] overflow-y-auto pr-1">
             {filteredVehicles.map((vehiculo) => {
               const polizaState = getExpiryState(vehiculo.vigenciaPoliza)
               const tarjetaState = getExpiryState(vehiculo.vigenciaTarjeta)
@@ -373,7 +373,7 @@ const filteredVehicles = useMemo(() => {
           </div>
         </section>
 
-        <section className="bg-white rounded-3xl p-6 md:p-8 shadow-sm min-h-[560px]">
+        <section className="bg-white rounded-3xl p-4 md:p-8 shadow-sm min-h-[420px] xl:min-h-[560px] min-w-0">
           {selectedVehicle ? (
             <VehicleDetail
               vehiculo={selectedVehicle}
@@ -381,7 +381,7 @@ const filteredVehicles = useMemo(() => {
               onDelete={() => setVehicleToDelete(selectedVehicle)}
             />
           ) : (
-            <div className="h-full min-h-[420px] flex flex-col items-center justify-center text-center text-slate-400">
+            <div className="h-full min-h-[300px] md:min-h-[420px] flex flex-col items-center justify-center text-center text-slate-400">
               <CarFront size={54} className="mb-4" />
               <p>Selecciona o registra un vehículo</p>
             </div>
@@ -525,7 +525,7 @@ function VehicleDetail({ vehiculo, onEdit, onDelete }) {
               </p>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <button
                 type="button"
                 onClick={onEdit}

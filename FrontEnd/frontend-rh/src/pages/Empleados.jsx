@@ -74,9 +74,9 @@ export default function Empleados({
 
   return (
 
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
 
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
 
         <div>
 
@@ -88,18 +88,18 @@ export default function Empleados({
 
         <button
           onClick={() => setShowEmpleadoModal(true)}
-          className="bg-[#0b2447] hover:bg-[#16325c] text-white px-5 py-3 rounded-xl transition-all"
+          className="bg-[#0b2447] hover:bg-[#16325c] text-white px-5 py-3 rounded-xl transition-all w-full sm:w-auto"
         >
           + Nuevo empleado
         </button>
 
       </div>
 
-      <div className="bg-white rounded-3xl p-8 shadow-sm">
+      <div className="bg-white rounded-3xl p-4 md:p-8 shadow-sm">
 
         <div className="overflow-x-auto">
 
-          <table className="w-full">
+          <table className="w-full min-w-[720px]">
 
             <thead>
 
