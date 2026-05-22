@@ -3,6 +3,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const multer = require('multer');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./docs/swagger');
 
 const app = express();
 
@@ -15,6 +17,7 @@ app.use(
 
 app.use(cors());
 app.use(express.json());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(
   '/uploads',

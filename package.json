@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env NODE_ENV=test mocha \"BackEnd/test/**/*.test.js\" --timeout 10000",
     "start": "node BackEnd/server.js"
   },
   "keywords": [],
@@ -22,6 +22,14 @@
     "mysql2": "^3.22.3",
     "pg": "^8.20.0",
     "recharts": "^2.12.7",
-    "sequelize": "^6.37.8"
+    "sequelize": "^6.37.8",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "chai": "^6.2.2",
+    "chai-http": "^5.1.2",
+    "cross-env": "^10.1.0",
+    "mocha": "^11.7.6"
   }
 }
