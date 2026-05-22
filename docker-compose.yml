@@ -1,0 +1,66 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: sigpa-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: example_password
+      MYSQL_DATABASE: practica5
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pexample_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: BackEnd/Dockerfile
+    container_name: sigpa-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: example_password
+      DB_NAME: practica5
+      JWT_SECRET: docker_secret_key
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - backend_uploads:/app/BackEnd/uploads
+
+  frontend:
+    build:
+      context: ./FrontEnd/frontend-rh
+      dockerfile: Dockerfile
+    container_name: sigpa-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "5173:5173"
+
+  notifications-service:
+    build:
+      context: ./services/notifications-service
+      dockerfile: Dockerfile
+    container_name: sigpa-notifications-service
+    restart: unless-stopped
+    ports:
+      - "4001:4001"
+
+volumes:
+  mysql_data:
+  backend_uploads:
