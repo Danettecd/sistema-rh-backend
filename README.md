@@ -1,125 +1,313 @@
-# RH SIGPA
+# SIGPA RH 💙
 
-Sistema RH SIGPA con backend Node.js + Express + Sequelize + MySQL, frontend React + Vite, Swagger, pruebas base y un microservicio independiente de notificaciones.
+Sistema integral de Recursos Humanos desarrollado con tecnologías modernas para la administración de empleados, incidencias, asistencia, salud ocupacional, vehículos y uniformes.
 
-## Requisitos
+---
 
-- Node.js 20 o compatible
-- npm
-- MySQL local para desarrollo sin Docker
-- Docker Desktop o Docker Engine con Docker Compose para ejecución en contenedores
+# 🚀 Tecnologías utilizadas
 
-## Puertos
+## Frontend
 
-- Frontend: `http://localhost:5173`
-- Backend: `http://localhost:3000`
-- Swagger: `http://localhost:3000/api-docs`
-- Notifications service: `http://localhost:4001`
-- MySQL: `localhost:3306`
+* React
+* Vite
+* Axios
+* CSS Responsive
 
-## Correr Local
+## Backend
 
-Configura las variables en `BackEnd/.env` tomando como base `BackEnd/.env.example`. No subas el `.env` real.
+* Node.js
+* Express
+* Sequelize
+* JWT Authentication
+* Helmet
+* Multer
+* dotenv
 
-Instala dependencias del backend desde la raíz:
+## Base de datos
 
-```bash
-npm install
-```
+* MySQL
 
-Levanta el backend:
+## Documentación y pruebas
 
-```bash
-node BackEnd/server.js
-```
+* Swagger / OpenAPI
+* Mocha
+* Chai
 
-Instala y levanta el frontend:
+## DevOps
 
-```bash
-cd FrontEnd/frontend-rh
-npm install
-npm run dev
-```
-
-## Swagger
-
-Con el backend corriendo, abre:
-
-```text
-http://localhost:3000/api-docs
-```
-
-Swagger documenta login, empleados, vehiculos, incidencias, asistencia, uniformes y salud. Los endpoints protegidos usan Bearer JWT.
-
-## Tests
-
-Desde la raíz:
-
-```bash
-npm test
-```
-
-Las pruebas con token usan `TEST_EMAIL` y `TEST_PASSWORD`. Si no existen en `BackEnd/.env`, esas pruebas quedan pendientes para no crear, borrar ni modificar datos reales.
-
-## Docker
-
-Levanta MySQL, backend, frontend y notifications-service:
-
-```bash
-docker compose up --build
-```
-
-Detén los servicios:
-
-```bash
-docker compose down
-```
-
-Para eliminar también volúmenes de MySQL y uploads:
-
-```bash
-docker compose down -v
-```
-
-El backend en Docker usa estas variables declaradas en `docker-compose.yml`:
-
-- `DB_HOST=mysql`
-- `DB_PORT=3306`
-- `DB_USER=root`
-- `DB_PASSWORD=example_password`
-- `DB_NAME=practica5`
-- `JWT_SECRET=docker_secret_key`
-- `NODE_ENV=development`
-- `PORT=3000`
-
-Docker es adicional al flujo local; no reemplaza `node BackEnd/server.js`.
-
-## Notifications Service
-
-`services/notifications-service` es un microservicio independiente de notificaciones RH. No depende todavía de MySQL ni del backend principal.
-
-Endpoints:
-
-```text
-GET http://localhost:4001/health
-GET http://localhost:4001/notifications/birthdays
-GET http://localhost:4001/notifications/documents
-```
-
-Respuesta de salud esperada:
-
-```json
-{
-  "status": "ok",
-  "service": "notifications-service"
-}
-```
+* Docker
+* Docker Compose
 
 ## Arquitectura
 
-`docker-compose.yml` levanta cuatro servicios:
+* Microservicios
+* Notifications Service
 
-- `mysql`: base de datos MySQL con volumen persistente `mysql_data`.
-- `backend`: API SIGPA en Express, puerto `3000`, con volumen `backend_uploads` para archivos subidos.
-- `frontend`: app React + Vite, puerto `5173`.
-- `notifications-service`: microservicio Express separado, puerto `4001`.
+---
+
+# ✨ Funcionalidades principales
+
+## 🔐 Autenticación y seguridad
+
+* Login con JWT
+* Roles y permisos (4)
+* Middleware de autenticación
+* Helmet para seguridad HTTP
+* Variables de entorno con dotenv
+
+## 👥 Gestión de empleados
+
+* Alta de empleados
+* Edición de empleados
+* Eliminación de empleados
+* Fotografía de empleados
+* Validaciones backend
+
+## 📊 Dashboard RH
+
+* Estadísticas generales
+* Gráficas dinámicas
+* Cumpleaños del mes
+* Incidencias y asistencia
+
+## 🚗 Vehículos
+
+* Registro de vehículos
+* Pólizas
+* Tarjetas de circulación
+* Fotografías
+
+## 🩺 Salud ocupacional
+
+* Expedientes médicos
+* Presión arterial
+* Incapacidades
+* Citas médicas
+
+## 👕 Uniformes y EPP
+
+* Registro de entregas
+* Historial por empleado
+
+## 📄 API Documentation
+
+* Swagger UI integrado
+
+## 🧪 Testing
+
+* Mocha + Chai
+* Pruebas de integración básicas
+
+## 🐳 Docker
+
+* Backend container
+* Frontend container
+* MySQL container
+* Notifications microservice
+
+---
+
+# 📁 Estructura general
+
+ProyectoFinalBN/
+│
+├── BackEnd/
+├── FrontEnd/
+├── services/
+│   └── notifications-service/
+├── docker-compose.yml
+└── README.md
+
+---
+
+# ⚙️ Variables de entorno
+
+Crear archivo:
+
+BackEnd/.env
+
+Ejemplo:
+
+PORT=3000
+
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=tu_password
+DB_NAME=practica5
+
+JWT_SECRET=sigpa-secret-key
+
+NODE_ENV=development
+
+---
+
+# ▶️ Ejecución local
+
+## Backend
+
+Desde la raíz:
+
+cd BackEnd
+npm install
+node server.js
+
+Backend:
+http://localhost:3000
+
+---
+
+## Frontend
+
+cd FrontEnd/frontend-rh
+npm install
+npm run dev
+
+Frontend:
+http://localhost:5173
+
+---
+
+# 📚 Swagger
+
+Documentación API:
+
+http://localhost:3000/api-docs
+
+Incluye:
+
+* Login
+* Empleados
+* Vehículos
+* Incidencias
+* Asistencia
+* Uniformes
+* Salud
+
+---
+
+# 🧪 Ejecutar pruebas
+
+Desde raíz:
+
+npm test
+
+Resultado esperado:
+
+2 passing
+4 pending
+
+Las pruebas protegidas requieren:
+
+TEST_EMAIL=
+TEST_PASSWORD=
+
+en BackEnd/.env
+
+---
+
+# 🐳 Docker
+
+## Levantar contenedores
+
+Desde raíz:
+
+docker compose up --build
+
+## Apagar contenedores
+
+docker compose down
+
+---
+
+# 🐳 Servicios Docker
+
+| Servicio              | Puerto        |
+| --------------------- | ------------- |
+| Frontend              | 5173          |
+| Backend               | 3000          |
+| Swagger               | 3000/api-docs |
+| Notifications Service | 4001          |
+| MySQL Docker          | 3307          |
+
+---
+
+# 🔔 Microservicio Notifications Service
+
+Servicio independiente de notificaciones RH.
+
+## Endpoints
+
+### Health Check
+
+http://localhost:4001/health
+
+### Cumpleaños
+
+http://localhost:4001/notifications/birthdays
+
+### Documentos
+
+http://localhost:4001/notifications/documents
+
+---
+
+# 🔐 Usuario administrador Docker
+
+Usuario inicial para entorno Docker:
+
+Email:
+[admin@sigpa.local](mailto:admin@sigpa.local)
+
+Password:
+admin123
+
+Nota:
+Docker utiliza una base de datos independiente del entorno local.
+
+---
+
+# 🧠 Arquitectura
+
+SIGPA RH utiliza una arquitectura modular basada en:
+
+* Frontend React + Vite
+* Backend Express + Sequelize
+* MySQL
+* Microservicio independiente
+* Docker Compose
+* API REST
+
+---
+
+# 📌 Características técnicas implementadas
+
+✅ JWT Authentication
+✅ Roles y permisos
+✅ Middleware de seguridad Helmet
+✅ Variables de entorno dotenv
+✅ Uploads con Multer
+✅ Validaciones backend
+✅ Swagger/OpenAPI
+✅ Testing con Mocha/Chai
+✅ Docker Compose
+✅ Microservicios
+✅ Responsive Design
+✅ CRUD completo
+✅ Arquitectura modular
+
+---
+
+# 👩‍💻 Proyecto académico
+
+Proyecto desarrollado como sistema integral de Recursos Humanos enfocado en:
+
+* arquitectura backend moderna
+* seguridad
+* documentación API
+* pruebas
+* contenedores Docker
+* microservicios
+* experiencia de usuario
+
+---
