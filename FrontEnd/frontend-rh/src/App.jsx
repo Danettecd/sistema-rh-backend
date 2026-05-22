@@ -8,9 +8,6 @@ import Salud from './pages/Salud'
 import FeedbackToast from './components/FeedbackToast'
 
 
-import empleado1 from './assets/fotos/CARLOS.jpg'
-import empleado2 from './assets/fotos/danettecd.jpg'
-import empleado3 from './assets/fotos/betty.jpg'
 import adminFoto from './assets/fotos/danettecd.jpg'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
@@ -41,11 +38,122 @@ import {
   CartesianGrid
 } from 'recharts'
 
-const fotosDemo = [
-  empleado1,
-  empleado2,
-  empleado3
-]
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
+function getEmpleadoFotoUrl(foto) {
+  if (!foto) {
+    return null
+  }
+
+  const fotoValue = String(foto)
+
+  if (
+    fotoValue.startsWith('blob:') ||
+    fotoValue.startsWith('data:') ||
+    fotoValue.startsWith('http')
+  ) {
+    return fotoValue
+  }
+
+  if (fotoValue.startsWith('/uploads')) {
+    return `${API_URL}${fotoValue}`
+  }
+
+  if (fotoValue.startsWith('uploads/')) {
+    return `${API_URL}/${fotoValue}`
+  }
+
+  return `${API_URL}/uploads/empleados/${fotoValue}`
+}
+
+function getEmpleadoIniciales(nombre = '') {
+  const partes = nombre.trim().split(/\s+/).filter(Boolean)
+
+  return partes
+    .slice(0, 2)
+    .map((parte) => parte[0])
+    .join('')
+    .toUpperCase() || 'SG'
+}
+
+function EmpleadoAvatarPlaceholder({ nombre, className = '' }) {
+  return (
+    <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br from-[#d8efff] via-white to-[#bfe0ff] text-[#07355E] font-bold ${className}`}>
+      {getEmpleadoIniciales(nombre)}
+    </div>
+  )
+}
+
+function EmpleadoFoto({ foto, nombre, className = '' }) {
+  const [hasError, setHasError] = useState(false)
+  const fotoUrl = getEmpleadoFotoUrl(foto)
+
+  if (!fotoUrl || hasError) {
+    return <EmpleadoAvatarPlaceholder nombre={nombre} className={className} />
+  }
+
+  return (
+    <img
+      src={fotoUrl}
+      alt={nombre || 'Empleado'}
+      className={`h-full w-full rounded-full object-cover ${className}`}
+      onError={(e) => {
+        console.log('No cargó foto:', getEmpleadoFotoUrl(foto))
+        e.currentTarget.style.display = 'none'
+        setHasError(true)
+      }}
+    />
+  )
+}
+
+function getFechaInputValue(fecha) {
+  if (
+    !fecha ||
+    fecha === 'Invalid date' ||
+    fecha === 'undefined' ||
+    fecha === 'null'
+  ) {
+    return ''
+  }
+
+  return String(fecha).slice(0, 10)
+}
+
+function isFechaValida(fecha) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(getFechaInputValue(fecha))
+}
+
+function buildEmpleadoFormData(empleado) {
+  const formData = new FormData()
+
+  ;[
+    'nombre',
+    'puesto',
+    'telefono',
+    'direccion',
+    'email',
+    'rfc',
+    'curp',
+    'nss'
+  ].forEach((field) => {
+    formData.append(field, empleado[field] || '')
+  })
+
+  ;['fechaIngreso', 'fechaNacimiento'].forEach((field) => {
+    const fecha = getFechaInputValue(empleado[field])
+
+    if (isFechaValida(fecha)) {
+      formData.append(field, fecha)
+    }
+  })
+
+  if (empleado.fotoFile) {
+    formData.append('foto', empleado.fotoFile)
+  }
+
+  return formData
+}
+
 export default function App() {
   const [showLogin, setShowLogin] = useState(false)
   const [isLogged, setIsLogged] = useState(false)
@@ -78,7 +186,8 @@ export default function App() {
     nss: '',
     fechaIngreso: '',
     fechaNacimiento: '',
-    foto: ''
+    foto: '',
+    fotoFile: null
   })
 
       const coloresBarras = [
@@ -139,7 +248,7 @@ export default function App() {
 
       setError('')
       const response = await axios.post(
-        'http://localhost:3000/api/login',
+        `${API_URL}/api/login`,
         {
           email,
           password
@@ -175,7 +284,7 @@ export default function App() {
       console.log('TOKEN:', token)
 
       const response = await axios.get(
-        'http://localhost:3000/empleados',
+        `${API_URL}/empleados`,
         {
           headers: {
             authorization: `Bearer ${token}`
@@ -202,7 +311,7 @@ export default function App() {
       const token = localStorage.getItem('token')
 
       const response = await axios.get(
-        'http://localhost:3000/vehiculos',
+        `${API_URL}/vehiculos`,
         {
           headers: {
             authorization: `Bearer ${token}`
@@ -227,7 +336,7 @@ export default function App() {
       const token = localStorage.getItem('token')
 
       const response = await axios.get(
-        'http://localhost:3000/incidencias',
+        `${API_URL}/incidencias`,
         {
           headers: {
             authorization: `Bearer ${token}`
@@ -252,7 +361,7 @@ export default function App() {
       const token = localStorage.getItem('token')
 
       const response = await axios.get(
-        'http://localhost:3000/asistencia',
+        `${API_URL}/asistencia`,
         {
           headers: {
             authorization: `Bearer ${token}`
@@ -278,23 +387,9 @@ export default function App() {
 
       const token = localStorage.getItem('token')
 
-      console.log(nuevoEmpleado)
-      const empleadoSinFoto = {
-        nombre: nuevoEmpleado.nombre,
-        puesto: nuevoEmpleado.puesto,
-        telefono: nuevoEmpleado.telefono,
-        direccion: nuevoEmpleado.direccion,
-        email: nuevoEmpleado.email,
-        rfc: nuevoEmpleado.rfc,
-        curp: nuevoEmpleado.curp,
-        nss: nuevoEmpleado.nss,
-        fechaIngreso: nuevoEmpleado.fechaIngreso,
-        fechaNacimiento: nuevoEmpleado.fechaNacimiento,
-
-      }
       await axios.post(
-        'http://localhost:3000/empleados',
-        empleadoSinFoto,
+        `${API_URL}/empleados`,
+        buildEmpleadoFormData(nuevoEmpleado),
         {
           headers: {
             authorization: `Bearer ${token}`
@@ -318,7 +413,8 @@ export default function App() {
         nss: '',
         fechaIngreso: '',
         fechaNacimiento: '',
-        foto: ''
+        foto: '',
+        fotoFile: null
       })
 
     } catch (error) {
@@ -336,8 +432,8 @@ export default function App() {
       const token = localStorage.getItem('token')
 
       await axios.put(
-        `http://localhost:3000/empleados/${id}`,
-        empleadoEditado,
+        `${API_URL}/empleados/${id}`,
+        buildEmpleadoFormData(empleadoEditado),
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -361,7 +457,7 @@ export default function App() {
       const token = localStorage.getItem('token')
 
       await axios.delete(
-        `http://localhost:3000/empleados/${empleadoAEliminar.id}`,
+        `${API_URL}/empleados/${empleadoAEliminar.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -722,11 +818,9 @@ export default function App() {
                       >
 
                         <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
-
-                          <img
-                            src={fotosDemo[person.id % fotosDemo.length]}
-                            alt={person.nombre}
-                            className="w-full h-full object-cover"
+                          <EmpleadoFoto
+                            foto={person.foto}
+                            nombre={person.nombre}
                           />
 
                         </div>
@@ -758,7 +852,7 @@ export default function App() {
                   <div className="bg-white rounded-3xl p-8 shadow-sm col-span-2">
 
                     <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
-                      Resumen del mes
+                      Resumen de empleados por puesto
                     </h3>
 
                     <div className="w-full h-[300px]">
@@ -880,7 +974,6 @@ export default function App() {
 
               <Empleados
                 empleados={empleados}
-                fotosDemo={fotosDemo}
                 setEmpleadoSeleccionado={setEmpleadoSeleccionado}
                 setEmpleadoAEliminar={setEmpleadoAEliminar}
                 setShowDeleteModal={setShowDeleteModal}
@@ -942,19 +1035,12 @@ export default function App() {
                   <div className="grid grid-cols-2 gap-5 items-start">
                     <div className="flex flex-col items-center mb-8">
 
-                      <div className="w-32 h-32 rounded-3xl bg-slate-200 overflow-hidden mb-4">
-
-                        {
-                          nuevoEmpleado.foto ? (
-
-                            <img
-                              src={nuevoEmpleado.foto}
-                              alt="Empleado"
-                              className="w-full h-full object-cover"
-                            />
-
-                          ) : null
-                        }
+                      <div className="w-32 h-32 rounded-full bg-slate-200 overflow-hidden mb-4">
+                        <EmpleadoFoto
+                          foto={nuevoEmpleado.foto}
+                          nombre={nuevoEmpleado.nombre}
+                          className="text-3xl"
+                        />
 
                       </div>
 
@@ -973,7 +1059,8 @@ export default function App() {
 
                             setNuevoEmpleado({
                               ...nuevoEmpleado,
-                              foto: imageUrl
+                              foto: imageUrl,
+                              fotoFile: file
                             })
 
                           }
@@ -1073,25 +1160,43 @@ export default function App() {
                   <div className="flex gap-8 items-start">
 
                     {/* FOTO */}
-                    <div className="w-36 h-44 rounded-3xl overflow-hidden bg-slate-300 flex-shrink-0">
+                    <div className="flex w-40 flex-shrink-0 flex-col items-center">
+                      <div className="w-36 h-36 rounded-full overflow-hidden bg-slate-300 shadow-sm">
+                        <EmpleadoFoto
+                          foto={empleadoSeleccionado.foto}
+                          nombre={empleadoSeleccionado.nombre}
+                          className="text-4xl"
+                        />
+                      </div>
 
-                      {
-                        empleadoSeleccionado.foto ? (
+                      <input
+                        type="file"
+                        className="hidden"
+                        id="editar-foto-empleado"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0]
 
-                          <img
-                            src={empleadoSeleccionado.foto}
-                            alt="Empleado"
-                            className="w-full h-full object-cover"
-                          />
+                          if (file) {
+                            setEmpleadoSeleccionado({
+                              ...empleadoSeleccionado,
+                              foto: URL.createObjectURL(file),
+                              fotoFile: file
+                            })
+                          }
+                        }}
+                      />
 
-                        ) : null
-                      }
-
+                      <label
+                        htmlFor="editar-foto-empleado"
+                        className="mt-4 inline-flex cursor-pointer rounded-xl bg-[#07355E] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[#1B2A38]"
+                      >
+                        Cambiar foto
+                      </label>
                     </div>
 
                     {/* INFO */}
                     <div className="flex-1">
-
                       <input
                         type="text"
                         value={empleadoSeleccionado.nombre}
@@ -1206,7 +1311,7 @@ export default function App() {
 
                           <input
                             type="date"
-                            value={empleadoSeleccionado.fechaNacimiento || ''}
+                            value={getFechaInputValue(empleadoSeleccionado.fechaNacimiento)}
                             onChange={(e) =>
                               setEmpleadoSeleccionado({
                                 ...empleadoSeleccionado,
@@ -1224,7 +1329,7 @@ export default function App() {
 
                           <input
                             type="date"
-                            value={empleadoSeleccionado.fechaIngreso || ''}
+                            value={getFechaInputValue(empleadoSeleccionado.fechaIngreso)}
                             onChange={(e) =>
                               setEmpleadoSeleccionado({
                                 ...empleadoSeleccionado,

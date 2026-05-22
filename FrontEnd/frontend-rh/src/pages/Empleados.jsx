@@ -1,6 +1,71 @@
+import { useState } from 'react'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
+function getEmpleadoFotoUrl(foto) {
+  if (!foto) {
+    return null
+  }
+
+  const fotoValue = String(foto)
+
+  if (
+    fotoValue.startsWith('blob:') ||
+    fotoValue.startsWith('data:') ||
+    fotoValue.startsWith('http')
+  ) {
+    return fotoValue
+  }
+
+  if (fotoValue.startsWith('/uploads')) {
+    return `${API_URL}${fotoValue}`
+  }
+
+  if (fotoValue.startsWith('uploads/')) {
+    return `${API_URL}/${fotoValue}`
+  }
+
+  return `${API_URL}/uploads/empleados/${fotoValue}`
+}
+
+function getEmpleadoIniciales(nombre = '') {
+  const partes = nombre.trim().split(/\s+/).filter(Boolean)
+
+  return partes
+    .slice(0, 2)
+    .map((parte) => parte[0])
+    .join('')
+    .toUpperCase() || 'SG'
+}
+
+function EmpleadoAvatar({ empleado }) {
+  const [hasError, setHasError] = useState(false)
+  const fotoUrl = getEmpleadoFotoUrl(empleado.foto)
+
+  return (
+    <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-[#eaf6ff] shadow-sm">
+      {fotoUrl && !hasError ? (
+        <img
+          src={fotoUrl}
+          alt={empleado.nombre}
+          className="h-full w-full rounded-full object-cover"
+          onError={(e) => {
+            console.log('No cargó foto:', getEmpleadoFotoUrl(empleado.foto))
+            e.currentTarget.style.display = 'none'
+            setHasError(true)
+          }}
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#d8efff] via-white to-[#bfe0ff] text-sm font-bold text-[#07355E]">
+          {getEmpleadoIniciales(empleado.nombre)}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function Empleados({
   empleados,
-  fotosDemo,
   setEmpleadoSeleccionado,
   setEmpleadoAEliminar,
   setShowDeleteModal,
@@ -54,9 +119,6 @@ export default function Empleados({
 
               {empleados.map((empleado) => {
 
-              const fotoRandom =
-  fotosDemo[empleado.id % fotosDemo.length]
-
                 return (
 
                   <tr
@@ -66,17 +128,16 @@ export default function Empleados({
 
                     <td className="py-5">
 
-                      <button
-                        onClick={() =>
-                          setEmpleadoSeleccionado({
-                            ...empleado,
-                           foto: fotoRandom
-                          })
-                        }
-                        className="font-medium text-[#07355E] hover:underline hover:text-[#1B2A38] transition-all"
-                      >
-                        {empleado.nombre}
-                      </button>
+                      <div className="flex items-center gap-4">
+                        <EmpleadoAvatar empleado={empleado} />
+
+                        <button
+                          onClick={() => setEmpleadoSeleccionado(empleado)}
+                          className="font-medium text-[#07355E] hover:underline hover:text-[#1B2A38] transition-all"
+                        >
+                          {empleado.nombre}
+                        </button>
+                      </div>
 
                     </td>
 

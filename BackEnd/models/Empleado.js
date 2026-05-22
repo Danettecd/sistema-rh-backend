@@ -42,6 +42,10 @@ const Empleado = sequelize.define('Empleado', {
 
   fechaNacimiento: {
     type: DataTypes.DATEONLY
+  },
+
+  foto: {
+    type: DataTypes.STRING
   }
 
 }, {

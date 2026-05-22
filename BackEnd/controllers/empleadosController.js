@@ -1,5 +1,16 @@
 const Empleado = require('../models/Empleado');
 
+function getFotoPath(file) {
+  return file ? `/uploads/empleados/${file.filename}` : null;
+}
+
+const limpiarFecha = (fecha, fechaAnterior = null) => {
+  if (!fecha || fecha === "Invalid date" || fecha === "undefined" || fecha === "null") {
+    return fechaAnterior || null;
+  }
+
+  return fecha;
+};
 
 // GET todos
 const obtenerEmpleados = async (req, res) => {
@@ -72,6 +83,7 @@ const crearEmpleado = async (req, res) => {
       fechaIngreso,
       fechaNacimiento
     } = req.body;
+    const foto = getFotoPath(req.file);
 
     // VALIDACIONES
 
@@ -95,7 +107,8 @@ const crearEmpleado = async (req, res) => {
       curp,
       nss,
       fechaIngreso: null,
-  fechaNacimiento: null
+      fechaNacimiento: null,
+      foto
     });
 
     res.status(201).json({
@@ -145,6 +158,15 @@ const actualizarEmpleado = async (req, res) => {
       fechaIngreso,
       fechaNacimiento
     } = req.body;
+    const fotoFinal = req.file
+      ? `/uploads/empleados/${req.file.filename}`
+      : empleado.foto || null;
+    const fechaIngresoFinal = limpiarFecha(req.body.fechaIngreso, empleado.fechaIngreso);
+    const fechaNacimientoFinal = limpiarFecha(req.body.fechaNacimiento, empleado.fechaNacimiento);
+
+    console.log("Foto anterior:", empleado.foto);
+    console.log("Nueva foto:", req.file?.filename);
+    console.log("Foto final:", fotoFinal);
 
     // VALIDACIÓN
 
@@ -167,8 +189,9 @@ const actualizarEmpleado = async (req, res) => {
       rfc,
       curp,
       nss,
-      fechaIngreso,
-      fechaNacimiento
+      fechaIngreso: fechaIngresoFinal,
+      fechaNacimiento: fechaNacimientoFinal,
+      foto: fotoFinal
     });
 
     res.status(200).json({

@@ -5,7 +5,6 @@ import {
   CalendarDays,
   ClipboardList,
   HeartPulse,
-  Plus,
   Trash2
 } from 'lucide-react'
 import ConfirmModal from '../components/ConfirmModal'
@@ -172,7 +171,6 @@ export default function Salud({ empleados = [] }) {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('')
   const [employeeSearch, setEmployeeSearch] = useState('')
   const [showEmployeeList, setShowEmployeeList] = useState(false)
-  const [filterValue, setFilterValue] = useState('Todos')
   const [saludRecords, setSaludRecords] = useState([])
   const [records, setRecords] = useState({
     citas: [],
@@ -223,13 +221,6 @@ export default function Salud({ empleados = [] }) {
     loadHealthData()
   }, [loadHealthData])
 
-  useEffect(() => {
-    if (!selectedEmployeeId && empleados.length > 0) {
-      setSelectedEmployeeId(empleados[0].id)
-      setEmployeeSearch(empleados[0].nombre)
-    }
-  }, [empleados, selectedEmployeeId])
-
   const selectedEmployee = useMemo(() => {
     return empleados.find((empleado) => String(empleado.id) === String(selectedEmployeeId))
   }, [empleados, selectedEmployeeId])
@@ -266,6 +257,7 @@ export default function Salud({ empleados = [] }) {
   const activeRecordConfig = recordConfig[activeTab]
   const activeRecordList = activeTab === 'salud' ? [] : employeeRecords[activeTab]
   const latestRecord = activeRecordList[0]
+  const hasSelectedEmployee = Boolean(selectedEmployee)
 
   const selectEmployee = (empleado) => {
     setSelectedEmployeeId(empleado.id)
@@ -274,16 +266,28 @@ export default function Salud({ empleados = [] }) {
   }
 
   const openSaludModal = () => {
+    if (!selectedEmployeeId) {
+      setError('Selecciona un empleado')
+      return
+    }
+
     setError('')
+
     setEditingSalud(currentSalud || null)
+
     setSaludForm({
       ...emptySalud,
       ...(currentSalud || {})
     })
+
     setShowSaludModal(true)
   }
-
   const openCreateRecordModal = () => {
+    if (!selectedEmployeeId) {
+      setError('Selecciona un empleado')
+      return
+    }
+
     if (activeTab === 'salud') {
       openSaludModal()
       return
@@ -436,67 +440,66 @@ export default function Salud({ empleados = [] }) {
     <div className="p-8">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
-          
+
 
           <p className="text-slate-500 mt-2">
             Seguimiento a estado de salud de empleados, citas, incapacidades y monitoreo de presión
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={openCreateRecordModal}
-          className="inline-flex items-center justify-center gap-2 bg-[#0b2447] hover:bg-[#16325c] text-white px-5 py-3 rounded-xl transition-all shadow-md hover:-translate-y-1"
-        >
-          <Plus size={17} />
-          Nuevo registro
-        </button>
       </div>
 
       <section className="bg-white rounded-3xl p-6 md:p-8 shadow-sm">
-        <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between mb-7">
-          <div className="relative w-full md:max-w-sm">
+        <div className="mb-8 max-w-[780px]">
+          <p className="mb-3 text-[15px] font-medium text-[#00578b]">
+            Seleccione el nombre del empleado para registrar y/o editar su expediente de salud.
+          </p>
+
+          <div className="relative max-w-[430px]">
             <input
               type="text"
-              placeholder="Buscar por empleado"
               value={employeeSearch}
               onFocus={() => setShowEmployeeList(true)}
+              onBlur={() => {
+                setTimeout(() => setShowEmployeeList(false), 140)
+              }}
               onChange={(event) => {
                 setEmployeeSearch(event.target.value)
+                setSelectedEmployeeId('')
                 setShowEmployeeList(true)
+                setError('')
               }}
-              className="border border-slate-200 bg-[#f8fbff] rounded-2xl px-5 py-3 w-full outline-none focus:ring-2 focus:ring-[#BFE0FF]"
+              placeholder="Buscar por empleado"
+              className="w-full rounded-2xl border border-[#dbe7f3] bg-[#f8fbff] px-5 py-4 text-[15px] text-slate-700 shadow-sm outline-none transition-all placeholder:text-slate-400 focus:border-[#8bc9f7] focus:bg-white focus:ring-2 focus:ring-[#BFE0FF]"
             />
 
-            {showEmployeeList && filteredEmployees.length > 0 && (
-              <div className="absolute left-0 right-0 top-[54px] bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden z-20">
+            {showEmployeeList && (
+              <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-20 max-h-64 overflow-y-auto rounded-2xl border border-[#dbe7f3] bg-white shadow-lg">
                 {filteredEmployees.map((empleado) => (
                   <button
                     type="button"
                     key={empleado.id}
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => selectEmployee(empleado)}
-                    className="w-full text-left px-5 py-3 hover:bg-[#f8fbff] text-[#07355E] transition-all"
+                    onMouseDown={(event) => {
+                      event.preventDefault()
+                      selectEmployee(empleado)
+                    }}
+                    className="block w-full px-5 py-3 text-left text-[15px] text-slate-700 transition-colors hover:bg-[#eef8ff]"
                   >
                     {empleado.nombre}
                   </button>
                 ))}
+
+                {filteredEmployees.length === 0 && (
+                  <div className="px-5 py-4 text-[15px] text-slate-400">
+                    No se encontraron empleados
+                  </div>
+                )}
               </div>
             )}
           </div>
-
-          <select
-            value={filterValue}
-            onChange={(event) => setFilterValue(event.target.value)}
-            className="border border-slate-200 bg-[#f8fbff] rounded-2xl px-5 py-3 outline-none focus:ring-2 focus:ring-[#BFE0FF]"
-          >
-            <option value="Todos">Todos</option>
-            <option value="Con registros">Con registros</option>
-            <option value="Sin registros">Sin registros</option>
-          </select>
         </div>
 
-        <div className="w-full max-w-[690px] mx-auto pt-1">
+        <div className="w-full max-w-[840px] mx-auto pt-1">
           <div className="flex items-end gap-1">
             {tabConfig.map((tab) => {
               const Icon = tab.icon
@@ -510,14 +513,13 @@ export default function Salud({ empleados = [] }) {
                     setActiveTab(tab.key)
                     setError('')
                   }}
-                  className={`w-[118px] h-[92px] rounded-t-[14px] flex flex-col items-center justify-center gap-1 border border-[#00598f] transition-all ${
-                    active
-                      ? 'bg-[#cff4fb] text-[#00578b] shadow-sm'
-                      : 'bg-[#00578b] text-white hover:bg-[#064b7a]'
-                  }`}
+                  className={`w-[136px] h-[100px] rounded-t-[16px] flex flex-col items-center justify-center gap-1 border border-[#00598f] transition-all ${active
+                    ? 'bg-[#cff4fb] text-[#00578b] shadow-sm'
+                    : 'bg-[#00578b] text-white hover:bg-[#064b7a]'
+                    }`}
                 >
-                  <Icon size={34} strokeWidth={1.8} />
-                  <span className="text-[12px] leading-tight font-bold underline underline-offset-2">
+                  <Icon size={36} strokeWidth={1.8} />
+                  <span className="text-[13px] leading-tight font-bold underline underline-offset-2">
                     {tab.label}
                   </span>
                 </button>
@@ -525,8 +527,10 @@ export default function Salud({ empleados = [] }) {
             })}
           </div>
 
-          <div className="min-h-[230px] border-[7px] border-[#cff4fb] rounded-b-[14px] rounded-tr-[14px] bg-white p-5 md:p-7 relative shadow-sm">
-            {activeTab === 'salud' ? (
+          <div className="min-h-[280px] border-[7px] border-[#cff4fb] rounded-b-[16px] rounded-tr-[16px] bg-white p-6 md:p-9 relative shadow-md">
+            {!hasSelectedEmployee ? (
+              <InitialHealthPanel />
+            ) : activeTab === 'salud' ? (
               <SaludPanel
                 empleado={selectedEmployee}
                 record={currentSalud}
@@ -562,7 +566,7 @@ export default function Salud({ empleados = [] }) {
           )}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <TextField label="Nombre" value={selectedEmployee?.nombre || ''} disabled />
+
             {[
               { name: 'nss', label: 'NSS' },
               { name: 'clinica', label: 'Clínica' },
@@ -591,7 +595,7 @@ export default function Salud({ empleados = [] }) {
                   ...saludForm,
                   padecimientos: event.target.value
                 })}
-                className="border border-slate-300 rounded-2xl px-5 py-4 w-full min-h-28 resize-none outline-none focus:ring-2 focus:ring-[#BFE0FF]"
+                className="border border-slate-300 rounded-2xl px-5 py-4 w-full min-h-28 resize-none text-[15px] outline-none focus:ring-2 focus:ring-[#BFE0FF]"
               />
             </label>
           </div>
@@ -728,6 +732,20 @@ export default function Salud({ empleados = [] }) {
   )
 }
 
+function InitialHealthPanel() {
+  return (
+    <div className="flex min-h-[205px] flex-col items-center justify-center text-center">
+      <h2 className="font-['Cooper'] text-[40px] leading-tight text-[#00578b] md:text-[46px]">
+        Seguimiento médico
+      </h2>
+
+      <p className="mt-2 text-[17px] text-slate-500">
+        Tu Salud es muy importante para nosotros
+      </p>
+    </div>
+  )
+}
+
 function SaludPanel({ empleado, record, onEdit }) {
   const rows = [
     { label: 'Nombre:', value: empleado?.nombre || record?.Empleado?.nombre || '' },
@@ -775,7 +793,7 @@ function RecordPanel({ config, record, onEdit, onHistory }) {
 
 function InfoRows({ rows }) {
   return (
-    <div className="space-y-4 text-[13px] leading-tight">
+    <div className="space-y-4 text-[14px] leading-tight">
       {rows.map((row) => (
         <p key={row.label} className="text-[#00578b]">
           <span className="font-bold">
@@ -795,36 +813,38 @@ function GrayButton({ children, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="min-w-[90px] bg-[#8b8e93] hover:bg-[#74777c] text-white px-4 py-2 rounded-lg text-[13px] leading-tight font-bold transition-all"
+      className="min-w-[90px] bg-[#8b8e93] hover:bg-[#74777c] text-white px-4 py-2 rounded-lg text-[14px] leading-tight font-bold transition-all"
     >
       {children}
     </button>
   )
 }
 
-function TextField({ label, value, onChange, disabled }) {
+function TextField({ label, value, onChange, readOnly, disabled }) {
   return (
     <label>
-      <span className="block text-sm text-slate-500 mb-2">
+      <span className="block text-[15px] text-slate-500 mb-2">
         {label}
       </span>
+
       <input
         type="text"
         value={value}
+        readOnly={readOnly}
         disabled={disabled}
         onChange={(event) => onChange?.(event.target.value)}
-        className="border border-slate-300 rounded-2xl px-5 py-4 w-full outline-none focus:ring-2 focus:ring-[#BFE0FF] disabled:bg-slate-100 disabled:text-slate-500"
+        className="border border-slate-300 rounded-2xl px-5 py-4 w-full text-[15px] outline-none focus:ring-2 focus:ring-[#BFE0FF] read-only:bg-slate-100 read-only:text-slate-500 disabled:bg-slate-100 disabled:text-slate-500"
       />
     </label>
   )
 }
 
 function RecordField({ field, value, onChange }) {
-  const baseClass = 'border border-slate-300 rounded-2xl px-5 py-4 w-full outline-none focus:ring-2 focus:ring-[#BFE0FF]'
+  const baseClass = 'border border-slate-300 rounded-2xl px-5 py-4 w-full text-[15px] outline-none focus:ring-2 focus:ring-[#BFE0FF]'
 
   return (
     <label className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
-      <span className="block text-sm text-slate-500 mb-2">
+      <span className="block text-[15px] text-slate-500 mb-2">
         {field.label}
       </span>
 
