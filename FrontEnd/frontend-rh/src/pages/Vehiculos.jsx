@@ -5,10 +5,12 @@ import ConfirmModal from '../components/ConfirmModal'
 import FeedbackToast from '../components/FeedbackToast'
 import RhModal from '../components/RhModal'
 
-const API_URL = 'http://localhost:3000'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 const emptyVehicle = {
   fotoVehiculo: '',
+  fotoVehiculoFile: null,
+  fotoVehiculoPreview: '',
   numeroVehiculo: '',
   marca: '',
   modelo: '',
@@ -26,6 +28,64 @@ function getTokenHeaders() {
   return {
     authorization: `Bearer ${localStorage.getItem('token')}`
   }
+}
+
+const getVehiculoFotoUrl = (fotoVehiculo) => {
+  if (!fotoVehiculo) return null
+  const fotoValue = String(fotoVehiculo)
+  if (fotoValue.startsWith('blob:') || fotoValue.startsWith('data:')) return fotoValue
+  if (fotoValue.startsWith('http')) return fotoValue
+  if (fotoValue.startsWith('/uploads')) return `${API_URL}${fotoValue}`
+  return `${API_URL}/uploads/vehiculos/${fotoValue}`
+}
+
+function getFechaInputValue(fecha) {
+  if (
+    !fecha ||
+    fecha === 'Invalid date' ||
+    fecha === 'undefined' ||
+    fecha === 'null'
+  ) {
+    return ''
+  }
+
+  return String(fecha).slice(0, 10)
+}
+
+function isFechaValida(fecha) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(getFechaInputValue(fecha))
+}
+
+function buildVehiculoFormData(vehiculo) {
+  const formData = new FormData()
+
+  ;[
+    'numeroVehiculo',
+    'marca',
+    'modelo',
+    'anio',
+    'color',
+    'placas',
+    'numeroPoliza',
+    'aseguradora',
+    'numeroTarjetaCirculacion'
+  ].forEach((field) => {
+    formData.append(field, vehiculo[field] || '')
+  })
+
+  ;['vigenciaPoliza', 'vigenciaTarjeta'].forEach((field) => {
+    const fecha = getFechaInputValue(vehiculo[field])
+
+    if (isFechaValida(fecha)) {
+      formData.append(field, fecha)
+    }
+  })
+
+  if (vehiculo.fotoVehiculoFile) {
+    formData.append('fotoVehiculo', vehiculo.fotoVehiculoFile)
+  }
+
+  return formData
 }
 
 function daysUntil(dateValue) {
@@ -166,10 +226,10 @@ const filteredVehicles = useMemo(() => {
       return
     }
 
-    const payload = {
+    const payload = buildVehiculoFormData({
       ...form,
       anio: Number(form.anio)
-    }
+    })
 
     try {
       if (editingVehicle) {
@@ -214,7 +274,6 @@ const filteredVehicles = useMemo(() => {
 
   const formFields = [
     { name: 'numeroVehiculo', label: 'Número interno', required: true },
-    { name: 'fotoVehiculo', label: 'Foto del vehículo (URL)' },
     { name: 'marca', label: 'Marca', required: true },
     { name: 'modelo', label: 'Modelo', required: true },
     { name: 'anio', label: 'Año', type: 'number', required: true },
@@ -277,8 +336,8 @@ const filteredVehicles = useMemo(() => {
                     <div className="w-14 h-14 rounded-2xl bg-[#eaf4ff] text-[#07355E] flex items-center justify-center overflow-hidden">
                       {vehiculo.fotoVehiculo ? (
                         <img
-                          src={vehiculo.fotoVehiculo}
-                          alt={vehicleTitle(vehiculo)}
+                          src={getVehiculoFotoUrl(vehiculo.fotoVehiculo)}
+                          alt={vehicleImageAlt(vehiculo)}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -344,6 +403,45 @@ const filteredVehicles = useMemo(() => {
             </button>
           )}
         >
+          <div className="flex flex-col items-center mb-5">
+            <div className="w-40 h-32 rounded-3xl bg-[#eaf4ff] overflow-hidden flex items-center justify-center text-[#07355E]">
+              {(form.fotoVehiculoPreview || form.fotoVehiculo) ? (
+                <img
+                  src={form.fotoVehiculoPreview || getVehiculoFotoUrl(form.fotoVehiculo)}
+                  alt={form.numeroVehiculo || form.placas || 'Vehículo'}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <CarFront size={48} />
+              )}
+            </div>
+
+            <input
+              type="file"
+              id="foto-vehiculo"
+              className="hidden"
+              accept="image/*"
+              onChange={(event) => {
+                const file = event.target.files[0]
+
+                if (file) {
+                  setForm({
+                    ...form,
+                    fotoVehiculoFile: file,
+                    fotoVehiculoPreview: URL.createObjectURL(file)
+                  })
+                }
+              }}
+            />
+
+            <label
+              htmlFor="foto-vehiculo"
+              className="mt-4 inline-flex cursor-pointer rounded-xl bg-[#07355E] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[#1B2A38]"
+            >
+              {form.fotoVehiculo ? 'Cambiar foto' : 'Seleccionar foto'}
+            </label>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {formFields.map((field) => (
               <label key={field.name}>
@@ -352,7 +450,7 @@ const filteredVehicles = useMemo(() => {
                 </span>
                 <input
                   type={field.type || 'text'}
-                  value={form[field.name] || ''}
+                  value={field.type === 'date' ? getFechaInputValue(form[field.name]) : form[field.name] || ''}
                   onChange={(event) => setForm({
                     ...form,
                     [field.name]: event.target.value
@@ -389,6 +487,9 @@ const filteredVehicles = useMemo(() => {
 function vehicleTitle(vehiculo) {
   return `${vehiculo.marca} ${vehiculo.modelo}`
 }
+function vehicleImageAlt(vehiculo) {
+  return vehiculo.numeroVehiculo || vehiculo.placas || 'Vehículo'
+}
 function VehicleDetail({ vehiculo, onEdit, onDelete }) {
   const polizaState = getExpiryState(vehiculo.vigenciaPoliza)
   const tarjetaState = getExpiryState(vehiculo.vigenciaTarjeta)
@@ -399,8 +500,8 @@ function VehicleDetail({ vehiculo, onEdit, onDelete }) {
         <div className="w-full lg:w-72 h-56 rounded-3xl bg-[#eaf4ff] overflow-hidden flex items-center justify-center text-[#07355E]">
           {vehiculo.fotoVehiculo ? (
             <img
-              src={vehiculo.fotoVehiculo}
-              alt={vehicleTitle(vehiculo)}
+              src={getVehiculoFotoUrl(vehiculo.fotoVehiculo)}
+              alt={vehicleImageAlt(vehiculo)}
               className="w-full h-full object-cover"
             />
           ) : (

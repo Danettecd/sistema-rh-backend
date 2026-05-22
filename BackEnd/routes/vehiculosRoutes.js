@@ -4,6 +4,7 @@ const {
 } = require('../middleware/auth');
 
 const express = require('express');
+const uploadVehiculo = require('../middleware/uploadVehiculo');
 const router = express.Router();
 
 const {
@@ -35,6 +36,7 @@ router.post(
     'contadora',
     'auxiliar'
   ),
+  uploadVehiculo.single('fotoVehiculo'),
   createVehiculo
 );
 
@@ -46,6 +48,7 @@ router.put(
     'contadora',
     'auxiliar'
   ),
+  uploadVehiculo.single('fotoVehiculo'),
   updateVehiculo
 );
 

@@ -1,4 +1,12 @@
 const Vehiculo = require('../models/vehiculos.model');
+
+const limpiarFecha = (fecha, fechaAnterior = null) => {
+  if (!fecha || fecha === "Invalid date" || fecha === "undefined" || fecha === "null") {
+    return fechaAnterior || null;
+  }
+
+  return fecha;
+};
 //obtener todos los vehiculos
 const getVehiculos = async (req, res) => {
 
@@ -58,7 +66,6 @@ const createVehiculo = async (req, res) => {
 
     const {
       numeroVehiculo,
-      fotoVehiculo,
       marca,
       modelo,
       anio,
@@ -70,6 +77,11 @@ const createVehiculo = async (req, res) => {
       numeroPoliza,
       vigenciaPoliza
     } = req.body;
+    const fotoVehiculo = req.file
+      ? `/uploads/vehiculos/${req.file.filename}`
+      : null;
+    const vigenciaTarjetaFinal = limpiarFecha(vigenciaTarjeta);
+    const vigenciaPolizaFinal = limpiarFecha(vigenciaPoliza);
 
     // VALIDACIONES
 
@@ -98,10 +110,10 @@ const createVehiculo = async (req, res) => {
       color,
       placas,
       numeroTarjetaCirculacion,
-      vigenciaTarjeta,
+      vigenciaTarjeta: vigenciaTarjetaFinal,
       aseguradora,
       numeroPoliza,
-      vigenciaPoliza
+      vigenciaPoliza: vigenciaPolizaFinal
     });
 
     res.status(201).json({
@@ -140,7 +152,6 @@ const updateVehiculo = async (req, res) => {
 
     const {
       numeroVehiculo,
-      fotoVehiculo,
       marca,
       modelo,
       anio,
@@ -152,6 +163,15 @@ const updateVehiculo = async (req, res) => {
       numeroPoliza,
       vigenciaPoliza
     } = req.body;
+    const fotoVehiculoFinal = req.file
+      ? `/uploads/vehiculos/${req.file.filename}`
+      : vehiculo.fotoVehiculo || null;
+    const vigenciaTarjetaFinal = limpiarFecha(vigenciaTarjeta, vehiculo.vigenciaTarjeta);
+    const vigenciaPolizaFinal = limpiarFecha(vigenciaPoliza, vehiculo.vigenciaPoliza);
+
+    console.log("Foto vehículo anterior:", vehiculo.fotoVehiculo);
+    console.log("Nueva foto vehículo:", req.file?.filename);
+    console.log("Foto vehículo final:", fotoVehiculoFinal);
 
     // VALIDACIONES
 
@@ -173,17 +193,17 @@ const updateVehiculo = async (req, res) => {
 
     await vehiculo.update({
       numeroVehiculo,
-      fotoVehiculo,
+      fotoVehiculo: fotoVehiculoFinal,
       marca,
       modelo,
       anio,
       color,
       placas,
       numeroTarjetaCirculacion,
-      vigenciaTarjeta,
+      vigenciaTarjeta: vigenciaTarjetaFinal,
       aseguradora,
       numeroPoliza,
-      vigenciaPoliza
+      vigenciaPoliza: vigenciaPolizaFinal
     });
 
     res.status(200).json({
@@ -193,10 +213,11 @@ const updateVehiculo = async (req, res) => {
 
   } catch (error) {
 
-    console.error(error);
+    console.error("Error actualizando vehículo:", error);
 
     res.status(500).json({
-      message: 'Error al actualizar vehículo'
+      message: 'Error al actualizar vehículo',
+      error: error.message
     });
 
   }
