@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const SECRET_KEY = 'sigpa-secret-key';
+const SECRET_KEY = process.env.JWT_SECRET;
 
 function generateAccessToken(user) {
 

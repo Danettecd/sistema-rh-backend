@@ -1,11 +1,12 @@
 const { Sequelize } = require('sequelize');
 
 const sequelize = new Sequelize(
-  'practica5', // nombre BD
-  'root',   // usuario mysql
-  'Wisconsin#815', // password mysql
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
   {
-    host: 'localhost',
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
     dialect: 'mysql'
   }
 );

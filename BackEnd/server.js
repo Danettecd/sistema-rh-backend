@@ -1,3 +1,4 @@
+require('dotenv').config();
 const app = require('./app');
 
 const sequelize = require('./config/db');
@@ -38,8 +39,10 @@ sequelize.sync({ alter: true })
 
     console.log('Base sincronizada');
 
-    app.listen(3000, () => {
-      console.log('Servidor corriendo');
+    const PORT = process.env.PORT || 3000;
+
+    app.listen(PORT, () => {
+      console.log(`Servidor corriendo en puerto ${PORT}`);
     });
 
   })
