@@ -1,7 +1,7 @@
 const Empleado = require('../models/Empleado');
 
 function getFotoPath(file) {
-  return file ? `/uploads/empleados/${file.filename}` : null;
+  return file ? file.filename : null;
 }
 
 const limpiarFecha = (fecha, fechaAnterior = null) => {
@@ -70,6 +70,8 @@ const obtenerEmpleadoPorId = async (req, res) => {
 const crearEmpleado = async (req, res) => {
 
   try {
+    console.log('Crear empleado body:', req.body);
+    console.log('Crear empleado file:', req.file);
 
     const {
       nombre,
@@ -84,6 +86,8 @@ const crearEmpleado = async (req, res) => {
       fechaNacimiento
     } = req.body;
     const foto = getFotoPath(req.file);
+    const fechaIngresoFinal = limpiarFecha(fechaIngreso);
+    const fechaNacimientoFinal = limpiarFecha(fechaNacimiento);
 
     // VALIDACIONES
 
@@ -106,8 +110,8 @@ const crearEmpleado = async (req, res) => {
       rfc,
       curp,
       nss,
-      fechaIngreso: null,
-      fechaNacimiento: null,
+      fechaIngreso: fechaIngresoFinal,
+      fechaNacimiento: fechaNacimientoFinal,
       foto
     });
 
@@ -118,7 +122,11 @@ const crearEmpleado = async (req, res) => {
 
   } catch (error) {
 
-    console.error(error);
+    console.error('Error Sequelize/crear empleado:', {
+      message: error.message,
+      name: error.name,
+      errors: error.errors
+    });
 
     res.status(500).json({
       mensaje: 'Error al crear empleado'
@@ -133,6 +141,8 @@ const crearEmpleado = async (req, res) => {
 const actualizarEmpleado = async (req, res) => {
 
   try {
+    console.log('Actualizar empleado body:', req.body);
+    console.log('Actualizar empleado file:', req.file);
 
     const id = req.params.id;
 
@@ -159,7 +169,7 @@ const actualizarEmpleado = async (req, res) => {
       fechaNacimiento
     } = req.body;
     const fotoFinal = req.file
-      ? `/uploads/empleados/${req.file.filename}`
+      ? req.file.filename
       : empleado.foto || null;
     const fechaIngresoFinal = limpiarFecha(req.body.fechaIngreso, empleado.fechaIngreso);
     const fechaNacimientoFinal = limpiarFecha(req.body.fechaNacimiento, empleado.fechaNacimiento);
@@ -201,7 +211,11 @@ const actualizarEmpleado = async (req, res) => {
 
   } catch (error) {
 
-    console.error(error);
+    console.error('Error Sequelize/actualizar empleado:', {
+      message: error.message,
+      name: error.name,
+      errors: error.errors
+    });
 
     res.status(500).json({
       mensaje: 'Error al actualizar empleado'

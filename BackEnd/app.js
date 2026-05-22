@@ -1,10 +1,29 @@
 const express = require("express");
-const cors = require('cors')
+const cors = require('cors');
+const helmet = require('helmet');
+const multer = require('multer');
 const path = require('path');
+
 const app = express();
-app.use(cors())
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+    contentSecurityPolicy: false
+  })
+);
+
+app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
+app.use(
+  '/uploads',
+  express.static(path.join(__dirname, 'uploads'))
+);
+app.use(
+  '/uploads',
+  express.static(path.join(__dirname, '..', 'uploads'))
+);
 
 const empleadosRoutes = require('./routes/empleadosRoutes');
 const asistenciaRoutes = require("./routes/asistenciaRoutes");
@@ -42,5 +61,21 @@ app.get("/",(req,res)=>{
  res.send("Sistema Global de Personal y Activos");
 });
 
-module.exports = app;
+app.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError || error.message === 'Solo se permiten imagenes') {
+    console.error('Error Multer empleados/uploads:', {
+      message: error.message,
+      code: error.code,
+      body: req.body,
+      file: req.file
+    });
 
+    return res.status(400).json({
+      message: error.message || 'Error al cargar archivo'
+    });
+  }
+
+  next(error);
+});
+
+module.exports = app;

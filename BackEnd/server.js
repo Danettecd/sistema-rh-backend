@@ -34,7 +34,7 @@ require('./models/incapacidad.model');
 require('./models/cita.model');
 
 // BASE DE DATOS
-sequelize.sync({ alter: true })
+sequelize.sync()
   .then(() => {
 
     console.log('Base sincronizada');

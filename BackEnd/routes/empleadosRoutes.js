@@ -1,3 +1,5 @@
+const { validarEmpleado } = require('../middleware/validaciones');
+
 const { 
    authenticateToken,
    authorizeRoles
@@ -31,6 +33,7 @@ router.post(
       'auxiliar'
    ),
    uploadEmpleado.single('foto'),
+   validarEmpleado,
    crearEmpleado
 );
 
@@ -49,6 +52,7 @@ router.put(
       'auxiliar'
    ),
    uploadEmpleado.single('foto'),
+   validarEmpleado,
    actualizarEmpleado
 );
 

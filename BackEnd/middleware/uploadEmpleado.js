@@ -2,7 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 
-const uploadDir = path.join(__dirname, '..', '..', 'uploads', 'empleados');
+const uploadDir = path.join(__dirname, '..', 'uploads', 'empleados');
+const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -22,7 +23,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if (!file.mimetype.startsWith('image/')) {
+  if (!allowedMimeTypes.includes(file.mimetype)) {
     cb(new Error('Solo se permiten imagenes'));
     return;
   }
@@ -32,5 +33,8 @@ const fileFilter = (req, file, cb) => {
 
 module.exports = multer({
   storage,
-  fileFilter
+  fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024
+  }
 });
