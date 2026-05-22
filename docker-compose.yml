@@ -7,7 +7,7 @@ services:
       MYSQL_ROOT_PASSWORD: example_password
       MYSQL_DATABASE: practica5
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -34,6 +34,10 @@ services:
       JWT_SECRET: docker_secret_key
       NODE_ENV: development
       PORT: 3000
+      ADMIN_NAME: Admin Docker
+      ADMIN_EMAIL: admin@sigpa.local
+      ADMIN_PASSWORD: admin123
+      ADMIN_ROLE: admin
     ports:
       - "3000:3000"
     volumes:

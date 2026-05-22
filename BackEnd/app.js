@@ -60,6 +60,13 @@ setTimeout(()=>{
 
 console.log("Servidor configurándose");
 
+app.get("/health",(req,res)=>{
+ res.json({
+  status: "ok",
+  service: "sigpa-backend"
+ });
+});
+
 app.get("/",(req,res)=>{
  res.send("Sistema Global de Personal y Activos");
 });

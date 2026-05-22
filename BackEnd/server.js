@@ -6,6 +6,7 @@ require('dotenv').config({
 const app = require('./app');
 
 const sequelize = require('./config/db');
+const seedAdmin = require('./seeders/seedAdmin');
 
 const Empleado = require('./models/Empleado');
 const Asistencia = require('./models/asistencia.model');
@@ -39,9 +40,11 @@ require('./models/cita.model');
 
 // BASE DE DATOS
 sequelize.sync()
-  .then(() => {
+  .then(async () => {
 
     console.log('Base sincronizada');
+
+    await seedAdmin();
 
     const PORT = process.env.PORT || 3000;
 
