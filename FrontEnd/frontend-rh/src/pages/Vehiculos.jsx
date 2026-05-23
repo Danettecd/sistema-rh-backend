@@ -4,8 +4,7 @@ import { AlertTriangle, CalendarClock, CarFront, ShieldCheck } from 'lucide-reac
 import ConfirmModal from '../components/ConfirmModal'
 import FeedbackToast from '../components/FeedbackToast'
 import RhModal from '../components/RhModal'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+import { API_URL } from '../config/api'
 
 const emptyVehicle = {
   fotoVehiculo: '',

@@ -6,6 +6,7 @@ import Uniformes from './pages/Uniformes'
 import Vehiculos from './pages/Vehiculos'
 import Salud from './pages/Salud'
 import FeedbackToast from './components/FeedbackToast'
+import { API_URL } from './config/api'
 
 
 import adminFoto from './assets/fotos/danettecd.jpg'
@@ -38,8 +39,6 @@ import {
   CartesianGrid,
   ResponsiveContainer
 } from 'recharts'
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
 
 function getEmpleadoFotoUrl(foto) {
   if (!foto) {

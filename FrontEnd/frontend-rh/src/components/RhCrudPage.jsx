@@ -3,8 +3,7 @@ import axios from 'axios'
 import ConfirmModal from './ConfirmModal'
 import FeedbackToast from './FeedbackToast'
 import RhModal from './RhModal'
-
-const API_URL = 'http://localhost:3000'
+import { API_URL } from '../config/api'
 
 function emptyForm(fields) {
   return fields.reduce((form, field) => ({
