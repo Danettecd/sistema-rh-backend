@@ -1,3 +1,5 @@
+import HomePublic from './components/HomePublic'
+
 import DashboardCard from './components/DashboardCard'
 import Empleados from './pages/Empleados';
 import Asistencia from './pages/Asistencia'
@@ -126,26 +128,26 @@ function isFechaValida(fecha) {
 function buildEmpleadoFormData(empleado) {
   const formData = new FormData()
 
-  ;[
-    'nombre',
-    'puesto',
-    'telefono',
-    'direccion',
-    'email',
-    'rfc',
-    'curp',
-    'nss'
-  ].forEach((field) => {
-    formData.append(field, empleado[field] || '')
-  })
+    ;[
+      'nombre',
+      'puesto',
+      'telefono',
+      'direccion',
+      'email',
+      'rfc',
+      'curp',
+      'nss'
+    ].forEach((field) => {
+      formData.append(field, empleado[field] || '')
+    })
 
-  ;['fechaIngreso', 'fechaNacimiento'].forEach((field) => {
-    const fecha = getFechaInputValue(empleado[field])
+    ;['fechaIngreso', 'fechaNacimiento'].forEach((field) => {
+      const fecha = getFechaInputValue(empleado[field])
 
-    if (isFechaValida(fecha)) {
-      formData.append(field, fecha)
-    }
-  })
+      if (isFechaValida(fecha)) {
+        formData.append(field, fecha)
+      }
+    })
 
   if (empleado.fotoFile) {
     formData.append('foto', empleado.fotoFile)
@@ -191,19 +193,19 @@ export default function App() {
     fotoFile: null
   })
 
-      const coloresBarras = [
-      '#93C5FD',
-      '#C4B5FD',
-      '#86EFAC',
-      '#FDE68A',
-      '#FCA5A5',
-      '#67E8F9',
-      '#FDBA74',
-      '#A5B4FC',
-      '#F9A8D4',
-      '#5EEAD4'
-    ]
-    
+  const coloresBarras = [
+    '#93C5FD',
+    '#C4B5FD',
+    '#86EFAC',
+    '#FDE68A',
+    '#FCA5A5',
+    '#67E8F9',
+    '#FDBA74',
+    '#A5B4FC',
+    '#F9A8D4',
+    '#5EEAD4'
+  ]
+
   const empleadosPorPuesto = empleados.reduce((acc, empleado) => {
     const puesto = empleado.puesto || "Sin puesto";
 
@@ -647,9 +649,8 @@ export default function App() {
         )}
 
         <aside
-          className={`fixed top-0 left-0 h-full w-72 bg-gradient-to-b from-[#081225] to-[#102544] text-white z-50 transform transition-transform duration-300 lg:hidden ${
-            menuAbierto ? 'translate-x-0' : '-translate-x-full'
-          }`}
+          className={`fixed top-0 left-0 h-full w-72 bg-gradient-to-b from-[#081225] to-[#102544] text-white z-50 transform transition-transform duration-300 lg:hidden ${menuAbierto ? 'translate-x-0' : '-translate-x-full'
+            }`}
         >
           <div className="flex items-center justify-between p-5 border-b border-white/10">
             <h1 className="text-3xl font-bold font-['Cooper']">
@@ -675,11 +676,10 @@ export default function App() {
                   setActiveSection(item.key)
                   setMenuAbierto(false)
                 }}
-                className={`w-full flex items-center px-4 py-3 rounded-xl cursor-pointer transition-all border border-transparent ${
-                  activeSection === item.key
+                className={`w-full flex items-center px-4 py-3 rounded-xl cursor-pointer transition-all border border-transparent ${activeSection === item.key
                     ? 'bg-[#BFE0FF] text-[#0b2447] shadow-sm'
                     : 'hover:bg-white/10 text-white'
-                }`}
+                  }`}
               >
                 <span className="text-lg mr-3">
                   {item.icon}
@@ -941,53 +941,53 @@ export default function App() {
                     <div className="w-full h-[300px] min-w-0">
 
                       <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={empleadosPorPuesto}
-                        layout="vertical"
-                        barSize={18}
-                        margin={{
-                          top: 20,
-                          right: 40,
-                          left: 40,
-                          bottom: 20
-                        }}
-                      >
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          stroke="#e2e8f0"
-                        />
-
-                        <XAxis
-                          type="number"
-                          tick={{
-                            fill: '#64748b'
+                        <BarChart
+                          data={empleadosPorPuesto}
+                          layout="vertical"
+                          barSize={18}
+                          margin={{
+                            top: 20,
+                            right: 40,
+                            left: 40,
+                            bottom: 20
                           }}
-                        />
-
-                        <YAxis
-                          type="category"
-                          dataKey="puesto"
-                          width={140}
-                          tick={{
-                            fill: '#64748b',
-                            fontSize: 15
-                          }}
-                        />
-
-                        <Tooltip />
-
-                        <Bar
-                          dataKey="total"
-                          radius={[0, 10, 10, 0]}
                         >
-                          {empleadosPorPuesto.map((entry, index) => (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={coloresBarras[index % coloresBarras.length]}
-                            />
-                          ))}
-                        </Bar>
-                      </BarChart>
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            stroke="#e2e8f0"
+                          />
+
+                          <XAxis
+                            type="number"
+                            tick={{
+                              fill: '#64748b'
+                            }}
+                          />
+
+                          <YAxis
+                            type="category"
+                            dataKey="puesto"
+                            width={140}
+                            tick={{
+                              fill: '#64748b',
+                              fontSize: 15
+                            }}
+                          />
+
+                          <Tooltip />
+
+                          <Bar
+                            dataKey="total"
+                            radius={[0, 10, 10, 0]}
+                          >
+                            {empleadosPorPuesto.map((entry, index) => (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={coloresBarras[index % coloresBarras.length]}
+                              />
+                            ))}
+                          </Bar>
+                        </BarChart>
                       </ResponsiveContainer>
 
                     </div>
@@ -1003,30 +1003,30 @@ export default function App() {
                     <div className="w-full h-[300px] flex justify-center min-w-0">
 
                       <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
+                        <PieChart>
 
-                        <Pie
-                          data={incidenciasData}
-                          dataKey="value"
-                          nameKey="name"
-                          outerRadius="75%"
-                          label
-                        >
+                          <Pie
+                            data={incidenciasData}
+                            dataKey="value"
+                            nameKey="name"
+                            outerRadius="75%"
+                            label
+                          >
 
-                          {incidenciasData.map((entry, index) => (
+                            {incidenciasData.map((entry, index) => (
 
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={COLORS[index % COLORS.length]}
-                            />
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={COLORS[index % COLORS.length]}
+                              />
 
-                          ))}
+                            ))}
 
-                        </Pie>
+                          </Pie>
 
-                        <Tooltip />
+                          <Tooltip />
 
-                      </PieChart>
+                        </PieChart>
                       </ResponsiveContainer>
 
                     </div>
@@ -1525,138 +1525,69 @@ export default function App() {
     )
   }
 
-  return (
-    <div className="min-h-screen bg-[#eef3ff] relative overflow-x-hidden">
+   return (
+  <>
+    <HomePublic
+      menuItems={menuItems}
+      onLogin={() => setShowLogin(true)}
+    />
 
-      {/* TOPBAR */}
-      <header className="min-h-20 md:h-24 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 md:px-12 py-4">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8 self-center sm:self-auto text-center sm:text-left">
+    {showLogin && (
+      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-          <h1 className="text-3xl leading-none mb-1 font-semibold text-[#0a237a] font-['Cooper'] tracking-tight">
-            SIGPA
-          </h1>
+        <div className="bg-white w-full max-w-[500px] max-h-[90vh] overflow-y-auto rounded-[28px] md:rounded-[35px] p-6 md:p-10 relative shadow-2xl">
 
-          <p className="text-slate-600">
-            Sistema Global de Personal y Activos
-          </p>
+          <button
+            onClick={() => setShowLogin(false)}
+            className="absolute top-6 right-8 text-3xl text-slate-400"
+          >
+            ×
+          </button>
 
-        </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-[#001b70] mb-8 md:mb-10 font-['Cormorant_Garamond']">
+            Iniciar Sesión
+          </h2>
 
-        <div className="flex items-center gap-8">
-          <p className="text-slate-500 text-sm">
-            Tampico, Tam. 18 Mayo 2026
-          </p>
+          <div className="space-y-6">
 
-        </div>
+            <input
+              type="email"
+              placeholder="Ingresa tu correo electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border border-slate-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500"
+            />
 
-      </header>
+            <input
+              type="password"
+              placeholder="Ingresa tu contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border border-slate-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500"
+            />
 
-      {/* HERO */}
-      <section className="flex flex-col items-center px-4 pt-12 md:pt-24">
-
-        <h2 className="text-5xl md:text-[80px] font-medium tracking-tight text-[#001b70] font-['Cooper']">
-          SIGPA
-        </h2>
-
-        <p className="text-xl md:text-3xl text-slate-600 mb-10 md:mb-16 text-center">
-          Sistema Global de Personal y Activos
-        </p>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 md:gap-6 w-full max-w-7xl">
-
-          {menuItems.map((item) => (
-
-            <div
-              key={item.title}
-              className="bg-white w-full aspect-square min-h-[130px] max-h-[160px] rounded-3xl shadow-md flex flex-col items-center justify-center gap-4 md:gap-5 hover:shadow-xl transition-all"
-            >
-
-              <div className="text-[#0b2447] text-5xl">
-                {item.icon}
-              </div>
-
-              <span className="text-slate-700 text-lg">
-                {item.title}
-              </span>
-
-            </div>
-
-          ))}
-
-        </div>
-
-        <button
-          onClick={() => setShowLogin(true)}
-          className="mt-14 bg-[#0b2447] hover:bg-[#16325c] hover:scale-105 text-white px-10 py-3 rounded-xl text-base tracking-wide shadow-md transition-all duration-300"
-        >
-          INICIAR SESIÓN
-        </button>
-
-      </section>
-
-      {/* LOGIN MODAL */}
-      {showLogin && (
-
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-
-          <div className="bg-white w-full max-w-[500px] max-h-[90vh] overflow-y-auto rounded-[28px] md:rounded-[35px] p-6 md:p-10 relative shadow-2xl">
+            {error && (
+              <p className="text-red-500 text-sm text-center">
+                {error}
+              </p>
+            )}
 
             <button
-              onClick={() => setShowLogin(false)}
-              className="absolute top-6 right-8 text-3xl text-slate-400"
+              onClick={handleLogin}
+              className="bg-[#0b2447] hover:bg-[#16325c] hover:scale-105 text-white py-3 px-10 rounded-xl text-lg font-medium transition-all duration-300 mx-auto block mt-4"
             >
-              ×
+              INICIAR SESIÓN
             </button>
-
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-[#001b70] mb-8 md:mb-10 font-['Cormorant_Garamond']">
-              Iniciar Sesión
-            </h2>
-
-            <div className="space-y-6">
-
-              <input
-                type="email"
-                placeholder="Ingresa tu correo electrónico"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-slate-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500"
-              />
-
-              <input
-                type="password"
-                placeholder="Ingresa tu contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-slate-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {
-                error && (
-                  <p className="text-red-500 text-sm text-center">
-                    {error}
-                  </p>
-                )
-              }
-              <button
-                onClick={handleLogin}
-                className="bg-[#0b2447] hover:bg-[#16325c] hover:scale-105 text-white py-3 px-10 rounded-xl text-lg font-medium transition-all duration-300 mx-auto block mt-4"
-              >
-                INICIAR SESIÓN
-              </button>
-
-            </div>
 
           </div>
 
         </div>
 
-      )}
-
-
-
-    </div>
-  )
+      </div>
+    )}
+  </>
+)
 }
-
 
 
 function Incident({ title, employee }) {
