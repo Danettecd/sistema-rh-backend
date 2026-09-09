@@ -386,8 +386,8 @@ export default function App() {
 
   const crearEmpleado = async () => {
     console.log('CLICK CREAR EMPLEADO')
-    try {
 
+    try {
       const token = localStorage.getItem('token')
 
       await axios.post(
@@ -421,11 +421,16 @@ export default function App() {
       })
 
     } catch (error) {
+      console.error('ERROR AL CREAR EMPLEADO:', error)
 
-      console.error(error.response?.data || error)
-
+      showFeedback(
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        error.message ||
+        'No se pudo registrar el empleado',
+        'error'
+      )
     }
-
   }
 
   const editarEmpleado = async (id, empleadoEditado) => {
@@ -677,8 +682,8 @@ export default function App() {
                   setMenuAbierto(false)
                 }}
                 className={`w-full flex items-center px-4 py-3 rounded-xl cursor-pointer transition-all border border-transparent ${activeSection === item.key
-                    ? 'bg-[#BFE0FF] text-[#0b2447] shadow-sm'
-                    : 'hover:bg-white/10 text-white'
+                  ? 'bg-[#BFE0FF] text-[#0b2447] shadow-sm'
+                  : 'hover:bg-white/10 text-white'
                   }`}
               >
                 <span className="text-lg mr-3">
@@ -864,69 +869,290 @@ export default function App() {
 
                 </div>
 
+
+
+
+                {/* CUMPLEAÑEROS */}
                 {/* BIRTHDAYS */}
-                <div className="bg-white rounded-3xl p-4 md:p-8 shadow-sm mb-8">
+                <div
+                  className="
+    relative
+    overflow-hidden
+    rounded-[28px]
+    mb-8
+    border border-[#e6edf5]
+    shadow-[0_10px_30px_rgba(15,45,75,0.08)]
+    bg-gradient-to-r
+    from-[#eaf4ff]
+    via-[#fffdf8]
+    to-[#fff5e8]
+  "
+                >
 
+                  {/* CONFETI */}
+                  <div className="absolute inset-0 pointer-events-none">
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <span className="absolute top-[22px] left-[3%] w-2 h-6 bg-[#ffcb48] rotate-[-18deg] rounded-sm" />
+                    <span className="absolute top-[34px] left-[7%] w-2 h-5 bg-[#ff9f43] rotate-[28deg] rounded-sm" />
+                    <span className="absolute top-[18px] left-[12%] w-2 h-7 bg-[#ffd166] rotate-[-10deg] rounded-sm" />
 
-                    <h3
-                      className="
-      text-3xl
-      md:text-5xl
-      font-black
-      bg-gradient-to-r
-      from-pink-400
-      via-yellow-400
-      to-blue-400
-      text-transparent
-      bg-clip-text
-      tracking-wide
-    "
-                    >
-                      HAPPY BIRTHDAY
-                    </h3>
+                    <span className="absolute top-[45px] left-[19%] w-3 h-3 bg-[#ff7fa6] rotate-45" />
+                    <span className="absolute top-[20px] left-[28%] w-2 h-6 bg-[#49c8a7] rotate-[-22deg] rounded-sm" />
 
-                    <div className="text-4xl md:text-5xl">
-                      🎂🎈
-                    </div>
+                    <span className="absolute bottom-[36px] left-[4%] w-3 h-3 bg-[#77b7ff] rotate-45" />
+                    <span className="absolute bottom-[20px] left-[11%] w-2 h-5 bg-[#ff86b4] rotate-[-15deg] rounded-sm" />
+                    <span className="absolute bottom-[34px] left-[24%] w-3 h-3 bg-[#f5c542] rounded-full" />
+
+                    <span className="absolute top-[30px] right-[27%] w-3 h-3 bg-[#ff7fa6] rotate-45" />
+                    <span className="absolute top-[18px] right-[18%] w-2 h-6 bg-[#b783ff] rotate-[10deg] rounded-sm" />
+                    <span className="absolute bottom-[28px] right-[24%] w-3 h-3 bg-[#49c8a7] rotate-45" />
+                    <span className="absolute bottom-[24px] right-[9%] w-2 h-5 bg-[#ffb23e] rotate-[30deg] rounded-sm" />
 
                   </div>
-                  <div className="flex justify-center gap-6 flex-wrap">
-                    {birthdays.map((person) => (
+
+                  {/* SERPENTINAS */}
+                  <div className="absolute left-[22%] top-[-20px] w-5 h-24 border-l-[9px] border-[#ffd45f] rounded-full rotate-[-15deg] opacity-90" />
+                  <div className="absolute left-[30%] bottom-[-18px] w-5 h-20 border-l-[9px] border-[#6dafff] rounded-full rotate-[24deg] opacity-90" />
+                  <div className="absolute right-[18%] top-[-20px] w-5 h-24 border-l-[9px] border-[#c886ff] rounded-full rotate-[18deg] opacity-90" />
+
+
+                  <div
+                    className="
+      relative
+      z-10
+      min-h-[320px]
+      px-8
+      lg:px-10
+      py-8
+      grid
+      grid-cols-1
+      lg:grid-cols-[0.95fr_1.8fr_0.7fr]
+      items-center
+      gap-8
+    "
+                  >
+
+                    {/* TITULO */}
+                    <div className="relative">
+
+                      {/* CONO FESTIVO */}
+                      <div className="mb-2">
+                        <div
+                          className="
+            w-0 h-0
+            border-l-[16px] border-l-transparent
+            border-r-[16px] border-r-transparent
+            border-b-[38px] border-b-[#f3b526]
+            rotate-[-20deg]
+          "
+                        />
+                      </div>
+
+                      <h3
+                        className="
+    text-[#082b59]
+    text-[58px]
+    md:text-[68px]
+    leading-none
+    font-['Dancing_Script']
+    font-bold
+  "
+                      >
+                        Cumpleañeros
+                      </h3>
+
+                      <p
+                        className="
+          mt-2
+          text-[#d8a326]
+          text-[28px]
+          md:text-[34px]
+          tracking-[0.16em]
+          font-semibold
+        "
+                      >
+                        DEL MES
+                      </p>
+
+                      <p
+                        className="
+          mt-5
+          text-[#5f7891]
+          text-[17px]
+          md:text-[18px]
+          leading-relaxed
+        "
+                      >
+                        Gracias por ser parte
+                        <br />
+                        de nuestro gran equipo
+                      </p>
+
+                    </div>
+
+
+                    {/* TARJETAS */}
+                    {birthdays.length > 0 ? (
 
                       <div
-                        key={person.nombre}
-                        className="border border-slate-200 rounded-3xl p-6 flex flex-col items-center bg-[#f8fbff] w-full sm:w-[260px]"
+                        className="
+    flex
+    justify-center
+    lg:justify-start
+    gap-4
+    flex-nowrap
+    overflow-x-auto
+  "
                       >
 
-                        <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
-                          <EmpleadoFoto
-                            foto={person.foto}
-                            nombre={person.nombre}
-                          />
+                        {birthdays.map((person) => (
 
-                        </div>
+                          <div
+                            key={person.nombre}
+                            className="
+              relative
+              w-[240px]
+              h-[255px]
+              rounded-[24px]
+              bg-white/95
+              border border-[#d5e4f0]
+              shadow-[0_8px_24px_rgba(15,45,75,0.10)]
+              flex
+              flex-col
+              items-center
+              justify-center
+              px-5
+            "
+                          >
 
-                        <h4 className="text-center font-medium text-slate-700 text-lg">
-                          {person.nombre}
-                        </h4>
+                            {/* ESTALLIDO ESQUINA */}
+                            <div className="absolute top-4 right-4">
+                              <span className="block w-1 h-4 bg-[#ff86b4] rotate-0 absolute" />
+                              <span className="block w-1 h-4 bg-[#ffd25f] rotate-45 absolute" />
+                              <span className="block w-1 h-4 bg-[#6db5ff] rotate-90 absolute" />
+                              <span className="block w-1 h-4 bg-[#65d5b2] rotate-[135deg] absolute" />
+                            </div>
 
-                        <p className="text-sm text-slate-400 mt-1">
-                          {new Date(person.fechaNacimiento + 'T00:00:00')
-                            .toLocaleDateString('es-MX', {
-                              day: '2-digit',
-                              month: 'long'
-                            })}
-                        </p>
+                            <div
+                              className="
+                w-[100px]
+                h-[100px]
+                rounded-full
+                overflow-hidden
+                mb-5
+                border-4
+                border-[#eef5fb]
+              "
+                            >
+                              <EmpleadoFoto
+                                foto={person.foto}
+                                nombre={person.nombre}
+                              />
+                            </div>
+
+                            <h4
+                              className="
+                text-center
+                text-[#082b59]
+                font-bold
+                text-[16px]
+                uppercase
+                leading-snug
+                min-h-[42px]
+              "
+                            >
+                              {person.nombre}
+                            </h4>
+
+                            <div className="mt-3 flex items-center gap-2">
+
+                              {/* ICONO PASTELITO SIMPLE */}
+                              <div className="relative w-5 h-5">
+                                <div className="absolute bottom-0 left-0 w-5 h-3 border-2 border-[#e2a81f] rounded-sm" />
+                                <div className="absolute top-0 left-[3px] w-[2px] h-2 bg-[#e2a81f]" />
+                                <div className="absolute top-0 left-[9px] w-[2px] h-2 bg-[#e2a81f]" />
+                                <div className="absolute top-0 right-[3px] w-[2px] h-2 bg-[#e2a81f]" />
+                              </div>
+
+                              <span
+                                className="
+                  text-[#d39d1e]
+                  text-[14px]
+                  capitalize
+                  font-medium
+                "
+                              >
+                                {new Date(person.fechaNacimiento + 'T00:00:00')
+                                  .toLocaleDateString('es-MX', {
+                                    day: 'numeric',
+                                    month: 'long'
+                                  })}
+                              </span>
+
+                            </div>
+
+                          </div>
+
+                        ))}
 
                       </div>
 
-                    ))}
+                    ) : (
+
+                      <div className="bg-white/80 rounded-2xl p-8 text-center text-[#6f8ca8]">
+                        No hay cumpleaños registrados este mes.
+                      </div>
+
+                    )}
+
+
+                    {/* GLOBOS */}
+                    <div className="relative hidden lg:block h-[220px]">
+
+                      {/* AZUL */}
+                      <div
+                        className="
+          absolute
+          top-4
+          right-8
+          w-[74px]
+          h-[92px]
+          bg-[#2d6fb3]
+          rounded-[50%_50%_45%_45%]
+          shadow-inner
+        "
+                      >
+                        <div className="absolute top-4 left-4 w-4 h-7 bg-white/35 rounded-full rotate-[25deg]" />
+                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent border-t-[10px] border-t-[#2d6fb3]" />
+                      </div>
+
+                      {/* HILO AZUL */}
+                      <div className="absolute top-[108px] right-[45px] w-[1px] h-[105px] bg-[#b8c4d0]" />
+
+                      {/* AMARILLO */}
+                      <div
+                        className="
+          absolute
+          top-[70px]
+          right-[-4px]
+          w-[70px]
+          h-[88px]
+          bg-[#f7be3e]
+          rounded-[50%_50%_45%_45%]
+        "
+                      >
+                        <div className="absolute top-4 left-4 w-4 h-7 bg-white/40 rounded-full rotate-[25deg]" />
+                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[7px] border-l-transparent border-r-[7px] border-r-transparent border-t-[10px] border-t-[#f7be3e]" />
+                      </div>
+
+                      {/* HILO AMARILLO */}
+                      <div className="absolute top-[158px] right-[29px] w-[1px] h-[72px] bg-[#b8c4d0]" />
+
+                    </div>
+
                   </div>
 
                 </div>
-
                 {/* BOTTOM */}
 
 
@@ -1049,7 +1275,7 @@ export default function App() {
 
                 </div>
 
-              </div>
+              </div >
             )
           }
 
@@ -1456,43 +1682,46 @@ export default function App() {
             )
           }
 
-          {showDeleteModal && (
+          {
+            showDeleteModal && (
 
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn p-4">
+              <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn p-4">
 
-              <div className="bg-white rounded-3xl shadow-2xl p-8 w-[90%] max-w-md border border-slate-100 animate-scaleIn">
+                <div className="bg-white rounded-3xl shadow-2xl p-8 w-[90%] max-w-md border border-slate-100 animate-scaleIn">
 
-                <div className="flex flex-col items-center text-center">
+                  <div className="flex flex-col items-center text-center">
 
-                  <h2 className="text-2xl font-bold text-[#07355E] mb-3">
-                    Eliminar empleado
-                  </h2>
+                    <h2 className="text-2xl font-bold text-[#07355E] mb-3">
+                      Eliminar empleado
+                    </h2>
 
-                  <p className="text-slate-500 leading-relaxed mb-8">
-                    ¿Deseas eliminar a
-                    <span className="font-semibold text-[#07355E]">
-                      {' '}{empleadoAEliminar?.nombre}
-                    </span>?
-                  </p>
+                    <p className="text-slate-500 leading-relaxed mb-8">
+                      ¿Deseas eliminar a
+                      <span className="font-semibold text-[#07355E]">
+                        {' '}{empleadoAEliminar?.nombre}
+                      </span>?
+                    </p>
 
-                  <div className="flex gap-4 w-full">
+                    <div className="flex gap-4 w-full">
 
-                    <button
-                      onClick={eliminarEmpleado}
-                      className="flex-1 bg-[#07355E] hover:bg-[#1B2A38] text-white py-3 rounded-2xl font-medium shadow-lg hover:-translate-y-1 transition-all duration-300"
-                    >
-                      Eliminar
-                    </button>
+                      <button
+                        onClick={eliminarEmpleado}
+                        className="flex-1 bg-[#07355E] hover:bg-[#1B2A38] text-white py-3 rounded-2xl font-medium shadow-lg hover:-translate-y-1 transition-all duration-300"
+                      >
+                        Eliminar
+                      </button>
 
-                    <button
-                      onClick={() => {
-                        setShowDeleteModal(false)
-                        setEmpleadoAEliminar(null)
-                      }}
-                      className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-2xl font-medium transition-all duration-300"
-                    >
-                      Cancelar
-                    </button>
+                      <button
+                        onClick={() => {
+                          setShowDeleteModal(false)
+                          setEmpleadoAEliminar(null)
+                        }}
+                        className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-2xl font-medium transition-all duration-300"
+                      >
+                        Cancelar
+                      </button>
+
+                    </div>
 
                   </div>
 
@@ -1500,93 +1729,94 @@ export default function App() {
 
               </div>
 
-            </div>
+            )
+          }
+          {
+            showSuccessModal && (
 
-          )}
-          {showSuccessModal && (
+              <div className="fixed inset-0 flex items-center justify-center z-50 animate-fadeIn p-4">
 
-            <div className="fixed inset-0 flex items-center justify-center z-50 animate-fadeIn p-4">
+                <div className="bg-gray-500 text-white px-6 md:px-10 py-5 md:py-6 rounded-3xl shadow-2xl animate-scaleIn text-center">
 
-              <div className="bg-gray-500 text-white px-6 md:px-10 py-5 md:py-6 rounded-3xl shadow-2xl animate-scaleIn text-center">
+                  <p className="font-medium text-xl">
+                    Empleado eliminado correctamente
+                  </p>
 
-                <p className="font-medium text-xl">
-                  Empleado eliminado correctamente
-                </p>
+                </div>
 
               </div>
 
-            </div>
-
-          )}
+            )
+          }
           <FeedbackToast message={feedback?.message} type={feedback?.type} />
-        </main>
+        </main >
 
       </div >
     )
   }
 
-   return (
-  <>
-    <HomePublic
-      menuItems={menuItems}
-      onLogin={() => setShowLogin(true)}
-    />
+  return (
+    <>
+      <HomePublic
+        menuItems={menuItems}
+        onLogin={() => setShowLogin(true)}
+      />
 
-    {showLogin && (
-      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      {showLogin && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
-        <div className="bg-white w-full max-w-[500px] max-h-[90vh] overflow-y-auto rounded-[28px] md:rounded-[35px] p-6 md:p-10 relative shadow-2xl">
-
-          <button
-            onClick={() => setShowLogin(false)}
-            className="absolute top-6 right-8 text-3xl text-slate-400"
-          >
-            ×
-          </button>
-
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-[#001b70] mb-8 md:mb-10 font-['Cormorant_Garamond']">
-            Iniciar Sesión
-          </h2>
-
-          <div className="space-y-6">
-
-            <input
-              type="email"
-              placeholder="Ingresa tu correo electrónico"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-slate-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <input
-              type="password"
-              placeholder="Ingresa tu contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-slate-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            {error && (
-              <p className="text-red-500 text-sm text-center">
-                {error}
-              </p>
-            )}
+          <div className="bg-white w-full max-w-[500px] max-h-[90vh] overflow-y-auto rounded-[28px] md:rounded-[35px] p-6 md:p-10 relative shadow-2xl">
 
             <button
-              onClick={handleLogin}
-              className="bg-[#0b2447] hover:bg-[#16325c] hover:scale-105 text-white py-3 px-10 rounded-xl text-lg font-medium transition-all duration-300 mx-auto block mt-4"
+              onClick={() => setShowLogin(false)}
+              className="absolute top-6 right-8 text-3xl text-slate-400"
             >
-              INICIAR SESIÓN
+              ×
             </button>
+
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-[#001b70] mb-8 md:mb-10 font-['Cormorant_Garamond']">
+              Iniciar Sesión
+            </h2>
+
+            <div className="space-y-6">
+
+              <input
+                type="email"
+                placeholder="Ingresa tu correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border border-slate-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
+              <input
+                type="password"
+                placeholder="Ingresa tu contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border border-slate-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
+              {error && (
+                <p className="text-red-500 text-sm text-center">
+                  {error}
+                </p>
+              )}
+
+              <button
+                onClick={handleLogin}
+                className="bg-[#0b2447] hover:bg-[#16325c] hover:scale-105 text-white py-3 px-10 rounded-xl text-lg font-medium transition-all duration-300 mx-auto block mt-4"
+              >
+                INICIAR SESIÓN
+              </button>
+
+            </div>
 
           </div>
 
         </div>
-
-      </div>
-    )}
-  </>
-)
+      )}
+    </>
+  )
 }
 
 
