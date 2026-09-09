@@ -5,3 +5,5 @@ coverage/
 npm-debug.log
 uploads/empleados/*
 !uploads/empleados/.gitkeep
+# Fotos cargadas por los empleados
+BackEnd/uploads/empleados/
