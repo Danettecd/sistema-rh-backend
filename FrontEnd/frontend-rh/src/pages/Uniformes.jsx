@@ -9,7 +9,7 @@ const tipoOptions = [
 export default function Uniformes({ empleados }) {
   return (
     <RhCrudPage
-      title="EPP / Calzado"
+      title="Uniformes y EPP"
       subtitle="Controla entregas de uniformes, equipo de protección y calzado"
       endpoint="/uniformes"
       empleados={empleados}
@@ -69,7 +69,7 @@ export default function Uniformes({ empleados }) {
         },
         {
           key: 'fecha_entrega',
-          label: 'Entrega'
+          label: 'Fecha de entrega'
         },
         {
           key: 'tipo',
@@ -92,21 +92,19 @@ export default function Uniformes({ empleados }) {
       badgeConfig={{
         Uniforme: {
           label: 'Uniforme',
-          className: 'bg-blue-100 text-blue-700'
+          className: 'bg-[#EAF4FC] text-[#164e87]'
         },
+
         EPP: {
           label: 'EPP',
           className: 'bg-emerald-100 text-emerald-700'
         },
+
         Calzado: {
           label: 'Calzado',
-          className: 'bg-slate-200 text-slate-700'
+          className: 'bg-amber-100 text-amber-700'
         }
       }}
-      mapBeforeSave={(form) => ({
-        ...form,
-        empleado_id: Number(form.empleado_id)
-      })}
     />
   )
 }

@@ -710,7 +710,7 @@ export default function App() {
           </div>
         </aside>
 
-        {/* SIDEBAR */}
+     
         {/* SIDEBAR */}
         <aside className={`${sidebarOpen ? 'lg:w-[250px]' : 'lg:w-[18px] lg:overflow-x-hidden'} hidden lg:flex lg:min-h-screen relative bg-gradient-to-b from-[#081225] to-[#102544] text-white flex-col justify-between py-8 px-6 transition-all duration-300 whitespace-nowrap`}>
 
@@ -1158,61 +1158,101 @@ export default function App() {
 
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
 
-                  <div className="bg-white rounded-3xl p-4 md:p-8 shadow-sm xl:col-span-2 min-w-0">
+                  <div className="bg-white rounded-3xl p-5 md:p-8 shadow-sm xl:col-span-2 min-w-0">
 
-                    <h3 className="text-2xl font-medium text-slate-800 mb-6 font-['Cooper']">
-                      Resumen de empleados por puesto
-                    </h3>
+                    {/* ENCABEZADO */}
+                    <div className="flex items-start justify-between mb-7">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.22em] text-slate-400 font-semibold mb-2">
+                          PERSONAL
+                        </p>
 
-                    <div className="w-full h-[300px] min-w-0">
+                        <h3 className="text-2xl font-semibold text-[#082b59]">
+                          Empleados por puesto
+                        </h3>
+
+                        <p className="text-sm text-slate-400 mt-1">
+                          Distribución actual del personal
+                        </p>
+                      </div>
+
+
+                    </div>
+
+                    {/* GRÁFICA */}
+                    <div className="w-full h-[310px] min-w-0">
 
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                           data={empleadosPorPuesto}
                           layout="vertical"
-                          barSize={18}
+                          barSize={22}
                           margin={{
-                            top: 20,
-                            right: 40,
-                            left: 40,
-                            bottom: 20
+                            top: 5,
+                            right: 55,
+                            left: 10,
+                            bottom: 5
                           }}
                         >
+
                           <CartesianGrid
-                            strokeDasharray="3 3"
+                            horizontal={false}
                             stroke="#e2e8f0"
+                            strokeDasharray="3 3"
                           />
 
                           <XAxis
                             type="number"
+                            axisLine={false}
+                            tickLine={false}
+                            allowDecimals={false}
                             tick={{
-                              fill: '#64748b'
+                              fill: '#64748b',
+                              fontSize: 12
                             }}
                           />
 
                           <YAxis
                             type="category"
                             dataKey="puesto"
-                            width={140}
+                            width={190}
+                            interval={0}
+                            axisLine={false}
+                            tickLine={false}
                             tick={{
-                              fill: '#64748b',
-                              fontSize: 15
+                              fill: '#082b59',
+                              fontSize: 12,
+                              fontWeight: 600
                             }}
                           />
 
-                          <Tooltip />
+                          <Tooltip
+                            cursor={{ fill: '#f8fafc' }}
+                            contentStyle={{
+                              borderRadius: '14px',
+                              border: '1px solid #e2e8f0',
+                              boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)'
+                            }}
+                          />
 
                           <Bar
                             dataKey="total"
                             radius={[0, 10, 10, 0]}
+                            label={{
+                              position: 'right',
+                              fill: '#082b59',
+                              fontSize: 13,
+                              fontWeight: 700
+                            }}
                           >
                             {empleadosPorPuesto.map((entry, index) => (
                               <Cell
                                 key={`cell-${index}`}
-                                fill={coloresBarras[index % coloresBarras.length]}
+                                fill={index % 2 === 0 ? '#164e87' : '#a9cbea'}
                               />
                             ))}
                           </Bar>
+
                         </BarChart>
                       </ResponsiveContainer>
 
@@ -1226,6 +1266,7 @@ export default function App() {
                       Incidencias recientes
                     </h3>
                     {/*grafica de pastel*/}
+                    {/* GRAFICA DE INCIDENCIAS */}
                     <div className="w-full h-[300px] flex justify-center min-w-0">
 
                       <ResponsiveContainer width="100%" height="100%">
@@ -1235,22 +1276,61 @@ export default function App() {
                             data={incidenciasData}
                             dataKey="value"
                             nameKey="name"
-                            outerRadius="75%"
-                            label
+                            innerRadius="58%"
+                            outerRadius="78%"
+                            paddingAngle={3}
+                            labelLine={false}
+                            label={({ name, value }) => `${name}: ${value}`}
                           >
 
-                            {incidenciasData.map((entry, index) => (
+                            {incidenciasData.map((entry, index) => {
+                              const coloresIncidencias = [
+                                '#164e87',
+                                '#a9cbea',
+                                '#94a3b8',
+                                '#d6e4f0'
+                              ]
 
-                              <Cell
-                                key={`cell-${index}`}
-                                fill={COLORS[index % COLORS.length]}
-                              />
-
-                            ))}
+                              return (
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={coloresIncidencias[index % coloresIncidencias.length]}
+                                />
+                              )
+                            })}
 
                           </Pie>
 
-                          <Tooltip />
+                          <Tooltip
+                            contentStyle={{
+                              borderRadius: '14px',
+                              border: '1px solid #e2e8f0',
+                              boxShadow: '0 8px 24px rgba(15, 23, 42, 0.08)'
+                            }}
+                          />
+
+                          <text
+                            x="50%"
+                            y="46%"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="#082b59"
+                            fontSize="28"
+                            fontWeight="700"
+                          >
+                            {incidenciasData.reduce((acc, item) => acc + item.value, 0)}
+                          </text>
+
+                          <text
+                            x="50%"
+                            y="56%"
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="#94a3b8"
+                            fontSize="12"
+                          >
+                            Total
+                          </text>
 
                         </PieChart>
                       </ResponsiveContainer>

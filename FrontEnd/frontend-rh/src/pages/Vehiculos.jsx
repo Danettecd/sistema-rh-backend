@@ -58,27 +58,27 @@ function isFechaValida(fecha) {
 function buildVehiculoFormData(vehiculo) {
   const formData = new FormData()
 
-  ;[
-    'numeroVehiculo',
-    'marca',
-    'modelo',
-    'anio',
-    'color',
-    'placas',
-    'numeroPoliza',
-    'aseguradora',
-    'numeroTarjetaCirculacion'
-  ].forEach((field) => {
-    formData.append(field, vehiculo[field] || '')
-  })
+    ;[
+      'numeroVehiculo',
+      'marca',
+      'modelo',
+      'anio',
+      'color',
+      'placas',
+      'numeroPoliza',
+      'aseguradora',
+      'numeroTarjetaCirculacion'
+    ].forEach((field) => {
+      formData.append(field, vehiculo[field] || '')
+    })
 
-  ;['vigenciaPoliza', 'vigenciaTarjeta'].forEach((field) => {
-    const fecha = getFechaInputValue(vehiculo[field])
+    ;['vigenciaPoliza', 'vigenciaTarjeta'].forEach((field) => {
+      const fecha = getFechaInputValue(vehiculo[field])
 
-    if (isFechaValida(fecha)) {
-      formData.append(field, fecha)
-    }
-  })
+      if (isFechaValida(fecha)) {
+        formData.append(field, fecha)
+      }
+    })
 
   if (vehiculo.fotoVehiculoFile) {
     formData.append('fotoVehiculo', vehiculo.fotoVehiculoFile)
@@ -157,19 +157,19 @@ export default function Vehiculos({
 
   const loadVehiculos = useCallback(async () => {
     try {
-   const response = await axios.get(`${API_URL}/vehiculos`, {
-  headers: getTokenHeaders()
-})
+      const response = await axios.get(`${API_URL}/vehiculos`, {
+        headers: getTokenHeaders()
+      })
 
-console.log(response.data)
-console.log(Array.isArray(response.data))
+      console.log(response.data)
+      console.log(Array.isArray(response.data))
 
       setVehiculos(response.data)
 
-setSelectedId(
-  (currentId) =>
-    currentId || response.data[0]?.id || null
-)
+      setSelectedId(
+        (currentId) =>
+          currentId || response.data[0]?.id || null
+      )
     } catch (requestError) {
       console.error(requestError)
       showFeedback('No se pudieron cargar los vehículos', 'error')
@@ -180,8 +180,8 @@ setSelectedId(
     loadVehiculos()
   }, [loadVehiculos])
 
-const filteredVehicles = useMemo(() => {
-  return (vehiculos || []).filter((vehiculo) => {
+  const filteredVehicles = useMemo(() => {
+    return (vehiculos || []).filter((vehiculo) => {
       const text = [
         vehiculo.marca,
         vehiculo.modelo,
@@ -286,13 +286,18 @@ const filteredVehicles = useMemo(() => {
   ]
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
+<div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden min-h-[calc(100vh-96px)] bg-[#f4f8fc]">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
-          
-          <p className="text-slate-500 mt-2">
-            Control de unidades, pólizas y tarjetas de circulación
-          </p>
+
+          <p className="text-[11px] uppercase tracking-[0.28em] text-[#7394b5] font-semibold mb-2">
+  ACTIVOS
+</p>
+
+<p className="text-slate-500 text-sm">
+  Control de unidades, pólizas y tarjetas de circulación
+</p>
+
         </div>
 
         <button
@@ -305,7 +310,7 @@ const filteredVehicles = useMemo(() => {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[380px_1fr] gap-6">
-        <section className="bg-white rounded-3xl p-4 md:p-6 shadow-sm min-w-0">
+        <section className="bg-white/95 rounded-3xl p-4 md:p-6 shadow-sm border border-white min-w-0">
           <input
             type="text"
             placeholder="Buscar por marca, modelo o placas"
@@ -325,11 +330,10 @@ const filteredVehicles = useMemo(() => {
                   type="button"
                   key={vehiculo.id}
                   onClick={() => setSelectedId(vehiculo.id)}
-                  className={`w-full text-left rounded-2xl p-4 border transition-all ${
-                    selectedVehicle?.id === vehiculo.id
+                  className={`w-full text-left rounded-2xl p-4 border transition-all ${selectedVehicle?.id === vehiculo.id
                       ? 'border-[#BFE0FF] bg-[#f8fbff] shadow-sm'
                       : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-[#eaf4ff] text-[#07355E] flex items-center justify-center overflow-hidden">
@@ -372,7 +376,7 @@ const filteredVehicles = useMemo(() => {
           </div>
         </section>
 
-        <section className="bg-white rounded-3xl p-4 md:p-8 shadow-sm min-h-[420px] xl:min-h-[560px] min-w-0">
+        <section className="bg-white/95 rounded-3xl p-4 md:p-8 shadow-sm border border-white min-h-[420px] xl:min-h-[560px] min-w-0">
           {selectedVehicle ? (
             <VehicleDetail
               vehiculo={selectedVehicle}
@@ -524,11 +528,21 @@ function VehicleDetail({ vehiculo, onEdit, onDelete }) {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+
               <button
                 type="button"
                 onClick={onEdit}
-                className="bg-[#07355E] hover:bg-[#1B2A38] text-white px-5 py-3 rounded-xl transition-all shadow-md"
+                className="
+      border border-[#b8d6ee]
+      text-[#164e87]
+      hover:bg-[#EAF4FC]
+      px-5 py-2.5
+      rounded-xl
+      text-sm
+      font-medium
+      transition-all
+    "
               >
                 Editar
               </button>
@@ -536,10 +550,20 @@ function VehicleDetail({ vehiculo, onEdit, onDelete }) {
               <button
                 type="button"
                 onClick={onDelete}
-                className="bg-red-500 hover:bg-red-600 text-white px-5 py-3 rounded-xl transition-all shadow-md"
+                className="
+      border border-red-200
+      text-red-500
+      hover:bg-red-50
+      px-5 py-2.5
+      rounded-xl
+      text-sm
+      font-medium
+      transition-all
+    "
               >
                 Eliminar
               </button>
+
             </div>
           </div>
 
@@ -590,29 +614,89 @@ function VehicleDetail({ vehiculo, onEdit, onDelete }) {
 }
 
 function InfoCard({ label, value }) {
+
   return (
-    <div className="rounded-2xl bg-[#f8fbff] border border-slate-100 p-5">
-      <p className="text-sm text-slate-400">
+
+    <div
+      className="
+        rounded-2xl
+        bg-gradient-to-br
+        from-[#f7fbff]
+        to-[#edf6fd]
+        border border-[#e1edf6]
+        p-5
+        transition-all
+        duration-200
+        hover:-translate-y-0.5
+        hover:shadow-sm
+      "
+    >
+
+      <p className="text-xs text-slate-400 font-medium mb-2">
         {label}
       </p>
 
-      <p className="font-semibold text-[#07355E] mt-1">
+      <p className="font-bold text-[#07355E]">
         {value}
       </p>
+
     </div>
+
   )
+
 }
 
 function ExpiryCard({ icon, title, date, state, helper }) {
+
+  const isExpired = state.label === 'Vencida'
+  const isWarning = state.alert && !isExpired
+  const isValid = state.label === 'Vigente'
+
+  const cardStyle = isExpired
+    ? 'bg-gradient-to-br from-[#fff8f8] to-[#fff0f0] border-red-100'
+    : isWarning
+      ? 'bg-gradient-to-br from-[#fffdf5] to-[#fff8df] border-amber-100'
+      : isValid
+        ? 'bg-gradient-to-br from-[#f7fffb] to-[#ecfbf3] border-emerald-100'
+        : 'bg-gradient-to-br from-[#f8fbff] to-[#eef6fc] border-slate-100'
+
+  const iconStyle = isExpired
+    ? 'text-red-500 bg-red-50'
+    : isWarning
+      ? 'text-amber-600 bg-amber-50'
+      : isValid
+        ? 'text-emerald-600 bg-emerald-50'
+        : 'text-[#07355E] bg-white'
+
   return (
-    <div className="rounded-3xl border border-slate-100 bg-[#f8fbff] p-6">
+
+    <div
+      className={`
+        rounded-3xl
+        border
+        p-6
+        ${cardStyle}
+      `}
+    >
+
       <div className="flex items-start justify-between gap-5">
+
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-white text-[#07355E] flex items-center justify-center">
+
+          <div
+            className={`
+              w-12 h-12
+              rounded-2xl
+              flex items-center justify-center
+              flex-shrink-0
+              ${iconStyle}
+            `}
+          >
             {icon}
           </div>
 
           <div>
+
             <p className="font-semibold text-[#07355E]">
               {title}
             </p>
@@ -620,19 +704,38 @@ function ExpiryCard({ icon, title, date, state, helper }) {
             <p className="text-sm text-slate-500 mt-1">
               {date || 'Sin fecha registrada'}
             </p>
+
           </div>
+
         </div>
 
-        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${state.className}`}>
+        <span
+          className={`
+            inline-flex
+            items-center
+            px-3 py-1
+            rounded-full
+            text-xs
+            font-semibold
+            whitespace-nowrap
+            ${state.className}
+          `}
+        >
           {state.label}
         </span>
+
       </div>
 
       {helper && (
+
         <p className="text-sm text-slate-500 mt-5">
           {helper}
         </p>
+
       )}
+
     </div>
+
   )
+
 }

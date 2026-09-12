@@ -165,6 +165,12 @@ function formatValue(value) {
   return value
 }
 
+function formatName(name = '') {
+  return name
+    .toLowerCase()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+}
+
 export default function Salud({ empleados = [] }) {
   const [activeTab, setActiveTab] = useState('salud')
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('')
@@ -246,11 +252,11 @@ export default function Salud({ empleados = [] }) {
   }, [records, selectedEmployeeId])
 
   const filteredEmployees = useMemo(() => {
-    const text = employeeSearch.toLowerCase()
+    const text = employeeSearch.trim().toLowerCase()
 
-    return empleados
-      .filter((empleado) => empleado.nombre.toLowerCase().includes(text))
-      .slice(0, 6)
+    return empleados.filter((empleado) =>
+      empleado.nombre.toLowerCase().includes(text)
+    )
   }, [empleados, employeeSearch])
 
   const activeRecordConfig = recordConfig[activeTab]
@@ -260,7 +266,7 @@ export default function Salud({ empleados = [] }) {
 
   const selectEmployee = (empleado) => {
     setSelectedEmployeeId(empleado.id)
-    setEmployeeSearch(empleado.nombre)
+    setEmployeeSearch('')
     setShowEmployeeList(false)
   }
 
@@ -436,114 +442,388 @@ export default function Salud({ empleados = [] }) {
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
+    <div
+      className="
+    p-4 md:p-6 lg:p-8
+    max-w-full
+    overflow-x-hidden
+    min-h-[calc(100vh-96px)]
+    bg-[#f4f8fc]
+  "
+    >
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
 
 
-          <p className="text-slate-500 mt-2">
-            Seguimiento a estado de salud de empleados, citas, incapacidades y monitoreo de presión
-          </p>
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.28em] text-[#7394b5] font-semibold mb-2">
+              SALUD
+            </p>
+
+            <p className="text-slate-500 text-sm">
+              Consulta y registra información médica de los empleados
+            </p>
+          </div>
         </div>
 
       </div>
 
-      <section className="bg-white rounded-3xl p-4 md:p-8 shadow-sm">
-        <div className="mb-8 max-w-[780px]">
-          <p className="mb-3 text-[15px] font-medium text-[#00578b]">
-            Seleccione el nombre del empleado para registrar y/o editar su expediente de salud.
-          </p>
+      <section>
+        <div
+          className="
+      grid
+      grid-cols-1
+      xl:grid-cols-[320px_minmax(0,1fr)]
+      gap-5
+      items-stretch
+    "
+        >
 
-          <div className="relative w-full max-w-[430px]">
-            <input
-              type="text"
-              value={employeeSearch}
-              onFocus={() => setShowEmployeeList(true)}
-              onBlur={() => {
-                setTimeout(() => setShowEmployeeList(false), 140)
-              }}
-              onChange={(event) => {
-                setEmployeeSearch(event.target.value)
-                setSelectedEmployeeId('')
-                setShowEmployeeList(true)
-                setError('')
-              }}
-              placeholder="Buscar por empleado"
-              className="w-full rounded-2xl border border-[#dbe7f3] bg-[#f8fbff] px-5 py-4 text-[15px] text-slate-700 shadow-sm outline-none transition-all placeholder:text-slate-400 focus:border-[#8bc9f7] focus:bg-white focus:ring-2 focus:ring-[#BFE0FF]"
-            />
+          {/* =========================
+        LISTA DE EMPLEADOS
+    ========================== */}
+          <aside
+            className="
+        bg-white
+        rounded-[26px]
+        border border-slate-100
+        shadow-[0_8px_30px_rgba(8,43,89,0.06)]
+        p-4
+        min-w-0
+      "
+          >
+            <div className="mb-4">
+              <p className="text-xs uppercase tracking-[0.22em] text-slate-400 font-semibold mb-2">
+                Empleados
+              </p>
 
-            {showEmployeeList && (
-              <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-20 max-h-64 overflow-y-auto rounded-2xl border border-[#dbe7f3] bg-white shadow-lg">
-                {filteredEmployees.map((empleado) => (
+              <p className="text-sm text-slate-500">
+                Selecciona un empleado
+              </p>
+            </div>
+
+            {/* BUSCADOR */}
+            <div className="relative mb-4">
+              <input
+                type="text"
+                value={employeeSearch}
+                onChange={(event) => {
+                  setEmployeeSearch(event.target.value)
+                  setError('')
+                }}
+                placeholder="Buscar empleado"
+                className="
+            w-full
+            rounded-xl
+            border border-[#d7e6f2]
+            bg-[#f8fbfe]
+            px-4 py-3
+            text-sm
+            text-slate-700
+            outline-none
+            placeholder:text-slate-400
+            focus:border-[#9bc8e8]
+            focus:ring-2
+            focus:ring-[#EAF4FC]
+          "
+              />
+            </div>
+
+            {/* LISTA PERMANENTE */}
+            <div className="space-y-2 max-h-[530px] overflow-y-auto pr-1">
+
+              {filteredEmployees.map((empleado) => {
+                const active =
+                  String(selectedEmployeeId) === String(empleado.id)
+
+                const initials = empleado.nombre
+                  ?.split(' ')
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map((word) => word[0])
+                  .join('')
+                  .toUpperCase()
+
+                return (
                   <button
                     type="button"
                     key={empleado.id}
-                    onMouseDown={(event) => {
-                      event.preventDefault()
-                      selectEmployee(empleado)
-                    }}
-                    className="block w-full px-5 py-3 text-left text-[15px] text-slate-700 transition-colors hover:bg-[#eef8ff]"
+                    onClick={() => selectEmployee(empleado)}
+                    className={`
+                w-full
+                flex items-center
+                gap-3
+                text-left
+                rounded-2xl
+                border
+                px-3 py-3
+                transition-all
+
+                ${active
+                        ? 'border-[#9ecdf0] bg-[#edf7ff] shadow-sm'
+                        : 'border-slate-100 bg-white hover:bg-[#f7fbfe] hover:border-[#d7e6f2]'
+                      }
+              `}
                   >
-                    {empleado.nombre}
+                    <div
+                      className={`
+                  w-11 h-11
+                  rounded-full
+                  flex items-center justify-center
+                  text-sm
+                  font-bold
+                  flex-shrink-0
+
+                  ${active
+                          ? 'bg-white text-[#164e87]'
+                          : 'bg-[#EAF4FC] text-[#164e87]'
+                        }
+                `}
+                    >
+                      {initials}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <p
+                        className="
+                    text-sm
+                    font-semibold
+                    text-[#082b59]
+                    truncate
+                  "
+                      >
+                        {formatName(empleado.nombre)}
+                      </p>
+
+                      <p className="text-xs text-slate-400 mt-1 truncate">
+                        {empleado.puesto || 'Empleado'}
+                      </p>
+                    </div>
+
+                    <span
+                      className={`
+                  text-lg
+                  ${active
+                          ? 'text-[#164e87]'
+                          : 'text-slate-300'
+                        }
+                `}
+                    >
+                      ›
+                    </span>
                   </button>
-                ))}
+                )
+              })}
 
-                {filteredEmployees.length === 0 && (
-                  <div className="px-5 py-4 text-[15px] text-slate-400">
-                    No se encontraron empleados
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+              {filteredEmployees.length === 0 && (
+                <div className="text-center py-10 text-sm text-slate-400">
+                  No se encontraron empleados
+                </div>
+              )}
 
-        <div className="w-full max-w-[840px] mx-auto pt-1">
-          <div className="flex items-end gap-1 overflow-x-auto pb-1">
-            {tabConfig.map((tab) => {
-              const Icon = tab.icon
-              const active = activeTab === tab.key
+            </div>
+          </aside>
 
-              return (
-                <button
-                  type="button"
-                  key={tab.key}
-                  onClick={() => {
-                    setActiveTab(tab.key)
-                    setError('')
-                  }}
-                  className={`w-[112px] sm:w-[136px] h-[88px] sm:h-[100px] flex-shrink-0 rounded-t-[16px] flex flex-col items-center justify-center gap-1 border border-[#00598f] transition-all ${active
-                    ? 'bg-[#cff4fb] text-[#00578b] shadow-sm'
-                    : 'bg-[#00578b] text-white hover:bg-[#064b7a]'
-                    }`}
-                >
-                  <Icon size={30} strokeWidth={1.8} />
-                  <span className="text-[12px] sm:text-[13px] leading-tight font-bold underline underline-offset-2">
-                    {tab.label}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
 
-          <div className="min-h-[280px] border-[5px] md:border-[7px] border-[#cff4fb] rounded-b-[16px] rounded-tr-[16px] bg-white p-4 md:p-9 relative shadow-md">
+          {/* =========================
+        EXPEDIENTE
+    ========================== */}
+          <section
+            className="
+        bg-white
+        rounded-[26px]
+        border border-slate-100
+        shadow-[0_8px_30px_rgba(8,43,89,0.06)]
+        p-5 md:p-7
+        min-w-0
+        min-h-[620px]
+      "
+          >
+
             {!hasSelectedEmployee ? (
+
               <InitialHealthPanel />
-            ) : activeTab === 'salud' ? (
-              <SaludPanel
-                empleado={selectedEmployee}
-                record={currentSalud}
-                onEdit={openSaludModal}
-              />
+
             ) : (
-              <RecordPanel
-                config={activeRecordConfig}
-                record={latestRecord}
-                onEdit={() => openEditRecordModal(latestRecord)}
-                onHistory={() => setShowHistoryModal(true)}
-              />
+
+              <>
+                {/* ENCABEZADO EMPLEADO */}
+                <div
+                  className="
+              flex
+              flex-col
+              md:flex-row
+              md:items-center
+              justify-between
+              gap-5
+              mb-6
+            "
+                >
+
+                  <div className="flex items-center gap-4">
+
+                    <div
+                      className="
+                  w-16 h-16
+                  rounded-full
+                  bg-[#EAF4FC]
+                  text-[#164e87]
+                  flex items-center justify-center
+                  text-xl
+                  font-bold
+                  flex-shrink-0
+                "
+                    >
+                      {selectedEmployee.nombre
+                        ?.split(' ')
+                        .filter(Boolean)
+                        .slice(0, 2)
+                        .map((word) => word[0])
+                        .join('')
+                        .toUpperCase()}
+                    </div>
+
+                    <div>
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400 font-semibold mb-1">
+                        Expediente médico
+                      </p>
+
+                      <h2
+                        className="
+                    font-['Cooper']
+                    text-2xl md:text-3xl
+                    text-[#082b59]
+                    leading-tight
+                  "
+                      >
+                        {formatName(selectedEmployee.nombre)}
+                      </h2>
+
+                      <p className="text-sm text-slate-400 mt-1">
+                        {selectedEmployee.puesto || 'Empleado'}
+                      </p>
+                    </div>
+
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={openSaludModal}
+                    className="
+                border border-[#b8d6ee]
+                text-[#164e87]
+                hover:bg-[#EAF4FC]
+                px-5 py-2.5
+                rounded-xl
+                text-sm
+                font-medium
+                transition-all
+                w-full md:w-auto
+              "
+                  >
+                    Editar información
+                  </button>
+
+                </div>
+
+
+                {/* PESTAÑAS */}
+                <div
+                  className="
+              flex
+              items-center
+              gap-2 md:gap-6
+              overflow-x-auto
+              border-b border-slate-200
+              mb-6
+            "
+                >
+                  {tabConfig.map((tab) => {
+                    const Icon = tab.icon
+                    const active = activeTab === tab.key
+
+                    return (
+                      <button
+                        type="button"
+                        key={tab.key}
+                        onClick={() => {
+                          setActiveTab(tab.key)
+                          setError('')
+                        }}
+                        className={`
+                    relative
+                    flex
+                    items-center
+                    gap-2
+                    px-3
+                    py-4
+                    flex-shrink-0
+                    text-sm
+                    font-medium
+                    transition-all
+
+                    ${active
+                            ? 'text-[#164e87]'
+                            : 'text-slate-500 hover:text-[#164e87]'
+                          }
+                  `}
+                      >
+                        <Icon
+                          size={20}
+                          strokeWidth={1.8}
+                        />
+
+                        <span>{tab.label}</span>
+
+                        {active && (
+                          <span
+                            className="
+                        absolute
+                        bottom-0
+                        left-0
+                        right-0
+                        h-[3px]
+                        bg-[#164e87]
+                        rounded-t-full
+                      "
+                          />
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+
+
+                {/* CONTENIDO DE LA PESTAÑA */}
+                {activeTab === 'salud' ? (
+
+                  <SaludPanel
+                    empleado={selectedEmployee}
+                    record={currentSalud}
+                    counts={{
+                      citas: employeeRecords.citas.length,
+                      incapacidades: employeeRecords.incapacidades.length,
+                      presiones: employeeRecords.presiones.length
+                    }}
+                    onNavigate={(tab) => setActiveTab(tab)}
+                  />
+
+                ) : (
+
+                  <RecordPanel
+                    config={activeRecordConfig}
+                    record={latestRecord}
+                    onEdit={() => openEditRecordModal(latestRecord)}
+                    onHistory={() => setShowHistoryModal(true)}
+                  />
+
+                )}
+
+              </>
             )}
-          </div>
+
+          </section>
+
         </div>
       </section>
 
@@ -745,47 +1025,447 @@ function InitialHealthPanel() {
   )
 }
 
-function SaludPanel({ empleado, record, onEdit }) {
-  const rows = [
-    { label: 'Nombre:', value: empleado?.nombre || record?.Empleado?.nombre || '' },
-    { label: 'NSS:', value: record?.nss || empleado?.nss || '' },
-    { label: 'Clínica:', value: record?.clinica },
-    { label: 'Padecimientos:', value: record?.padecimientos || 'Ninguno' },
-    { label: 'Tipo de Sangre:', value: record?.tipo_sangre },
-    { label: 'Contacto de Emergencia:', value: record?.contacto_emergencia },
-    { label: 'Teléfono de Emergencia:', value: record?.telefono_emergencia }
-  ]
+function SaludPanel({
+  empleado,
+  record,
+  counts = {
+    citas: 0,
+    incapacidades: 0,
+    presiones: 0
+  },
+  onNavigate = () => {}
+}) {
 
   return (
-    <div className="h-full pb-16 sm:pb-10">
-      <InfoRows rows={rows} />
+    <div
+      className="
+        grid
+        grid-cols-1
+        xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.85fr)]
+        gap-5
+      "
+    >
 
-      <div className="absolute bottom-3 left-4 right-4 sm:left-auto">
-        <GrayButton onClick={onEdit}>
-          Editar
-        </GrayButton>
+      {/* INFORMACIÓN MÉDICA */}
+      <div
+        className="
+          rounded-2xl
+          border border-[#e1edf6]
+          bg-[#fbfdff]
+          p-5
+        "
+      >
+
+        <div className="flex items-center gap-3 mb-5">
+          <div
+            className="
+              w-10 h-10
+              rounded-xl
+              bg-[#EAF4FC]
+              text-[#164e87]
+              flex items-center justify-center
+            "
+          >
+            <HeartPulse size={20} />
+          </div>
+
+          <div>
+            <p className="font-semibold text-[#082b59]">
+              Información médica
+            </p>
+
+            <p className="text-xs text-slate-400 mt-0.5">
+              Datos generales del expediente
+            </p>
+          </div>
+        </div>
+
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+
+          <MedicalInfoCard
+            label="NSS"
+            value={record?.nss || empleado?.nss}
+          />
+
+          <MedicalInfoCard
+            label="Clínica"
+            value={record?.clinica}
+          />
+
+          <MedicalInfoCard
+            label="Tipo de sangre"
+            value={record?.tipo_sangre}
+          />
+
+          <MedicalInfoCard
+            label="Padecimientos"
+            value={record?.padecimientos || 'Ninguno'}
+          />
+
+          <MedicalInfoCard
+            label="Contacto de emergencia"
+            value={record?.contacto_emergencia}
+          />
+
+          <MedicalInfoCard
+            label="Teléfono de emergencia"
+            value={record?.telefono_emergencia}
+          />
+
+        </div>
+
+
+        {/* AVISO */}
+        <div
+          className="
+            mt-5
+            rounded-2xl
+            border border-[#d9eaf7]
+            bg-[#eef7fd]
+            p-4
+            flex
+            items-start
+            gap-3
+          "
+        >
+          <div
+            className="
+              w-9 h-9
+              rounded-xl
+              bg-white
+              text-[#164e87]
+              flex items-center justify-center
+              flex-shrink-0
+            "
+          >
+            <HeartPulse size={18} />
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold text-[#164e87]">
+              Información importante
+            </p>
+
+            <p className="text-sm text-slate-500 mt-1 leading-relaxed">
+              Mantén actualizados los datos médicos del empleado para
+              contar con información disponible en caso de emergencia.
+            </p>
+          </div>
+        </div>
+
       </div>
+
+
+      {/* RESÚMENES */}
+      <div className="space-y-3">
+
+        <HealthSummaryCard
+          icon={<CalendarDays size={21} />}
+          title="Citas médicas"
+          subtitle="Historial de citas registradas"
+          count={counts.citas}
+          button="Ver citas"
+          onClick={() => onNavigate('citas')}
+        />
+
+        <HealthSummaryCard
+          icon={<ClipboardList size={21} />}
+          title="Incapacidades"
+          subtitle="Historial de incapacidades"
+          count={counts.incapacidades}
+          button="Ver incapacidades"
+          onClick={() => onNavigate('incapacidades')}
+        />
+
+        <HealthSummaryCard
+          icon={<Activity size={21} />}
+          title="Registro de presión"
+          subtitle="Historial de tomas de presión"
+          count={counts.presiones}
+          button="Ver presiones"
+          onClick={() => onNavigate('presiones')}
+        />
+
+      </div>
+
+    </div>
+  )
+}
+
+function MedicalInfoCard({ label, value }) {
+  return (
+    <div
+      className="
+        rounded-2xl
+        border border-[#e1edf6]
+        bg-gradient-to-br
+        from-white
+        to-[#f7fbff]
+        p-4
+        min-h-[92px]
+        transition-all
+        duration-200
+        hover:-translate-y-0.5
+        hover:shadow-sm
+      "
+    >
+      <p className="text-xs text-slate-400 font-medium mb-2">
+        {label}
+      </p>
+
+      <p className="text-[15px] font-semibold text-[#082b59]">
+        {value || 'Sin información'}
+      </p>
     </div>
   )
 }
 
 function RecordPanel({ config, record, onEdit, onHistory }) {
   return (
-    <div className="h-full pb-20 sm:pb-10">
-      <InfoRows rows={config.display.map((item) => ({
-        label: item.label,
-        value: formatValue(record?.[item.key])
-      }))} />
+    <div className="space-y-6">
 
-      <div className="absolute bottom-3 left-4 right-4 sm:left-auto flex flex-col sm:flex-row gap-2">
-        <GrayButton onClick={onEdit}>
-          Editar
-        </GrayButton>
+      {/* ENCABEZADO */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
 
-        <GrayButton onClick={onHistory}>
+        <div>
+          <p className="text-xs uppercase tracking-[0.18em] text-slate-400 font-semibold mb-1">
+            Seguimiento
+          </p>
+
+          <h2 className="font-['Cooper'] text-2xl md:text-3xl text-[#082b59]">
+            {config.historyTitle.replace('Historial de ', '')}
+          </h2>
+
+          <p className="text-sm text-slate-400 mt-1">
+            Último registro del empleado
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onHistory}
+          className="
+            border border-[#b8d6ee]
+            text-[#164e87]
+            hover:bg-[#EAF4FC]
+            px-5 py-2.5
+            rounded-xl
+            text-sm
+            font-medium
+            transition-all
+            w-full md:w-auto
+          "
+        >
           {config.viewButton}
-        </GrayButton>
+        </button>
+
       </div>
+
+      {/* ÚLTIMO REGISTRO */}
+      {record ? (
+        <div
+          className="
+            rounded-3xl
+            border border-[#e1edf6]
+            bg-white
+            p-5 md:p-6
+          "
+        >
+          <div className="flex items-center gap-3 mb-5">
+
+            <div
+              className="
+                w-11 h-11
+                rounded-2xl
+                bg-[#EAF4FC]
+                text-[#164e87]
+                flex items-center justify-center
+              "
+            >
+              <ClipboardList size={21} />
+            </div>
+
+            <div>
+              <p className="font-semibold text-[#082b59]">
+                Último registro
+              </p>
+
+              <p className="text-xs text-slate-400 mt-1">
+                Información más reciente
+              </p>
+            </div>
+
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+            {config.display.map((item) => (
+              <MedicalInfoCard
+                key={item.key}
+                label={item.label.replace(':', '')}
+                value={formatValue(record[item.key])}
+              />
+            ))}
+
+          </div>
+
+          <div className="flex justify-end mt-5">
+
+            <button
+              type="button"
+              onClick={onEdit}
+              className="
+                border border-[#b8d6ee]
+                text-[#164e87]
+                hover:bg-[#EAF4FC]
+                px-5 py-2.5
+                rounded-xl
+                text-sm
+                font-medium
+                transition-all
+                w-full sm:w-auto
+              "
+            >
+              Editar registro
+            </button>
+
+          </div>
+        </div>
+      ) : (
+
+        <div
+          className="
+            rounded-3xl
+            border border-dashed border-[#cbddeb]
+            bg-[#f8fbfe]
+            py-14 px-6
+            text-center
+          "
+        >
+          <div
+            className="
+              w-12 h-12
+              mx-auto
+              rounded-2xl
+              bg-[#EAF4FC]
+              text-[#164e87]
+              flex items-center justify-center
+              mb-4
+            "
+          >
+            <ClipboardList size={22} />
+          </div>
+
+          <p className="font-semibold text-[#082b59]">
+            Sin registros
+          </p>
+
+          <p className="text-sm text-slate-400 mt-1">
+            {config.emptyText}
+          </p>
+
+          <button
+            type="button"
+            onClick={onEdit}
+            className="
+              mt-5
+              bg-[#082b59]
+              hover:bg-[#164e87]
+              text-white
+              px-5 py-2.5
+              rounded-xl
+              text-sm
+              font-medium
+              transition-all
+            "
+          >
+            + Registrar
+          </button>
+
+        </div>
+
+      )}
+
+    </div>
+  )
+}
+function HealthSummaryCard({
+  icon,
+  title,
+  subtitle,
+  count,
+  button,
+  onClick
+}) {
+  return (
+    <div
+      className="
+        rounded-2xl
+        border border-[#e1edf6]
+        bg-white
+        p-4
+        flex
+        items-center
+        gap-3
+        min-h-[112px]
+      "
+    >
+      <div
+        className="
+          w-11 h-11
+          rounded-full
+          bg-[#EAF4FC]
+          text-[#164e87]
+          flex items-center justify-center
+          flex-shrink-0
+        "
+      >
+        {icon}
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-[#082b59]">
+          {title}
+        </p>
+
+        <p className="text-xs text-slate-400 mt-1">
+          {subtitle}
+        </p>
+      </div>
+
+      <div
+        className="
+          w-9 h-9
+          rounded-full
+          bg-[#EAF4FC]
+          text-[#164e87]
+          flex items-center justify-center
+          text-sm
+          font-bold
+          flex-shrink-0
+        "
+      >
+        {count || 0}
+      </div>
+
+      <button
+        type="button"
+        onClick={onClick}
+        className="
+          border border-[#b8d6ee]
+          text-[#164e87]
+          hover:bg-[#EAF4FC]
+          px-3 py-2
+          rounded-xl
+          text-xs
+          font-medium
+          transition-all
+          whitespace-nowrap
+        "
+      >
+        {button}
+      </button>
     </div>
   )
 }
@@ -812,7 +1492,18 @@ function GrayButton({ children, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full sm:w-auto min-w-[90px] bg-[#8b8e93] hover:bg-[#74777c] text-white px-4 py-2 rounded-lg text-[14px] leading-tight font-bold transition-all"
+      className="
+        w-full sm:w-auto
+        min-w-[100px]
+        border border-[#b8d6ee]
+        text-[#164e87]
+        hover:bg-[#EAF4FC]
+        px-5 py-2.5
+        rounded-xl
+        text-sm
+        font-medium
+        transition-all
+      "
     >
       {children}
     </button>

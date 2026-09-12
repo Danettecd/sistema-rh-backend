@@ -75,9 +75,18 @@ export default function Empleados({
 
     <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
 
+      {/* ENCABEZADO */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
 
         <div>
+
+          <p className="text-xs uppercase tracking-[0.22em] text-slate-400 font-semibold mb-2">
+            PERSONAL
+          </p>
+
+          <h2 className="text-3xl md:text-4xl font-medium text-[#001b70] font-['Cooper']">
+            Empleados
+          </h2>
 
           <p className="text-slate-500 mt-2">
             Gestiona la información de los colaboradores
@@ -87,31 +96,56 @@ export default function Empleados({
 
         <button
           onClick={() => setShowEmpleadoModal(true)}
-          className="bg-[#0b2447] hover:bg-[#16325c] text-white px-5 py-3 rounded-xl transition-all w-full sm:w-auto"
+          className="
+            bg-[#0b2447]
+            hover:bg-[#16325c]
+            hover:-translate-y-0.5
+            text-white
+            px-5 py-3
+            rounded-2xl
+            shadow-sm
+            transition-all
+            duration-200
+            w-full sm:w-auto
+            font-medium
+          "
         >
           + Nuevo empleado
         </button>
 
       </div>
 
-      <div className="bg-white rounded-3xl p-4 md:p-8 shadow-sm">
+      {/* TABLA */}
+      <div className="bg-white rounded-3xl p-4 md:p-8 shadow-sm border border-slate-100">
 
         <div className="overflow-x-auto">
 
           <table className="w-full min-w-[720px]">
 
             <thead>
+              <tr className="border-b border-slate-200">
 
-              <tr className="border-b border-slate-200 text-slate-500">
+                <th className="text-left pb-4 text-xs uppercase tracking-[0.14em] text-slate-400 font-semibold">
+                  Nombre
+                </th>
 
-                <th className="text-left pb-4">Nombre</th>
-                <th className="text-left pb-4">Correo</th>
-                <th className="text-left pb-4">Puesto</th>
-                <th className="text-left pb-4">Teléfono</th>
-                <th className="text-left pb-4">Acciones</th>
+                <th className="text-left pb-4 text-xs uppercase tracking-[0.14em] text-slate-400 font-semibold">
+                  Correo
+                </th>
+
+                <th className="text-left pb-4 text-xs uppercase tracking-[0.14em] text-slate-400 font-semibold">
+                  Puesto
+                </th>
+
+                <th className="text-left pb-4 text-xs uppercase tracking-[0.14em] text-slate-400 font-semibold">
+                  Teléfono
+                </th>
+
+                <th className="text-left pb-4 text-xs uppercase tracking-[0.14em] text-slate-400 font-semibold">
+                  Acciones
+                </th>
 
               </tr>
-
             </thead>
 
             <tbody>
@@ -122,46 +156,88 @@ export default function Empleados({
 
                   <tr
                     key={empleado.id}
-                    className="border-b border-slate-100 hover:bg-slate-50 transition-all"
+                    className="
+                      border-b border-slate-100
+                      last:border-b-0
+                      hover:bg-[#f8fbfe]
+                      transition-all
+                    "
                   >
 
+                    {/* NOMBRE */}
                     <td className="py-5">
 
                       <div className="flex items-center gap-4">
+
                         <EmpleadoAvatar empleado={empleado} />
 
                         <button
                           onClick={() => setEmpleadoSeleccionado(empleado)}
-                          className="font-medium text-[#07355E] hover:underline hover:text-[#1B2A38] transition-all"
+                          className="
+                            font-semibold
+                            text-[#07355E]
+                            hover:text-[#164e87]
+                            transition-all
+                            text-left
+                          "
                         >
                           {empleado.nombre}
                         </button>
+
                       </div>
 
                     </td>
 
-                    <td className="py-5 text-slate-500">
+                    {/* CORREO */}
+                    <td className="py-5 text-slate-500 text-sm">
                       {empleado.email}
                     </td>
 
-                    <td className="py-5 text-slate-500">
-                      {empleado.puesto}
+                    {/* PUESTO */}
+                    <td className="py-5">
+
+                      <span
+                        className="
+                          inline-flex
+                          items-center
+                          bg-[#EAF4FC]
+                          text-[#164e87]
+                          text-xs
+                          font-semibold
+                          px-3 py-1.5
+                          rounded-full
+                        "
+                      >
+                        {empleado.puesto}
+                      </span>
+
                     </td>
 
-                    <td className="py-5 text-slate-500">
+                    {/* TELEFONO */}
+                    <td className="py-5 text-slate-500 text-sm">
                       {empleado.telefono}
                     </td>
 
+                    {/* ACCIONES */}
                     <td className="py-5">
 
-                      <div className="flex gap-3">
+                      <div className="flex gap-2">
 
                         <button
                           onClick={() => {
                             setShowEmpleadoModal(false)
                             setEmpleadoSeleccionado(empleado)
                           }}
-                          className="bg-[#07355E] hover:bg-[#1B2A38] hover:-translate-y-1 shadow-md text-white px-4 py-2 rounded-xl transition-all duration-300"
+                          className="
+                            border border-[#b8d6ee]
+                            text-[#164e87]
+                            hover:bg-[#EAF4FC]
+                            px-4 py-2
+                            rounded-xl
+                            text-sm
+                            font-medium
+                            transition-all
+                          "
                         >
                           Editar
                         </button>
@@ -171,7 +247,16 @@ export default function Empleados({
                             setEmpleadoAEliminar(empleado)
                             setShowDeleteModal(true)
                           }}
-                          className="bg-red-500 hover:bg-red-600 hover:-translate-y-1 shadow-md text-white px-4 py-2 rounded-xl transition-all duration-300"
+                          className="
+                            border border-red-200
+                            text-red-500
+                            hover:bg-red-50
+                            px-4 py-2
+                            rounded-xl
+                            text-sm
+                            font-medium
+                            transition-all
+                          "
                         >
                           Eliminar
                         </button>
@@ -197,4 +282,5 @@ export default function Empleados({
     </div>
 
   )
+
 }

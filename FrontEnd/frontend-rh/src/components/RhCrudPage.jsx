@@ -235,166 +235,384 @@ export default function RhCrudPage({
     )
   }
 
-  return (
-    <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-medium text-[#001b70] font-['Cooper']">
-            {title}
-          </h1>
+return (
 
-          <p className="text-slate-500 mt-2">
-            {subtitle}
-          </p>
-        </div>
+  <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
 
-        <button
-          type="button"
-          onClick={openCreateModal}
-          className="bg-[#0b2447] hover:bg-[#16325c] text-white px-5 py-3 rounded-xl transition-all shadow-md hover:-translate-y-1 w-full sm:w-auto"
-        >
-          + Nuevo registro
-        </button>
+    {/* ENCABEZADO */}
+    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+
+      <div>
+
+        <p className="text-xs uppercase tracking-[0.22em] text-slate-400 font-semibold mb-2">
+          GESTIÓN
+        </p>
+
+        <h1 className="text-3xl md:text-4xl font-medium text-[#001b70] font-['Cooper']">
+          {title}
+        </h1>
+
+        <p className="text-slate-500 mt-2">
+          {subtitle}
+        </p>
+
       </div>
 
-      <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm">
-        <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between mb-7">
+      <button
+        type="button"
+        onClick={openCreateModal}
+        className="
+          bg-[#0b2447]
+          hover:bg-[#16325c]
+          hover:-translate-y-0.5
+          text-white
+          px-5 py-3
+          rounded-2xl
+          transition-all
+          duration-200
+          shadow-sm
+          w-full sm:w-auto
+          font-medium
+        "
+      >
+        + Nuevo registro
+      </button>
+
+    </div>
+
+    {/* CONTENEDOR PRINCIPAL */}
+    <div className="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-slate-100">
+
+      {/* BUSCADOR Y FILTRO */}
+      <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between mb-7">
+
+        <div className="w-full md:max-w-md">
+
+          <p className="text-xs uppercase tracking-[0.14em] text-slate-400 font-semibold mb-2">
+            Buscar
+          </p>
+
           <input
             type="text"
             placeholder={searchPlaceholder}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="border border-slate-200 bg-[#f8fbff] rounded-2xl px-5 py-3 w-full md:max-w-sm outline-none focus:ring-2 focus:ring-[#BFE0FF]"
+            className="
+              border border-slate-200
+              bg-[#f8fbff]
+              rounded-2xl
+              px-5 py-3
+              w-full
+              outline-none
+              focus:ring-2
+              focus:ring-[#BFE0FF]
+              focus:border-[#a9cbea]
+              transition-all
+            "
           />
 
-          {filter && (
+        </div>
+
+        {filter && (
+
+          <div className="w-full md:w-auto">
+
+            <p className="text-xs uppercase tracking-[0.14em] text-slate-400 font-semibold mb-2">
+              Filtrar
+            </p>
+
             <select
               value={filterValue}
               onChange={(event) => setFilterValue(event.target.value)}
-              className="border border-slate-200 bg-[#f8fbff] rounded-2xl px-5 py-3 outline-none focus:ring-2 focus:ring-[#BFE0FF]"
+              className="
+                border border-slate-200
+                bg-[#f8fbff]
+                rounded-2xl
+                px-5 py-3
+                outline-none
+                focus:ring-2
+                focus:ring-[#BFE0FF]
+                focus:border-[#a9cbea]
+                transition-all
+                w-full md:min-w-[180px]
+              "
             >
-              <option value="Todos">Todos</option>
+              <option value="Todos">
+                Todos
+              </option>
+
               {filter.options.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option
+                  key={option.value}
+                  value={option.value}
+                >
                   {option.label}
                 </option>
               ))}
+
             </select>
-          )}
-        </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px]">
-            <thead>
-              <tr className="border-b border-slate-200 text-slate-500">
-                {columns.map((column) => (
-                  <th key={column.key} className="text-left pb-4 whitespace-nowrap">
-                    {column.label}
-                  </th>
-                ))}
-                <th className="text-left pb-4">Acciones</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredItems.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-b border-slate-100 hover:bg-slate-50 transition-all"
-                >
-                  {columns.map((column) => {
-                    const value = column.render
-                      ? column.render(item)
-                      : getNestedValue(item, column.key)
-
-                    return (
-                      <td key={column.key} className="py-5 text-slate-600 min-w-36">
-                        {column.badge ? renderBadge(value) : value}
-                      </td>
-                    )
-                  })}
-
-                  <td className="py-5">
-                    <div className="flex gap-3 whitespace-nowrap">
-                      <button
-                        type="button"
-                        onClick={() => openEditModal(item)}
-                        className="bg-[#07355E] hover:bg-[#1B2A38] hover:-translate-y-1 shadow-md text-white px-4 py-2 rounded-xl transition-all duration-300"
-                      >
-                        Editar
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setItemToDelete(item)}
-                        className="bg-red-500 hover:bg-red-600 hover:-translate-y-1 shadow-md text-white px-4 py-2 rounded-xl transition-all duration-300"
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {filteredItems.length === 0 && (
-                <tr>
-                  <td colSpan={columns.length + 1} className="py-12 text-center text-slate-400">
-                    No hay registros para mostrar
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {showFormModal && (
-        <RhModal
-          title={editingItem ? `Editar ${formTitle}` : `Registrar ${formTitle}`}
-          onClose={closeFormModal}
-          footer={(
-            <button
-              type="button"
-              onClick={saveItem}
-              className="w-full bg-[#0b2447] hover:bg-[#16325c] text-white px-8 py-4 rounded-2xl transition-all shadow-md"
-            >
-              Guardar
-            </button>
-          )}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {fields.map((field) => (
-              <label
-                key={field.name}
-                className={field.full ? 'md:col-span-2' : ''}
-              >
-                <span className="block text-sm text-slate-500 mb-2">
-                  {field.label}
-                </span>
-                {renderField(field)}
-              </label>
-            ))}
           </div>
 
-          {error && (
-            <p className="text-red-500 text-sm mt-5 text-center">
-              {error}
-            </p>
-          )}
-        </RhModal>
-      )}
+        )}
 
-      {itemToDelete && (
-        <ConfirmModal
-          title={deleteTitle}
-          message="Deseas eliminar"
-          highlight={itemToDelete.Empleado?.nombre || itemToDelete.empleado?.nombre || itemToDelete.tipo || itemToDelete.id}
-          onConfirm={deleteItem}
-          onCancel={() => setItemToDelete(null)}
-        />
-      )}
+      </div>
 
-      <FeedbackToast message={feedback?.message} type={feedback?.type} />
+      {/* TABLA */}
+      <div className="overflow-x-auto">
+
+        <table className="w-full min-w-[720px]">
+
+          <thead>
+
+            <tr className="border-b border-slate-200">
+
+              {columns.map((column) => (
+
+                <th
+                  key={column.key}
+                  className="
+                    text-left
+                    pb-4
+                    whitespace-nowrap
+                    text-xs
+                    uppercase
+                    tracking-[0.14em]
+                    text-slate-400
+                    font-semibold
+                  "
+                >
+                  {column.label}
+                </th>
+
+              ))}
+
+              <th
+                className="
+                  text-left
+                  pb-4
+                  text-xs
+                  uppercase
+                  tracking-[0.14em]
+                  text-slate-400
+                  font-semibold
+                "
+              >
+                Acciones
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {filteredItems.map((item) => (
+
+              <tr
+                key={item.id}
+                className="
+                  border-b border-slate-100
+                  last:border-b-0
+                  hover:bg-[#f8fbfe]
+                  transition-all
+                "
+              >
+
+                {columns.map((column) => {
+
+                  const value = column.render
+                    ? column.render(item)
+                    : getNestedValue(item, column.key)
+
+                  return (
+
+                    <td
+                      key={column.key}
+                      className="py-5 text-slate-600 min-w-36 text-sm"
+                    >
+                      {column.badge
+                        ? renderBadge(value)
+                        : value
+                      }
+                    </td>
+
+                  )
+
+                })}
+
+                {/* ACCIONES */}
+                <td className="py-5">
+
+                  <div className="flex gap-2 whitespace-nowrap">
+
+                    <button
+                      type="button"
+                      onClick={() => openEditModal(item)}
+                      className="
+                        border border-[#b8d6ee]
+                        text-[#164e87]
+                        hover:bg-[#EAF4FC]
+                        px-4 py-2
+                        rounded-xl
+                        text-sm
+                        font-medium
+                        transition-all
+                      "
+                    >
+                      Editar
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setItemToDelete(item)}
+                      className="
+                        border border-red-200
+                        text-red-500
+                        hover:bg-red-50
+                        px-4 py-2
+                        rounded-xl
+                        text-sm
+                        font-medium
+                        transition-all
+                      "
+                    >
+                      Eliminar
+                    </button>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            ))}
+
+            {filteredItems.length === 0 && (
+
+              <tr>
+
+                <td
+                  colSpan={columns.length + 1}
+                  className="py-14 text-center"
+                >
+
+                  <div className="text-slate-400">
+
+                    <p className="font-medium text-slate-500 mb-1">
+                      No hay registros
+                    </p>
+
+                    <p className="text-sm">
+                      No hay información para mostrar con los filtros actuales
+                    </p>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            )}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
     </div>
-  )
+
+    {/* MODAL CREAR / EDITAR */}
+    {showFormModal && (
+
+      <RhModal
+        title={
+          editingItem
+            ? `Editar ${formTitle}`
+            : `Registrar ${formTitle}`
+        }
+        onClose={closeFormModal}
+        footer={(
+
+          <button
+            type="button"
+            onClick={saveItem}
+            className="
+              w-full
+              bg-[#0b2447]
+              hover:bg-[#16325c]
+              text-white
+              px-8 py-4
+              rounded-2xl
+              transition-all
+              shadow-sm
+              font-medium
+            "
+          >
+            Guardar
+          </button>
+
+        )}
+      >
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+          {fields.map((field) => (
+
+            <label
+              key={field.name}
+              className={field.full ? 'md:col-span-2' : ''}
+            >
+
+              <span className="block text-sm text-slate-500 mb-2 font-medium">
+                {field.label}
+              </span>
+
+              {renderField(field)}
+
+            </label>
+
+          ))}
+
+        </div>
+
+        {error && (
+
+          <p className="text-red-500 text-sm mt-5 text-center">
+            {error}
+          </p>
+
+        )}
+
+      </RhModal>
+
+    )}
+
+    {/* MODAL ELIMINAR */}
+    {itemToDelete && (
+
+      <ConfirmModal
+        title={deleteTitle}
+        message="Deseas eliminar"
+        highlight={
+          itemToDelete.Empleado?.nombre ||
+          itemToDelete.empleado?.nombre ||
+          itemToDelete.tipo ||
+          itemToDelete.id
+        }
+        onConfirm={deleteItem}
+        onCancel={() => setItemToDelete(null)}
+      />
+
+    )}
+
+    <FeedbackToast
+      message={feedback?.message}
+      type={feedback?.type}
+    />
+
+  </div>
+
+)
 }
