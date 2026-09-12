@@ -22,6 +22,12 @@ function getNestedValue(item, path) {
   return path.split('.').reduce((value, key) => value?.[key], item)
 }
 
+function formatDisplayName(name = '') {
+  return name
+    .toLowerCase()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+}
+
 export default function RhCrudPage({
   title,
   subtitle,
@@ -34,6 +40,7 @@ export default function RhCrudPage({
   badgeConfig,
   formTitle,
   deleteTitle,
+  summary,
   deleteLabel,
   mapBeforeSave = (form) => form,
   normalizeItem = (item) => item
@@ -176,6 +183,17 @@ export default function RhCrudPage({
       </span>
     )
   }
+  const summaryData = useMemo(() => {
+    if (!summary) return []
+
+    return summary.items.map((summaryItem) => ({
+      ...summaryItem,
+      count: items.filter(
+        (item) =>
+          getNestedValue(item, summary.field) === summaryItem.value
+      ).length
+    }))
+  }, [items, summary])
 
   const renderField = (field) => {
     const baseClass = 'border border-slate-300 rounded-2xl px-5 py-4 w-full outline-none focus:ring-2 focus:ring-[#BFE0FF] bg-white'
@@ -235,33 +253,33 @@ export default function RhCrudPage({
     )
   }
 
-return (
+  return (
 
-  <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
+    <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
 
-    {/* ENCABEZADO */}
-    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
+      {/* ENCABEZADO */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
 
-      <div>
+        <div>
 
-        <p className="text-xs uppercase tracking-[0.22em] text-slate-400 font-semibold mb-2">
-          GESTIÓN
-        </p>
+          <p className="text-xs uppercase tracking-[0.22em] text-slate-400 font-semibold mb-2">
+            GESTIÓN
+          </p>
 
-        <h1 className="text-3xl md:text-4xl font-medium text-[#001b70] font-['Cooper']">
-          {title}
-        </h1>
+          <h1 className="text-3xl md:text-4xl font-medium text-[#001b70] font-['Cooper']">
+            {title}
+          </h1>
 
-        <p className="text-slate-500 mt-2">
-          {subtitle}
-        </p>
+          <p className="text-slate-500 mt-2">
+            {subtitle}
+          </p>
 
-      </div>
+        </div>
 
-      <button
-        type="button"
-        onClick={openCreateModal}
-        className="
+        <button
+          type="button"
+          onClick={openCreateModal}
+          className="
           bg-[#0b2447]
           hover:bg-[#16325c]
           hover:-translate-y-0.5
@@ -274,30 +292,30 @@ return (
           w-full sm:w-auto
           font-medium
         "
-      >
-        + Nuevo registro
-      </button>
+        >
+          + Nuevo registro
+        </button>
 
-    </div>
+      </div>
 
-    {/* CONTENEDOR PRINCIPAL */}
-    <div className="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-slate-100">
+      {/* CONTENEDOR PRINCIPAL */}
+      <div className="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-slate-100">
 
-      {/* BUSCADOR Y FILTRO */}
-      <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between mb-7">
+        {/* BUSCADOR Y FILTRO */}
+        <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between mb-7">
 
-        <div className="w-full md:max-w-md">
+          <div className="w-full md:max-w-md">
 
-          <p className="text-xs uppercase tracking-[0.14em] text-slate-400 font-semibold mb-2">
-            Buscar
-          </p>
+            <p className="text-xs uppercase tracking-[0.14em] text-slate-400 font-semibold mb-2">
+              Buscar
+            </p>
 
-          <input
-            type="text"
-            placeholder={searchPlaceholder}
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            className="
+            <input
+              type="text"
+              placeholder={searchPlaceholder}
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              className="
               border border-slate-200
               bg-[#f8fbff]
               rounded-2xl
@@ -309,22 +327,22 @@ return (
               focus:border-[#a9cbea]
               transition-all
             "
-          />
+            />
 
-        </div>
+          </div>
 
-        {filter && (
+          {filter && (
 
-          <div className="w-full md:w-auto">
+            <div className="w-full md:w-auto">
 
-            <p className="text-xs uppercase tracking-[0.14em] text-slate-400 font-semibold mb-2">
-              Filtrar
-            </p>
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400 font-semibold mb-2">
+                Filtrar
+              </p>
 
-            <select
-              value={filterValue}
-              onChange={(event) => setFilterValue(event.target.value)}
-              className="
+              <select
+                value={filterValue}
+                onChange={(event) => setFilterValue(event.target.value)}
+                className="
                 border border-slate-200
                 bg-[#f8fbff]
                 rounded-2xl
@@ -336,42 +354,106 @@ return (
                 transition-all
                 w-full md:min-w-[180px]
               "
-            >
-              <option value="Todos">
-                Todos
-              </option>
-
-              {filter.options.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                >
-                  {option.label}
+              >
+                <option value="Todos">
+                  Todos
                 </option>
-              ))}
 
-            </select>
+                {filter.options.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
 
-          </div>
+              </select>
 
-        )}
+            </div>
+
+          )}
 
       </div>
 
-      {/* TABLA */}
-      <div className="overflow-x-auto">
+      {/* RESUMEN */}
+      {summary && (
+        <div
+          className="
+            flex
+            flex-wrap
+            items-center
+            gap-3
+            mb-7
+            pb-6
+            border-b border-slate-100
+          "
+        >
+          <div
+            className="
+              px-4 py-2.5
+              rounded-xl
+              bg-[#f8fbfe]
+              border border-slate-100
+              text-sm
+            "
+          >
+            <span className="font-bold text-[#082b59]">
+              {items.length}
+            </span>
 
-        <table className="w-full min-w-[720px]">
+            <span className="text-slate-400 ml-2">
+              registros
+            </span>
+          </div>
 
-          <thead>
+          {summaryData.map((summaryItem) => (
+            <div
+              key={summaryItem.value}
+              className="
+                px-4 py-2.5
+                rounded-xl
+                bg-white
+                border border-slate-100
+                text-sm
+                flex items-center
+                gap-2
+              "
+            >
+              <span
+                className={`
+                  w-2.5 h-2.5
+                  rounded-full
+                  ${summaryItem.dotClass}
+                `}
+              />
 
-            <tr className="border-b border-slate-200">
+              <span className="font-bold text-[#082b59]">
+                {summaryItem.count}
+              </span>
 
-              {columns.map((column) => (
+              <span className="text-slate-400">
+                {summaryItem.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
-                <th
-                  key={column.key}
-                  className="
+        {/* TABLA */}
+        <div className="overflow-x-auto">
+
+          <table className="w-full min-w-[720px]">
+
+            <thead>
+
+              <tr className="border-b border-slate-200">
+
+                {columns.map((column) => (
+
+                  <th
+                    key={column.key}
+                    className="
                     text-left
                     pb-4
                     whitespace-nowrap
@@ -381,14 +463,14 @@ return (
                     text-slate-400
                     font-semibold
                   "
-                >
-                  {column.label}
-                </th>
+                  >
+                    {column.label}
+                  </th>
 
-              ))}
+                ))}
 
-              <th
-                className="
+                <th
+                  className="
                   text-left
                   pb-4
                   text-xs
@@ -397,59 +479,59 @@ return (
                   text-slate-400
                   font-semibold
                 "
-              >
-                Acciones
-              </th>
+                >
+                  Acciones
+                </th>
 
-            </tr>
+              </tr>
 
-          </thead>
+            </thead>
 
-          <tbody>
+            <tbody>
 
-            {filteredItems.map((item) => (
+              {filteredItems.map((item) => (
 
-              <tr
-                key={item.id}
-                className="
+                <tr
+                  key={item.id}
+                  className="
                   border-b border-slate-100
                   last:border-b-0
                   hover:bg-[#f8fbfe]
                   transition-all
                 "
-              >
+                >
 
-                {columns.map((column) => {
+                  {columns.map((column) => {
 
-                  const value = column.render
-                    ? column.render(item)
-                    : getNestedValue(item, column.key)
+                    const value = column.render
+                      ? column.render(item)
+                      : getNestedValue(item, column.key)
 
-                  return (
+                    return (
 
-                    <td
-                      key={column.key}
-                      className="py-5 text-slate-600 min-w-36 text-sm"
-                    >
-                      {column.badge
-                        ? renderBadge(value)
-                        : value
-                      }
-                    </td>
+                      <td
+                        key={column.key}
+                        className="py-5 text-slate-600 min-w-36 text-sm"
+                      >
+                        {column.badge
+                          ? renderBadge(value)
+                          : value
+                        }
+                      </td>
 
-                  )
+                    )
 
-                })}
+                  })}
 
-                {/* ACCIONES */}
-                <td className="py-5">
+                  {/* ACCIONES */}
+                  <td className="py-5">
 
-                  <div className="flex gap-2 whitespace-nowrap">
+                    <div className="flex gap-2 whitespace-nowrap">
 
-                    <button
-                      type="button"
-                      onClick={() => openEditModal(item)}
-                      className="
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(item)}
+                        className="
                         border border-[#b8d6ee]
                         text-[#164e87]
                         hover:bg-[#EAF4FC]
@@ -459,14 +541,14 @@ return (
                         font-medium
                         transition-all
                       "
-                    >
-                      Editar
-                    </button>
+                      >
+                        Editar
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => setItemToDelete(item)}
-                      className="
+                      <button
+                        type="button"
+                        onClick={() => setItemToDelete(item)}
+                        className="
                         border border-red-200
                         text-red-500
                         hover:bg-red-50
@@ -476,69 +558,69 @@ return (
                         font-medium
                         transition-all
                       "
-                    >
-                      Eliminar
-                    </button>
+                      >
+                        Eliminar
+                      </button>
 
-                  </div>
+                    </div>
 
-                </td>
+                  </td>
 
-              </tr>
+                </tr>
 
-            ))}
+              ))}
 
-            {filteredItems.length === 0 && (
+              {filteredItems.length === 0 && (
 
-              <tr>
+                <tr>
 
-                <td
-                  colSpan={columns.length + 1}
-                  className="py-14 text-center"
-                >
+                  <td
+                    colSpan={columns.length + 1}
+                    className="py-14 text-center"
+                  >
 
-                  <div className="text-slate-400">
+                    <div className="text-slate-400">
 
-                    <p className="font-medium text-slate-500 mb-1">
-                      No hay registros
-                    </p>
+                      <p className="font-medium text-slate-500 mb-1">
+                        No hay registros
+                      </p>
 
-                    <p className="text-sm">
-                      No hay información para mostrar con los filtros actuales
-                    </p>
+                      <p className="text-sm">
+                        No hay información para mostrar con los filtros actuales
+                      </p>
 
-                  </div>
+                    </div>
 
-                </td>
+                  </td>
 
-              </tr>
+                </tr>
 
-            )}
+              )}
 
-          </tbody>
+            </tbody>
 
-        </table>
+          </table>
+
+        </div>
 
       </div>
 
-    </div>
+      {/* MODAL CREAR / EDITAR */}
+      {showFormModal && (
 
-    {/* MODAL CREAR / EDITAR */}
-    {showFormModal && (
+        <RhModal
+          title={
+            editingItem
+              ? `Editar ${formTitle}`
+              : `Registrar ${formTitle}`
+          }
+          onClose={closeFormModal}
+          footer={(
 
-      <RhModal
-        title={
-          editingItem
-            ? `Editar ${formTitle}`
-            : `Registrar ${formTitle}`
-        }
-        onClose={closeFormModal}
-        footer={(
-
-          <button
-            type="button"
-            onClick={saveItem}
-            className="
+            <button
+              type="button"
+              onClick={saveItem}
+              className="
               w-full
               bg-[#0b2447]
               hover:bg-[#16325c]
@@ -549,70 +631,70 @@ return (
               shadow-sm
               font-medium
             "
-          >
-            Guardar
-          </button>
-
-        )}
-      >
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-          {fields.map((field) => (
-
-            <label
-              key={field.name}
-              className={field.full ? 'md:col-span-2' : ''}
             >
+              Guardar
+            </button>
 
-              <span className="block text-sm text-slate-500 mb-2 font-medium">
-                {field.label}
-              </span>
+          )}
+        >
 
-              {renderField(field)}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-            </label>
+            {fields.map((field) => (
 
-          ))}
+              <label
+                key={field.name}
+                className={field.full ? 'md:col-span-2' : ''}
+              >
 
-        </div>
+                <span className="block text-sm text-slate-500 mb-2 font-medium">
+                  {field.label}
+                </span>
 
-        {error && (
+                {renderField(field)}
 
-          <p className="text-red-500 text-sm mt-5 text-center">
-            {error}
-          </p>
+              </label>
 
-        )}
+            ))}
 
-      </RhModal>
+          </div>
 
-    )}
+          {error && (
 
-    {/* MODAL ELIMINAR */}
-    {itemToDelete && (
+            <p className="text-red-500 text-sm mt-5 text-center">
+              {error}
+            </p>
 
-      <ConfirmModal
-        title={deleteTitle}
-        message="Deseas eliminar"
-        highlight={
-          itemToDelete.Empleado?.nombre ||
-          itemToDelete.empleado?.nombre ||
-          itemToDelete.tipo ||
-          itemToDelete.id
-        }
-        onConfirm={deleteItem}
-        onCancel={() => setItemToDelete(null)}
+          )}
+
+        </RhModal>
+
+      )}
+
+      {/* MODAL ELIMINAR */}
+      {itemToDelete && (
+
+        <ConfirmModal
+          title={deleteTitle}
+          message="Deseas eliminar"
+          highlight={
+            itemToDelete.Empleado?.nombre ||
+            itemToDelete.empleado?.nombre ||
+            itemToDelete.tipo ||
+            itemToDelete.id
+          }
+          onConfirm={deleteItem}
+          onCancel={() => setItemToDelete(null)}
+        />
+
+      )}
+
+      <FeedbackToast
+        message={feedback?.message}
+        type={feedback?.type}
       />
 
-    )}
+    </div>
 
-    <FeedbackToast
-      message={feedback?.message}
-      type={feedback?.type}
-    />
-
-  </div>
-
-)
+  )
 }

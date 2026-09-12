@@ -9,13 +9,38 @@ const tipoOptions = [
 export default function Asistencia({ empleados }) {
   return (
     <RhCrudPage
-            subtitle="Registra retardos, faltas y horas extra del equipo"
+      subtitle="Registra retardos, faltas y horas extra del equipo"
       endpoint="/asistencia"
       empleados={empleados}
       searchPlaceholder="Buscar por empleado"
       formTitle="asistencia"
       deleteTitle="Eliminar asistencia"
       deleteLabel="Asistencia"
+      filter={{
+        field: 'type',
+        options: tipoOptions
+      }}
+
+      summary={{
+        field: 'type',
+        items: [
+          {
+            value: 'falta',
+            label: 'Faltas',
+            dotClass: 'bg-red-400'
+          },
+          {
+            value: 'retardo',
+            label: 'Retardos',
+            dotClass: 'bg-amber-400'
+          },
+          {
+            value: 'horas_extra',
+            label: 'Horas extra',
+            dotClass: 'bg-[#7db8e8]'
+          }
+        ]
+      }}
       fields={[
         {
           name: 'employeeId',
@@ -74,7 +99,7 @@ export default function Asistencia({ empleados }) {
         },
         horas_extra: {
           label: 'Hora extra',
-          className: 'bg-blue-100 text-blue-700'
+          className: 'bg-[#EAF4FC] text-[#164e87]'
         }
       }}
       mapBeforeSave={(form) => ({
