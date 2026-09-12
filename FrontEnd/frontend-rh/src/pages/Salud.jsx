@@ -287,37 +287,42 @@ export default function Salud({ empleados = [] }) {
 
     setShowSaludModal(true)
   }
-  const openCreateRecordModal = () => {
-    if (!selectedEmployeeId) {
-      setError('Selecciona un empleado')
-      return
-    }
-
-    if (activeTab === 'salud') {
-      openSaludModal()
-      return
-    }
-
-    setError('')
-    setEditingRecord(null)
-    setRecordForm(emptyForms[activeTab])
-    setShowRecordModal(true)
+const openCreateRecordModal = () => {
+  if (!selectedEmployeeId) {
+    setError('Selecciona un empleado')
+    return
   }
 
-  const openEditRecordModal = (record = latestRecord) => {
-    if (!record) {
-      openCreateRecordModal()
-      return
-    }
-
-    setError('')
-    setEditingRecord(record)
-    setRecordForm({
-      ...emptyForms[activeTab],
-      ...record
-    })
-    setShowRecordModal(true)
+  if (activeTab === 'salud') {
+    openSaludModal()
+    return
   }
+
+  setError('')
+  setEditingRecord(null)
+  setRecordForm(emptyForms[activeTab])
+
+  setShowHistoryModal(false)
+  setShowRecordModal(true)
+}
+
+ const openEditRecordModal = (record = latestRecord) => {
+  if (!record) {
+    openCreateRecordModal()
+    return
+  }
+
+  setError('')
+  setEditingRecord(record)
+
+  setRecordForm({
+    ...emptyForms[activeTab],
+    ...record
+  })
+
+  setShowHistoryModal(false)
+  setShowRecordModal(true)
+}
 
   const closeRecordModal = () => {
     setShowRecordModal(false)
@@ -457,7 +462,7 @@ export default function Salud({ empleados = [] }) {
 
           <div>
             <p className="text-[11px] uppercase tracking-[0.28em] text-[#7394b5] font-semibold mb-2">
-              SALUD
+              SALUD OCUPACIONAL
             </p>
 
             <p className="text-slate-500 text-sm">
@@ -962,28 +967,46 @@ export default function Salud({ empleados = [] }) {
                     </p>
                   ))}
                 </div>
+<div className="flex gap-2">
+  <button
+    type="button"
+    onClick={() => openEditRecordModal(record)}
+    className="
+      border border-[#b8d6ee]
+      text-[#164e87]
+      hover:bg-[#EAF4FC]
+      px-4 py-2
+      rounded-xl
+      text-sm
+      font-medium
+      transition-all
+    "
+  >
+    Editar
+  </button>
 
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => openEditRecordModal(record)}
-                    className="bg-[#8b8e93] hover:bg-[#74777c] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all"
-                  >
-                    Editar
-                  </button>
+  <button
+    type="button"
+    onClick={() => setRecordToDelete({
+      tab: activeTab,
+      record
+    })}
+    className="
+      border border-red-200
+      text-red-500
+      hover:bg-red-50
+      w-10 h-10
+      rounded-xl
+      flex items-center justify-center
+      transition-all
+    "
+    aria-label="Eliminar registro"
+  >
+    <Trash2 size={16} />
+  </button>
+</div>
 
-                  <button
-                    type="button"
-                    onClick={() => setRecordToDelete({
-                      tab: activeTab,
-                      record
-                    })}
-                    className="bg-red-500 hover:bg-red-600 text-white w-10 h-10 rounded-lg flex items-center justify-center transition-all"
-                    aria-label="Eliminar registro"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
+
               </div>
             ))}
 
@@ -1013,13 +1036,247 @@ export default function Salud({ empleados = [] }) {
 
 function InitialHealthPanel() {
   return (
-    <div className="flex min-h-[205px] flex-col items-center justify-center text-center">
-      <h2 className="font-['Cooper'] text-3xl leading-tight text-[#00578b] md:text-[46px]">
-        Seguimiento médico
-      </h2>
+    <div
+      className="
+        relative
+        min-h-[560px]
+        overflow-hidden
+        rounded-[24px]
+        bg-gradient-to-br
+        from-white
+        via-[#f8fbfe]
+        to-[#eaf4fc]
+        p-7 md:p-10 lg:p-12
+      "
+    >
+      {/* DECORACIÓN SUAVE */}
+      <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-[#dceefb]/60" />
+      <div className="absolute right-20 bottom-[-110px] w-72 h-72 rounded-full bg-white/70" />
 
-      <p className="mt-2 text-sm md:text-[17px] text-slate-500">
-        Tu Salud es muy importante para nosotros
+      <div className="relative z-10 h-full">
+
+        {/* ENCABEZADO */}
+        <div
+          className="
+            grid
+            grid-cols-1
+            xl:grid-cols-[1.4fr_0.6fr]
+            gap-8
+            items-start
+          "
+        >
+          <div>
+            <p
+              className="
+                text-[11px]
+                uppercase
+                tracking-[0.28em]
+                text-[#7394b5]
+                font-semibold
+                mb-4
+              "
+            >
+              Salud ocupacional
+            </p>
+
+            <h2
+              className="
+                font-['Cooper']
+                text-4xl
+                md:text-5xl
+                text-[#082b59]
+                leading-tight
+              "
+            >
+              Seguimiento médico
+            </h2>
+
+            <p
+              className="
+                text-xl
+                md:text-2xl
+                text-slate-500
+                mt-3
+                font-medium
+              "
+            >
+              Personas saludables, equipos más fuertes
+            </p>
+
+            <div className="w-16 h-1 bg-[#9ecdf0] rounded-full mt-5 mb-6" />
+
+            <p
+              className="
+                max-w-[720px]
+                text-sm
+                md:text-base
+                text-slate-500
+                leading-relaxed
+              "
+            >
+              Consulta y registra información médica, citas,
+              incapacidades y control de presión para mantener
+              actualizado el seguimiento de nuestros colaboradores.
+            </p>
+          </div>
+
+          {/* FRASE DESTACADA */}
+          <div
+            className="
+              hidden
+              xl:flex
+              justify-end
+              pt-8
+            "
+          >
+            <div
+              className="
+                max-w-[290px]
+                rounded-3xl
+                border border-[#dceaf5]
+                bg-white/80
+                px-6 py-7
+                shadow-[0_8px_24px_rgba(8,43,89,0.05)]
+              "
+            >
+              <div
+                className="
+                  w-11 h-11
+                  rounded-full
+                  bg-[#EAF4FC]
+                  text-[#164e87]
+                  flex items-center justify-center
+                  mb-4
+                "
+              >
+                <HeartPulse size={20} />
+              </div>
+
+              <p
+                className="
+                  font-['Dancing_Script']
+                  text-2xl
+                  text-[#164e87]
+                  leading-relaxed
+                "
+              >
+                Cuidar a nuestra gente también construye el futuro.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* TARJETAS */}
+        <div
+          className="
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            xl:grid-cols-4
+            gap-4
+            mt-10
+          "
+        >
+          <WelcomeHealthCard
+            icon={<HeartPulse size={24} />}
+            title="Registro de salud"
+            text="Información médica general"
+          />
+
+          <WelcomeHealthCard
+            icon={<CalendarDays size={24} />}
+            title="Citas médicas"
+            text="Agenda y seguimiento de citas"
+          />
+
+          <WelcomeHealthCard
+            icon={<ClipboardList size={24} />}
+            title="Incapacidades"
+            text="Control de periodos de incapacidad"
+          />
+
+          <WelcomeHealthCard
+            icon={<Activity size={24} />}
+            title="Presión arterial"
+            text="Registro y monitoreo de presión"
+          />
+        </div>
+
+        {/* FRASE MOBILE/TABLET */}
+        <div
+          className="
+            xl:hidden
+            mt-8
+            flex
+            items-center
+            gap-3
+          "
+        >
+          <div
+            className="
+              w-10 h-10
+              rounded-full
+              bg-white
+              shadow-sm
+              flex items-center justify-center
+              text-[#164e87]
+            "
+          >
+            <HeartPulse size={19} />
+          </div>
+
+          <p
+            className="
+              font-['Dancing_Script']
+              text-xl
+              md:text-2xl
+              text-[#164e87]
+            "
+          >
+            Cuidar a nuestra gente también construye el futuro.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
+function WelcomeHealthCard({ icon, title, text }) {
+  return (
+    <div
+      className="
+        bg-white/90
+        border border-[#e1edf6]
+        rounded-2xl
+        p-5
+        min-h-[165px]
+        shadow-[0_6px_20px_rgba(8,43,89,0.05)]
+        transition-all
+        duration-300
+        hover:-translate-y-1
+        hover:shadow-md
+      "
+    >
+      <div
+        className="
+          w-12 h-12
+          rounded-full
+          bg-[#EAF4FC]
+          text-[#164e87]
+          flex items-center justify-center
+          mb-4
+        "
+      >
+        {icon}
+      </div>
+
+      <p className="font-semibold text-[#082b59] text-sm">
+        {title}
+      </p>
+
+      <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+        {text}
       </p>
     </div>
   )

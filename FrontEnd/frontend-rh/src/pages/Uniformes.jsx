@@ -9,7 +9,7 @@ const tipoOptions = [
 export default function Uniformes({ empleados }) {
   return (
     <RhCrudPage
-      title="Uniformes y EPP"
+     
       subtitle="Controla entregas de uniformes, equipo de protección y calzado"
       endpoint="/uniformes"
       empleados={empleados}

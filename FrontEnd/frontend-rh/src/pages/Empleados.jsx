@@ -84,9 +84,7 @@ export default function Empleados({
             PERSONAL
           </p>
 
-          <h2 className="text-3xl md:text-4xl font-medium text-[#001b70] font-['Cooper']">
-            Empleados
-          </h2>
+       
 
           <p className="text-slate-500 mt-2">
             Gestiona la información de los colaboradores

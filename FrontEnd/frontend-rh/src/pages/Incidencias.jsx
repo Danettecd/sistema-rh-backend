@@ -85,7 +85,7 @@ export default function Incidencias({ empleados }) {
         },
         'En proceso': {
           label: 'En proceso',
-          className: 'bg-blue-100 text-blue-700'
+          className: 'bg-[#EAF4FC] text-[#164e87]'
         },
         Resuelto: {
           label: 'Resuelto',
