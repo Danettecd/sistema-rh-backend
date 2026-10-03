@@ -9,7 +9,7 @@ const statusOptions = [
 export default function Incidencias({ empleados }) {
   return (
     <RhCrudPage
-      
+
       subtitle="Da seguimiento a incidencias internas y su estado de resolución"
       endpoint="/incidencias"
       empleados={empleados}
@@ -20,6 +20,27 @@ export default function Incidencias({ empleados }) {
       filter={{
         field: 'status',
         options: statusOptions
+      }}
+
+      summary={{
+        field: 'status',
+        items: [
+          {
+            value: 'Pendiente',
+            label: 'Pendientes',
+            dotClass: 'bg-amber-400'
+          },
+          {
+            value: 'En proceso',
+            label: 'En proceso',
+            dotClass: 'bg-[#7db8e8]'
+          },
+          {
+            value: 'Resuelto',
+            label: 'Resueltas',
+            dotClass: 'bg-emerald-400'
+          }
+        ]
       }}
       fields={[
         {

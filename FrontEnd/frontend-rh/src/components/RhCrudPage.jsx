@@ -23,7 +23,7 @@ function getNestedValue(item, path) {
 }
 
 function formatDisplayName(name = '') {
-  return name
+  return String(name)
     .toLowerCase()
     .replace(/\b\w/g, (letter) => letter.toUpperCase())
 }
@@ -186,13 +186,25 @@ export default function RhCrudPage({
   const summaryData = useMemo(() => {
     if (!summary) return []
 
-    return summary.items.map((summaryItem) => ({
-      ...summaryItem,
-      count: items.filter(
+    return summary.items.map((summaryItem) => {
+      const matchingItems = items.filter(
         (item) =>
           getNestedValue(item, summary.field) === summaryItem.value
-      ).length
-    }))
+      )
+
+      const count = summary.sumField
+        ? matchingItems.reduce(
+          (total, item) =>
+            total + Number(getNestedValue(item, summary.sumField) || 0),
+          0
+        )
+        : matchingItems.length
+
+      return {
+        ...summaryItem,
+        count
+      }
+    })
   }, [items, summary])
 
   const renderField = (field) => {
@@ -374,12 +386,12 @@ export default function RhCrudPage({
 
           )}
 
-      </div>
+        </div>
 
-      {/* RESUMEN */}
-      {summary && (
-        <div
-          className="
+        {/* RESUMEN */}
+        {summary && (
+          <div
+            className="
             flex
             flex-wrap
             items-center
@@ -388,29 +400,29 @@ export default function RhCrudPage({
             pb-6
             border-b border-slate-100
           "
-        >
-          <div
-            className="
+          >
+            <div
+              className="
               px-4 py-2.5
               rounded-xl
               bg-[#f8fbfe]
               border border-slate-100
               text-sm
             "
-          >
-            <span className="font-bold text-[#082b59]">
-              {items.length}
-            </span>
+            >
+              <span className="font-bold text-[#082b59]">
+                {items.length}
+              </span>
 
-            <span className="text-slate-400 ml-2">
-              registros
-            </span>
-          </div>
+              <span className="text-slate-400 ml-2">
+                {summary.totalLabel || 'registros'}
+              </span>
+            </div>
 
-          {summaryData.map((summaryItem) => (
-            <div
-              key={summaryItem.value}
-              className="
+            {summaryData.map((summaryItem) => (
+              <div
+                key={summaryItem.value}
+                className="
                 px-4 py-2.5
                 rounded-xl
                 bg-white
@@ -419,26 +431,26 @@ export default function RhCrudPage({
                 flex items-center
                 gap-2
               "
-            >
-              <span
-                className={`
+              >
+                <span
+                  className={`
                   w-2.5 h-2.5
                   rounded-full
                   ${summaryItem.dotClass}
                 `}
-              />
+                />
 
-              <span className="font-bold text-[#082b59]">
-                {summaryItem.count}
-              </span>
+                <span className="font-bold text-[#082b59]">
+                  {summaryItem.count}
+                </span>
 
-              <span className="text-slate-400">
-                {summaryItem.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+                <span className="text-slate-400">
+                  {summaryItem.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* TABLA */}
         <div className="overflow-x-auto">
@@ -515,7 +527,9 @@ export default function RhCrudPage({
                       >
                         {column.badge
                           ? renderBadge(value)
-                          : value
+                          : column.key === 'Empleado.nombre'
+                            ? formatDisplayName(value)
+                            : value
                         }
                       </td>
 

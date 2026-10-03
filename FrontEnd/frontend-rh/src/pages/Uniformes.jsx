@@ -9,7 +9,7 @@ const tipoOptions = [
 export default function Uniformes({ empleados }) {
   return (
     <RhCrudPage
-     
+
       subtitle="Controla entregas de uniformes, equipo de protección y calzado"
       endpoint="/uniformes"
       empleados={empleados}
@@ -21,6 +21,30 @@ export default function Uniformes({ empleados }) {
         field: 'tipo',
         options: tipoOptions
       }}
+
+      summary={{
+        field: 'tipo',
+        sumField: 'cantidad',
+        totalLabel: 'entregas',
+        items: [
+          {
+            value: 'Uniforme',
+            label: 'Uniformes',
+            dotClass: 'bg-[#7db8e8]'
+          },
+          {
+            value: 'EPP',
+            label: 'EPP',
+            dotClass: 'bg-emerald-400'
+          },
+          {
+            value: 'Calzado',
+            label: 'Calzado',
+            dotClass: 'bg-amber-400'
+          }
+        ]
+      }}
+
       fields={[
         {
           name: 'empleado_id',
@@ -42,6 +66,7 @@ export default function Uniformes({ empleados }) {
           options: tipoOptions,
           required: true
         },
+
         {
           name: 'talla',
           label: 'Talla'
@@ -53,6 +78,13 @@ export default function Uniformes({ empleados }) {
         {
           name: 'descripcion',
           label: 'Descripción',
+          required: true
+        },
+        {
+          name: 'cantidad',
+          label: 'Cantidad',
+          type: 'number',
+          defaultValue: 1,
           required: true
         },
         {
@@ -87,6 +119,10 @@ export default function Uniformes({ empleados }) {
         {
           key: 'descripcion',
           label: 'Descripción'
+        },
+        {
+          key: 'cantidad',
+          label: 'Cantidad'
         }
       ]}
       badgeConfig={{
@@ -105,6 +141,11 @@ export default function Uniformes({ empleados }) {
           className: 'bg-amber-100 text-amber-700'
         }
       }}
+      mapBeforeSave={(form) => ({
+        ...form,
+        empleado_id: Number(form.empleado_id),
+        cantidad: Number(form.cantidad)
+      })}
     />
   )
 }

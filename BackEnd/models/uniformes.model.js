@@ -14,6 +14,12 @@ const Uniforme = sequelize.define('Uniforme', {
     allowNull: false
   },
 
+  cantidad: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1
+  },
+
   fecha_entrega: {
     type: DataTypes.DATEONLY,
     allowNull: false
