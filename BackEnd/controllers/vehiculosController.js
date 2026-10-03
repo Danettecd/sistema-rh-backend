@@ -1,15 +1,20 @@
 const Vehiculo = require('../models/vehiculos.model');
 
 const limpiarFecha = (fecha, fechaAnterior = null) => {
-  if (!fecha || fecha === "Invalid date" || fecha === "undefined" || fecha === "null") {
+  if (
+    !fecha ||
+    fecha === "Invalid date" ||
+    fecha === "undefined" ||
+    fecha === "null"
+  ) {
     return fechaAnterior || null;
   }
 
   return fecha;
 };
-//obtener todos los vehiculos
-const getVehiculos = async (req, res) => {
 
+// OBTENER TODOS LOS VEHÍCULOS
+const getVehiculos = async (req, res) => {
   try {
 
     const vehiculos = await Vehiculo.findAll();
@@ -23,11 +28,10 @@ const getVehiculos = async (req, res) => {
     });
 
   }
-
 };
-//obtener un vehiculo por id
-const getVehiculoById = async (req, res) => {
 
+// OBTENER UN VEHÍCULO POR ID
+const getVehiculoById = async (req, res) => {
   try {
 
     const { id } = req.params;
@@ -35,11 +39,9 @@ const getVehiculoById = async (req, res) => {
     const vehiculo = await Vehiculo.findByPk(id);
 
     if (!vehiculo) {
-
       return res.status(404).json({
         message: 'Vehículo no encontrado'
       });
-
     }
 
     res.status(200).json({
@@ -56,12 +58,10 @@ const getVehiculoById = async (req, res) => {
     });
 
   }
-
 };
 
-//crear un nuevo vehiculo
+// CREAR UN NUEVO VEHÍCULO
 const createVehiculo = async (req, res) => {
-
   try {
 
     const {
@@ -71,20 +71,28 @@ const createVehiculo = async (req, res) => {
       anio,
       color,
       placas,
+      numeroSerie,
+      numeroMotor,
       numeroTarjetaCirculacion,
-      vigenciaTarjeta,
+      fechaExpedicionTarjeta,
       aseguradora,
       numeroPoliza,
       vigenciaPoliza
     } = req.body;
+
     const fotoVehiculo = req.file
       ? `/uploads/vehiculos/${req.file.filename}`
       : null;
-    const vigenciaTarjetaFinal = limpiarFecha(vigenciaTarjeta);
-    const vigenciaPolizaFinal = limpiarFecha(vigenciaPoliza);
+
+    const fechaExpedicionTarjetaFinal = limpiarFecha(
+      fechaExpedicionTarjeta
+    );
+
+    const vigenciaPolizaFinal = limpiarFecha(
+      vigenciaPoliza
+    );
 
     // VALIDACIONES
-
     if (
       !numeroVehiculo ||
       !marca ||
@@ -92,15 +100,12 @@ const createVehiculo = async (req, res) => {
       !anio ||
       !placas
     ) {
-
       return res.status(400).json({
         message: 'numeroVehiculo, marca, modelo, anio y placas son obligatorios'
       });
-
     }
 
     // CREAR VEHÍCULO
-
     const vehiculo = await Vehiculo.create({
       numeroVehiculo,
       fotoVehiculo,
@@ -109,8 +114,10 @@ const createVehiculo = async (req, res) => {
       anio,
       color,
       placas,
+      numeroSerie,
+      numeroMotor,
       numeroTarjetaCirculacion,
-      vigenciaTarjeta: vigenciaTarjetaFinal,
+      fechaExpedicionTarjeta: fechaExpedicionTarjetaFinal,
       aseguradora,
       numeroPoliza,
       vigenciaPoliza: vigenciaPolizaFinal
@@ -130,12 +137,10 @@ const createVehiculo = async (req, res) => {
     });
 
   }
-
 };
 
-//editar un vehiculo existente
+// EDITAR UN VEHÍCULO EXISTENTE
 const updateVehiculo = async (req, res) => {
-
   try {
 
     const { id } = req.params;
@@ -143,11 +148,9 @@ const updateVehiculo = async (req, res) => {
     const vehiculo = await Vehiculo.findByPk(id);
 
     if (!vehiculo) {
-
       return res.status(404).json({
         message: 'Vehículo no encontrado'
       });
-
     }
 
     const {
@@ -157,24 +160,34 @@ const updateVehiculo = async (req, res) => {
       anio,
       color,
       placas,
+      numeroSerie,
+      numeroMotor,
       numeroTarjetaCirculacion,
-      vigenciaTarjeta,
+      fechaExpedicionTarjeta,
       aseguradora,
       numeroPoliza,
       vigenciaPoliza
     } = req.body;
+
     const fotoVehiculoFinal = req.file
       ? `/uploads/vehiculos/${req.file.filename}`
       : vehiculo.fotoVehiculo || null;
-    const vigenciaTarjetaFinal = limpiarFecha(vigenciaTarjeta, vehiculo.vigenciaTarjeta);
-    const vigenciaPolizaFinal = limpiarFecha(vigenciaPoliza, vehiculo.vigenciaPoliza);
+
+    const fechaExpedicionTarjetaFinal = limpiarFecha(
+      fechaExpedicionTarjeta,
+      vehiculo.fechaExpedicionTarjeta
+    );
+
+    const vigenciaPolizaFinal = limpiarFecha(
+      vigenciaPoliza,
+      vehiculo.vigenciaPoliza
+    );
 
     console.log("Foto vehículo anterior:", vehiculo.fotoVehiculo);
     console.log("Nueva foto vehículo:", req.file?.filename);
     console.log("Foto vehículo final:", fotoVehiculoFinal);
 
     // VALIDACIONES
-
     if (
       !numeroVehiculo ||
       !marca ||
@@ -182,15 +195,12 @@ const updateVehiculo = async (req, res) => {
       !anio ||
       !placas
     ) {
-
       return res.status(400).json({
         message: 'numeroVehiculo, marca, modelo, anio y placas son obligatorios'
       });
-
     }
 
     // ACTUALIZAR
-
     await vehiculo.update({
       numeroVehiculo,
       fotoVehiculo: fotoVehiculoFinal,
@@ -199,8 +209,10 @@ const updateVehiculo = async (req, res) => {
       anio,
       color,
       placas,
+      numeroSerie,
+      numeroMotor,
       numeroTarjetaCirculacion,
-      vigenciaTarjeta: vigenciaTarjetaFinal,
+      fechaExpedicionTarjeta: fechaExpedicionTarjetaFinal,
       aseguradora,
       numeroPoliza,
       vigenciaPoliza: vigenciaPolizaFinal
@@ -221,12 +233,10 @@ const updateVehiculo = async (req, res) => {
     });
 
   }
-
 };
 
-//eliminar un vehiculo
+// ELIMINAR UN VEHÍCULO
 const deleteVehiculo = async (req, res) => {
-
   try {
 
     const { id } = req.params;
@@ -234,11 +244,9 @@ const deleteVehiculo = async (req, res) => {
     const vehiculo = await Vehiculo.findByPk(id);
 
     if (!vehiculo) {
-
       return res.status(404).json({
         message: 'Vehículo no encontrado'
       });
-
     }
 
     await vehiculo.destroy();
@@ -256,7 +264,6 @@ const deleteVehiculo = async (req, res) => {
     });
 
   }
-
 };
 
 module.exports = {

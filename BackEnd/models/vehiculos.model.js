@@ -37,13 +37,23 @@ const Vehiculo = sequelize.define('Vehiculo', {
     allowNull: false
   },
 
+  numeroSerie: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+
+  numeroMotor: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+
   numeroTarjetaCirculacion: {
     type: DataTypes.STRING
   },
 
-  vigenciaTarjeta: {
-    type: DataTypes.DATEONLY
-  },
+ fechaExpedicionTarjeta: {
+  type: DataTypes.DATEONLY
+},
 
   aseguradora: {
     type: DataTypes.STRING

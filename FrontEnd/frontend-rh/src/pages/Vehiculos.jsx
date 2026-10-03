@@ -16,11 +16,13 @@ const emptyVehicle = {
   anio: '',
   color: '',
   placas: '',
+  numeroSerie: '',
+  numeroMotor: '',
   numeroPoliza: '',
   aseguradora: '',
   numeroTarjetaCirculacion: '',
   vigenciaPoliza: '',
-  vigenciaTarjeta: ''
+  fechaExpedicionTarjeta: ''
 }
 
 function getTokenHeaders() {
@@ -65,6 +67,8 @@ function buildVehiculoFormData(vehiculo) {
       'anio',
       'color',
       'placas',
+      'numeroSerie',
+      'numeroMotor',
       'numeroPoliza',
       'aseguradora',
       'numeroTarjetaCirculacion'
@@ -72,7 +76,7 @@ function buildVehiculoFormData(vehiculo) {
       formData.append(field, vehiculo[field] || '')
     })
 
-    ;['vigenciaPoliza', 'vigenciaTarjeta'].forEach((field) => {
+    ;['vigenciaPoliza', 'fechaExpedicionTarjeta'].forEach((field) => {
       const fecha = getFechaInputValue(vehiculo[field])
 
       if (isFechaValida(fecha)) {
@@ -278,25 +282,27 @@ export default function Vehiculos({
     { name: 'anio', label: 'Año', type: 'number', required: true },
     { name: 'color', label: 'Color' },
     { name: 'placas', label: 'Placas', required: true },
+    { name: 'numeroSerie', label: 'Número de serie / VIN' },
+    { name: 'numeroMotor', label: 'Número de motor' },
     { name: 'numeroPoliza', label: 'Número de póliza' },
     { name: 'aseguradora', label: 'Aseguradora' },
     { name: 'numeroTarjetaCirculacion', label: 'Tarjeta de circulación' },
     { name: 'vigenciaPoliza', label: 'Vigencia póliza', type: 'date' },
-    { name: 'vigenciaTarjeta', label: 'Vigencia tarjeta circulación', type: 'date' }
+    { name: 'fechaExpedicionTarjeta', label: 'Fecha de expedición tarjeta', type: 'date' }
   ]
 
   return (
-<div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden min-h-[calc(100vh-96px)] bg-[#f4f8fc]">
+    <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden min-h-[calc(100vh-96px)] bg-[#f4f8fc]">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
         <div>
 
           <p className="text-[11px] uppercase tracking-[0.28em] text-[#7394b5] font-semibold mb-2">
-  ACTIVOS
-</p>
+            ACTIVOS
+          </p>
 
-<p className="text-slate-500 text-sm">
-  Control de unidades, pólizas y tarjetas de circulación
-</p>
+          <p className="text-slate-500 text-sm">
+            Control de unidades, pólizas y tarjetas de circulación
+          </p>
 
         </div>
 
@@ -322,8 +328,7 @@ export default function Vehiculos({
           <div className="space-y-3 max-h-[420px] xl:max-h-[650px] overflow-y-auto pr-1">
             {filteredVehicles.map((vehiculo) => {
               const polizaState = getExpiryState(vehiculo.vigenciaPoliza)
-              const tarjetaState = getExpiryState(vehiculo.vigenciaTarjeta)
-              const hasAlert = polizaState.alert || tarjetaState.alert
+              const hasAlert = polizaState.alert
 
               return (
                 <button
@@ -331,8 +336,8 @@ export default function Vehiculos({
                   key={vehiculo.id}
                   onClick={() => setSelectedId(vehiculo.id)}
                   className={`w-full text-left rounded-2xl p-4 border transition-all ${selectedVehicle?.id === vehiculo.id
-                      ? 'border-[#BFE0FF] bg-[#f8fbff] shadow-sm'
-                      : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50'
+                    ? 'border-[#BFE0FF] bg-[#f8fbff] shadow-sm'
+                    : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50'
                     }`}
                 >
                   <div className="flex items-center gap-4">
@@ -495,7 +500,6 @@ function vehicleImageAlt(vehiculo) {
 }
 function VehicleDetail({ vehiculo, onEdit, onDelete }) {
   const polizaState = getExpiryState(vehiculo.vigenciaPoliza)
-  const tarjetaState = getExpiryState(vehiculo.vigenciaTarjeta)
 
   return (
     <div>
@@ -567,32 +571,55 @@ function VehicleDetail({ vehiculo, onEdit, onDelete }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            <InfoCard label="Año" value={vehiculo.anio} />
-            <InfoCard label="Aseguradora" value={vehiculo.aseguradora || 'Sin registro'} />
-            <InfoCard label="Póliza" value={vehiculo.numeroPoliza || 'Sin registro'} />
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-8">
+            <InfoCard
+              label="Año"
+              value={vehiculo.anio}
+            />
+
+            <InfoCard
+              label="Número de serie / VIN"
+              value={vehiculo.numeroSerie || 'Sin registro'}
+            />
+
+            <InfoCard
+              label="Número de motor"
+              value={vehiculo.numeroMotor || 'Sin registro'}
+            />
+
+            <InfoCard
+              label="Aseguradora"
+              value={vehiculo.aseguradora || 'Sin registro'}
+            />
+
+            <InfoCard
+              label="Póliza"
+              value={vehiculo.numeroPoliza || 'Sin registro'}
+            />
+
+            <InfoCard
+              label="Vencimiento de póliza"
+              value={vehiculo.vigenciaPoliza || 'Sin registro'}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <InfoCard
+              label="Tarjeta de circulación"
+              value={vehiculo.numeroTarjetaCirculacion || 'Sin registro'}
+            />
+
+            <InfoCard
+              label="Fecha de expedición"
+              value={vehiculo.fechaExpedicionTarjeta || 'Sin registro'}
+            />
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-8">
-        <ExpiryCard
-          icon={<ShieldCheck size={24} />}
-          title="Vigencia póliza"
-          date={vehiculo.vigenciaPoliza}
-          state={polizaState}
-        />
+     
 
-        <ExpiryCard
-          icon={<CalendarClock size={24} />}
-          title="Tarjeta circulación"
-          date={vehiculo.vigenciaTarjeta}
-          state={tarjetaState}
-          helper={vehiculo.numeroTarjetaCirculacion || 'Sin número de tarjeta'}
-        />
-      </div>
-
-      {(polizaState.alert || tarjetaState.alert) && (
+      {polizaState.alert && (
         <div className="mt-6 rounded-3xl border border-amber-200 bg-amber-50 p-5 flex items-start gap-4 text-amber-800">
           <div className="w-11 h-11 rounded-2xl bg-white flex items-center justify-center flex-shrink-0">
             <AlertTriangle size={22} />
@@ -604,7 +631,7 @@ function VehicleDetail({ vehiculo, onEdit, onDelete }) {
             </p>
 
             <p className="text-sm mt-1">
-              Revisa los documentos marcados como vencidos o próximos a vencer para mantener la unidad en regla.
+              Revisa la póliza marcada como vencida o próxima a vencer para mantener la unidad en regla.
             </p>
           </div>
         </div>
