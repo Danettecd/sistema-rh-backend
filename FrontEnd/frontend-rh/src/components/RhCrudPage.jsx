@@ -43,7 +43,8 @@ export default function RhCrudPage({
   summary,
   deleteLabel,
   mapBeforeSave = (form) => form,
-  normalizeItem = (item) => item
+  normalizeItem = (item) => item,
+  currentUser
 }) {
   const [items, setItems] = useState([])
   const [form, setForm] = useState(emptyForm(fields))
@@ -54,6 +55,10 @@ export default function RhCrudPage({
   const [filterValue, setFilterValue] = useState('Todos')
   const [feedback, setFeedback] = useState(null)
   const [error, setError] = useState('')
+  const puedeCrear = ['admin', 'contadora', 'auxiliar'].includes(currentUser?.role)
+  const puedeEditar = ['admin', 'contadora', 'auxiliar'].includes(currentUser?.role)
+  const puedeEliminar = ['admin', 'contadora'].includes(currentUser?.role)
+  const soloConsulta = !puedeEditar
 
   const showFeedback = useCallback((message, type = 'success') => {
     setFeedback({ message, type })
@@ -208,7 +213,8 @@ export default function RhCrudPage({
   }, [items, summary])
 
   const renderField = (field) => {
-    const baseClass = 'border border-slate-300 rounded-2xl px-5 py-4 w-full outline-none focus:ring-2 focus:ring-[#BFE0FF] bg-white'
+    const baseClass = `border border-slate-300 rounded-2xl px-5 py-4 w-full outline-none focus:ring-2 focus:ring-[#BFE0FF] bg-white ${soloConsulta ? 'disabled:bg-[#f8fafc] disabled:text-slate-700 disabled:opacity-100' : ''
+      }`
 
     if (field.type === 'select') {
       const options = field.options === 'empleados'
@@ -240,6 +246,7 @@ export default function RhCrudPage({
     if (field.type === 'textarea') {
       return (
         <textarea
+          disabled={soloConsulta}
           value={form[field.name]}
           onChange={(event) => setForm({
             ...form,
@@ -253,6 +260,7 @@ export default function RhCrudPage({
 
     return (
       <input
+        disabled={soloConsulta}
         type={field.type || 'text'}
         value={form[field.name]}
         onChange={(event) => setForm({
@@ -352,6 +360,7 @@ export default function RhCrudPage({
               </p>
 
               <select
+                disabled={soloConsulta}
                 value={filterValue}
                 onChange={(event) => setFilterValue(event.target.value)}
                 className="
@@ -539,47 +548,38 @@ export default function RhCrudPage({
 
                   {/* ACCIONES */}
                   <td className="py-5">
-
                     <div className="flex gap-2 whitespace-nowrap">
 
-                      <button
-                        type="button"
-                        onClick={() => openEditModal(item)}
-                        className="
-                        border border-[#b8d6ee]
-                        text-[#164e87]
-                        hover:bg-[#EAF4FC]
-                        px-4 py-2
-                        rounded-xl
-                        text-sm
-                        font-medium
-                        transition-all
-                      "
-                      >
-                        Editar
-                      </button>
+                      {puedeEditar ? (
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(item)}
+                          className="border border-[#b8d6ee] text-[#164e87] hover:bg-[#EAF4FC] px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                        >
+                          Editar
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(item)}
+                          className="border border-[#b8d6ee] text-[#164e87] hover:bg-[#EAF4FC] px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                        >
+                          Ver
+                        </button>
+                      )}
 
-                      <button
-                        type="button"
-                        onClick={() => setItemToDelete(item)}
-                        className="
-                        border border-red-200
-                        text-red-500
-                        hover:bg-red-50
-                        px-4 py-2
-                        rounded-xl
-                        text-sm
-                        font-medium
-                        transition-all
-                      "
-                      >
-                        Eliminar
-                      </button>
+                      {puedeEliminar && (
+                        <button
+                          type="button"
+                          onClick={() => setItemToDelete(item)}
+                          className="border border-red-200 text-red-500 hover:bg-red-50 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                        >
+                          Eliminar
+                        </button>
+                      )}
 
                     </div>
-
                   </td>
-
                 </tr>
 
               ))}
@@ -624,12 +624,14 @@ export default function RhCrudPage({
 
         <RhModal
           title={
-            editingItem
-              ? `Editar ${formTitle}`
-              : `Registrar ${formTitle}`
+            soloConsulta
+              ? `Consultar ${formTitle}`
+              : editingItem
+                ? `Editar ${formTitle}`
+                : `Registrar ${formTitle}`
           }
           onClose={closeFormModal}
-          footer={(
+          footer={puedeEditar ? (
 
             <button
               type="button"
@@ -649,7 +651,7 @@ export default function RhCrudPage({
               Guardar
             </button>
 
-          )}
+          ) : null}
         >
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

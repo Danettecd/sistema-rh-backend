@@ -159,6 +159,11 @@ function buildEmpleadoFormData(empleado) {
 export default function App() {
   const [showLogin, setShowLogin] = useState(false)
   const [isLogged, setIsLogged] = useState(false)
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem('user')
+    return savedUser ? JSON.parse(savedUser) : null
+  })
+  const puedeEditarEmpleado = ['admin', 'contadora', 'auxiliar'].includes(currentUser?.role)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [menuAbierto, setMenuAbierto] = useState(false)
   const [activeSection, setActiveSection] = useState('dashboard')
@@ -263,8 +268,12 @@ export default function App() {
         response.data.token
       )
 
+      localStorage.setItem(
+        'user',
+        JSON.stringify(response.data.user)
+      )
+      setCurrentUser(response.data.user)
       setIsLogged(true)
-
     } catch (error) {
 
       console.error(error)
@@ -513,7 +522,9 @@ export default function App() {
   const logout = () => {
 
     localStorage.removeItem('token')
+    localStorage.removeItem('user')
 
+    setCurrentUser(null)
     setIsLogged(false)
 
   }
@@ -710,7 +721,7 @@ export default function App() {
           </div>
         </aside>
 
-     
+
         {/* SIDEBAR */}
         <aside className={`${sidebarOpen ? 'lg:w-[250px]' : 'lg:w-[18px] lg:overflow-x-hidden'} hidden lg:flex lg:min-h-screen relative bg-gradient-to-b from-[#081225] to-[#102544] text-white flex-col justify-between py-8 px-6 transition-all duration-300 whitespace-nowrap`}>
 
@@ -803,23 +814,33 @@ export default function App() {
 
               <div className="flex items-center gap-4">
 
-                <div className="w-14 h-14 rounded-full overflow-hidden">
+                <div className="w-14 h-14 rounded-full overflow-hidden bg-[#BFE0FF] flex items-center justify-center">
 
-                  <img
-                    src={adminFoto}
-                    alt="Administrador"
-                    className="w-full h-full object-cover"
-                  />
+                  {currentUser?.role === 'admin' ? (
+                    <img
+                      src={adminFoto}
+                      alt={currentUser?.nombre || 'Administrador'}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-[#07355E] text-xl font-bold">
+                      {currentUser?.nombre?.charAt(0).toUpperCase() || 'U'}
+                    </span>
+                  )}
 
                 </div>
 
                 <div>
                   <p className="font-semibold text-slate-800">
-                    Danette Centeno
+                    {currentUser?.role === 'admin'
+                      ? 'Danette Centeno'
+                      : currentUser?.nombre || 'Usuario'}
                   </p>
 
-                  <p className="text-slate-500 text-sm">
-                    Administrador
+                  <p className="text-slate-500 text-sm capitalize">
+                    {currentUser?.role === 'admin'
+                      ? 'Administradora'
+                      : currentUser?.role || ''}
                   </p>
                 </div>
 
@@ -1369,6 +1390,7 @@ export default function App() {
                 setEmpleadoAEliminar={setEmpleadoAEliminar}
                 setShowDeleteModal={setShowDeleteModal}
                 setShowEmpleadoModal={setShowEmpleadoModal}
+                currentUser={currentUser}
               />
 
             )
@@ -1532,235 +1554,215 @@ export default function App() {
 
             )
           }
-          {
-            empleadoSeleccionado && (
 
-              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          {empleadoSeleccionado && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
 
-                <div className="bg-white w-full max-w-[650px] max-h-[90vh] overflow-y-auto rounded-[28px] md:rounded-[35px] p-5 md:p-10 shadow-2xl relative">
+              <div className="relative w-full max-w-[760px] max-h-[90vh] overflow-y-auto rounded-[28px] bg-white p-6 md:p-9 shadow-2xl">
+
+                {/* CERRAR */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmpleadoSeleccionado(null)
+                    setShowEmpleadoModal(false)
+                  }}
+                  className="absolute right-6 top-5 text-2xl text-slate-400 hover:text-[#07355E]"
+                >
+                  ×
+                </button>
+
+                {/* ENCABEZADO */}
+                <div className="mb-7 pr-8">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
+                    PERSONAL · EXPEDIENTE
+                  </p>
+
+                  <h2 className="mt-2 font-['Cooper'] text-2xl text-[#07355E]">
+                    {puedeEditarEmpleado ? 'Editar empleado' : 'Expediente del empleado'}
+                  </h2>
+
+                </div>
+
+                {/* PERFIL */}
+                <div className="mb-7 flex flex-col items-center gap-5 rounded-2xl bg-[#f4f8fc] p-6 sm:flex-row sm:items-start">
+
+                  <div className="flex flex-col items-center">
+                    <div className="h-32 w-32 overflow-hidden rounded-full bg-slate-200 shadow-sm">
+                      <EmpleadoFoto
+                        foto={empleadoSeleccionado.foto}
+                        nombre={empleadoSeleccionado.nombre}
+                        className="text-4xl"
+                      />
+                    </div>
+
+                    {puedeEditarEmpleado && (
+                      <>
+                        <input
+                          type="file"
+                          className="hidden"
+                          id="editar-foto-empleado"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files[0]
+
+                            if (file) {
+                              setEmpleadoSeleccionado({
+                                ...empleadoSeleccionado,
+                                foto: URL.createObjectURL(file),
+                                fotoFile: file
+                              })
+                            }
+                          }}
+                        />
+
+                        <label
+                          htmlFor="editar-foto-empleado"
+                          className="mt-3 cursor-pointer rounded-xl bg-[#07355E] px-4 py-2 text-xs font-medium text-white hover:bg-[#1B2A38]"
+                        >
+                          Cambiar foto
+                        </label>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="w-full flex-1">
+                    {puedeEditarEmpleado ? (
+                      <>
+                        <label className="mb-1 block text-xs text-slate-400">
+                          Nombre completo
+                        </label>
+
+                        <input
+                          type="text"
+                          value={empleadoSeleccionado.nombre || ''}
+                          onChange={(e) =>
+                            setEmpleadoSeleccionado({
+                              ...empleadoSeleccionado,
+                              nombre: e.target.value
+                            })
+                          }
+                          className="mb-4 w-full rounded-xl border border-slate-300 px-4 py-3 font-semibold text-[#07355E]"
+                        />
+
+                        <label className="mb-1 block text-xs text-slate-400">
+                          Puesto
+                        </label>
+
+                        <input
+                          type="text"
+                          value={empleadoSeleccionado.puesto || ''}
+                          onChange={(e) =>
+                            setEmpleadoSeleccionado({
+                              ...empleadoSeleccionado,
+                              puesto: e.target.value
+                            })
+                          }
+                          className="w-full rounded-xl border border-slate-300 px-4 py-3"
+                        />
+                      </>
+                    ) : (
+                      <div className="sm:pt-5">
+                        <h3 className="text-xl font-bold text-[#07355E]">
+                          {empleadoSeleccionado.nombre}
+                        </h3>
+
+                        <span className="mt-3 inline-flex rounded-full bg-[#e0effb] px-4 py-1.5 text-sm font-medium text-[#164e87]">
+                          {empleadoSeleccionado.puesto || 'Sin puesto'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* DATOS DEL EXPEDIENTE */}
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                  {[
+                    { label: 'Correo electrónico', field: 'email', type: 'email' },
+                    { label: 'Teléfono', field: 'telefono', type: 'text' },
+                    { label: 'RFC', field: 'rfc', type: 'text' },
+                    { label: 'CURP', field: 'curp', type: 'text' },
+                    { label: 'NSS', field: 'nss', type: 'text' },
+                    { label: 'Dirección', field: 'direccion', type: 'text' },
+                    { label: 'Fecha de nacimiento', field: 'fechaNacimiento', type: 'date' },
+                    { label: 'Fecha de ingreso', field: 'fechaIngreso', type: 'date' }
+                  ].map(({ label, field, type }) => {
+
+                    const valor = empleadoSeleccionado[field] || ''
+
+                    return (
+                      <div key={field}>
+                        <label className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-400">
+                          {label}
+                        </label>
+
+                        {puedeEditarEmpleado ? (
+                          <input
+                            type={type}
+                            value={
+                              type === 'date'
+                                ? getFechaInputValue(valor)
+                                : valor
+                            }
+                            onChange={(e) =>
+                              setEmpleadoSeleccionado({
+                                ...empleadoSeleccionado,
+                                [field]: e.target.value
+                              })
+                            }
+                            className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-[#164e87]"
+                          />
+                        ) : (
+                          <div className="min-h-[46px] rounded-xl border border-slate-100 bg-[#f8fafc] px-4 py-3 text-sm text-slate-700 break-words">
+                            {type === 'date'
+                              ? getFechaInputValue(valor) || 'No registrado'
+                              : valor || 'No registrado'}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+
+                </div>
+
+                {/* ACCIONES */}
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-end">
 
                   <button
+                    type="button"
                     onClick={() => {
                       setEmpleadoSeleccionado(null)
                       setShowEmpleadoModal(false)
                     }}
+                    className="rounded-xl border border-slate-200 px-6 py-3 font-medium text-slate-600 transition-all hover:bg-slate-50"
                   >
-                    ×
+                    Cerrar
                   </button>
 
-                  <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start">
+                  {puedeEditarEmpleado && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        editarEmpleado(
+                          empleadoSeleccionado.id,
+                          empleadoSeleccionado
+                        )
 
-                    {/* FOTO */}
-                    <div className="flex w-full md:w-40 flex-shrink-0 flex-col items-center">
-                      <div className="w-36 h-36 rounded-full overflow-hidden bg-slate-300 shadow-sm">
-                        <EmpleadoFoto
-                          foto={empleadoSeleccionado.foto}
-                          nombre={empleadoSeleccionado.nombre}
-                          className="text-4xl"
-                        />
-                      </div>
-
-                      <input
-                        type="file"
-                        className="hidden"
-                        id="editar-foto-empleado"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files[0]
-
-                          if (file) {
-                            setEmpleadoSeleccionado({
-                              ...empleadoSeleccionado,
-                              foto: URL.createObjectURL(file),
-                              fotoFile: file
-                            })
-                          }
-                        }}
-                      />
-
-                      <label
-                        htmlFor="editar-foto-empleado"
-                        className="mt-4 inline-flex cursor-pointer rounded-xl bg-[#07355E] px-4 py-2 text-sm font-medium text-white transition-all hover:bg-[#1B2A38]"
-                      >
-                        Cambiar foto
-                      </label>
-                    </div>
-
-                    {/* INFO */}
-                    <div className="flex-1 w-full">
-                      <input
-                        type="text"
-                        value={empleadoSeleccionado.nombre}
-                        onChange={(e) =>
-                          setEmpleadoSeleccionado({
-                            ...empleadoSeleccionado,
-                            nombre: e.target.value
-                          })
-                        }
-                        className="border border-slate-300 rounded-2xl px-5 py-4 w-full mb-4 text-lg"
-                      />
-
-                      <input
-                        type="text"
-                        value={empleadoSeleccionado.puesto}
-                        onChange={(e) =>
-                          setEmpleadoSeleccionado({
-                            ...empleadoSeleccionado,
-                            puesto: e.target.value
-                          })
-                        }
-                        className="w-full border border-slate-300 rounded-xl px-3 py-2 mb-8"
-                      />
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                        {/* CORREO */}
-                        <div>
-                          <p className="text-slate-400 text-sm">
-                            Correo
-                          </p>
-
-                          <input
-                            type="email"
-                            value={empleadoSeleccionado.email}
-                            onChange={(e) =>
-                              setEmpleadoSeleccionado({
-                                ...empleadoSeleccionado,
-                                email: e.target.value
-                              })
-                            }
-                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
-                          />
-                        </div>
-
-                        {/* TELEFONO */}
-                        <div>
-                          <p className="text-slate-400 text-sm">
-                            Teléfono
-                          </p>
-
-                          <input
-                            type="text"
-                            value={empleadoSeleccionado.telefono}
-                            onChange={(e) =>
-                              setEmpleadoSeleccionado({
-                                ...empleadoSeleccionado,
-                                telefono: e.target.value
-                              })
-                            }
-                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
-                          />
-                        </div>
-
-                        {/* RFC */}
-                        <div>
-                          <p className="text-slate-400 text-sm">
-                            RFC
-                          </p>
-
-                          <input
-                            type="text"
-                            value={empleadoSeleccionado.rfc || ''}
-                            onChange={(e) =>
-                              setEmpleadoSeleccionado({
-                                ...empleadoSeleccionado,
-                                rfc: e.target.value
-                              })
-                            }
-                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
-                          />
-                        </div>
-
-                      </div>
-
-                      {/* CURP FULL WIDTH */}
-                      <div className="mt-5">
-                        <p className="text-slate-400 text-sm">
-                          CURP
-                        </p>
-
-                        <input
-                          type="text"
-                          value={empleadoSeleccionado.curp || ''}
-                          onChange={(e) =>
-                            setEmpleadoSeleccionado({
-                              ...empleadoSeleccionado,
-                              curp: e.target.value
-                            })
-                          }
-                          className="w-full border border-slate-300 rounded-xl px-3 py-2"
-                        />
-                      </div>
-
-                      {/* FECHAS */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-
-                        <div>
-                          <p className="text-slate-400 text-sm">
-                            Fecha de nacimiento
-                          </p>
-
-                          <input
-                            type="date"
-                            value={getFechaInputValue(empleadoSeleccionado.fechaNacimiento)}
-                            onChange={(e) =>
-                              setEmpleadoSeleccionado({
-                                ...empleadoSeleccionado,
-                                fechaNacimiento: e.target.value
-                              })
-                            }
-                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
-                          />
-                        </div>
-
-                        <div>
-                          <p className="text-slate-400 text-sm">
-                            Fecha de ingreso
-                          </p>
-
-                          <input
-                            type="date"
-                            value={getFechaInputValue(empleadoSeleccionado.fechaIngreso)}
-                            onChange={(e) =>
-                              setEmpleadoSeleccionado({
-                                ...empleadoSeleccionado,
-                                fechaIngreso: e.target.value
-                              })
-                            }
-                            className="w-full border border-slate-300 rounded-xl px-3 py-2"
-                          />
-                        </div>
-
-                      </div>
-
-
-                      <button
-                        onClick={() => {
-
-                          editarEmpleado(
-                            empleadoSeleccionado.id,
-                            empleadoSeleccionado
-                          )
-
-                          setEmpleadoSeleccionado(null)
-
-                          setShowEmpleadoModal(false)
-
-                        }}
-                        className="mt-8 w-full bg-[#07355E] hover:bg-[#1B2A38] text-white py-4 rounded-2xl transition-all"
-                      >
-                        Guardar cambios
-                      </button>
-                    </div>
-
-                  </div>
+                        setEmpleadoSeleccionado(null)
+                        setShowEmpleadoModal(false)
+                      }}
+                      className="rounded-xl bg-[#07355E] px-7 py-3 font-medium text-white transition-all hover:bg-[#1B2A38]"
+                    >
+                      Guardar cambios
+                    </button>
+                  )}
 
                 </div>
 
               </div>
-
-            )
-          }
+            </div>
+          )}
 
           {
             showDeleteModal && (

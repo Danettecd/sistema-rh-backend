@@ -44,7 +44,13 @@ exports.login = async (req, res) => {
       const token = generateAccessToken(user);
 
       res.json({
-         token
+         token,
+         user: {
+            id: user.id,
+            nombre: user.nombre,
+            email: user.email,
+            role: user.role
+         }
       });
 
    } catch (error) {

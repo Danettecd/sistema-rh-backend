@@ -139,8 +139,13 @@ function getExpiryState(dateValue) {
 
 export default function Vehiculos({
   vehiculos = [],
-  setVehiculos
+  setVehiculos,
+  currentUser
 }) {
+
+  const puedeCrear = ['admin', 'contadora', 'auxiliar'].includes(currentUser?.role)
+  const puedeEditar = ['admin', 'contadora', 'auxiliar'].includes(currentUser?.role)
+  const puedeEliminar = ['admin', 'contadora'].includes(currentUser?.role)
 
   const [selectedId, setSelectedId] = useState(null)
   const [showFormModal, setShowFormModal] = useState(false)
@@ -617,7 +622,7 @@ function VehicleDetail({ vehiculo, onEdit, onDelete }) {
         </div>
       </div>
 
-     
+
 
       {polizaState.alert && (
         <div className="mt-6 rounded-3xl border border-amber-200 bg-amber-50 p-5 flex items-start gap-4 text-amber-800">

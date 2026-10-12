@@ -68,8 +68,13 @@ export default function Empleados({
   setEmpleadoSeleccionado,
   setEmpleadoAEliminar,
   setShowDeleteModal,
-  setShowEmpleadoModal
+  setShowEmpleadoModal,
+  currentUser
 }) {
+
+  const canCreate = ['admin', 'contadora', 'auxiliar'].includes(currentUser?.role)
+  const canEdit = ['admin', 'contadora', 'auxiliar'].includes(currentUser?.role)
+  const canDelete = ['admin', 'contadora'].includes(currentUser?.role)
 
   return (
 
@@ -84,7 +89,7 @@ export default function Empleados({
             PERSONAL
           </p>
 
-       
+
 
           <p className="text-slate-500 mt-2">
             Gestiona la información de los colaboradores
@@ -92,24 +97,26 @@ export default function Empleados({
 
         </div>
 
-        <button
-          onClick={() => setShowEmpleadoModal(true)}
-          className="
-            bg-[#0b2447]
-            hover:bg-[#16325c]
-            hover:-translate-y-0.5
-            text-white
-            px-5 py-3
-            rounded-2xl
-            shadow-sm
-            transition-all
-            duration-200
-            w-full sm:w-auto
-            font-medium
-          "
-        >
-          + Nuevo empleado
-        </button>
+        {canCreate && (
+          <button
+            onClick={() => setShowEmpleadoModal(true)}
+            className="
+      bg-[#0b2447]
+      hover:bg-[#16325c]
+      hover:-translate-y-0.5
+      text-white
+      px-5 py-3
+      rounded-2xl
+      shadow-sm
+      transition-all
+      duration-200
+      w-full sm:w-auto
+      font-medium
+    "
+          >
+            + Nuevo empleado
+          </button>
+        )}
 
       </div>
 
@@ -169,18 +176,24 @@ export default function Empleados({
 
                         <EmpleadoAvatar empleado={empleado} />
 
-                        <button
-                          onClick={() => setEmpleadoSeleccionado(empleado)}
-                          className="
-                            font-semibold
-                            text-[#07355E]
-                            hover:text-[#164e87]
-                            transition-all
-                            text-left
-                          "
-                        >
-                          {empleado.nombre}
-                        </button>
+                        {canEdit ? (
+                          <button
+                            onClick={() => setEmpleadoSeleccionado(empleado)}
+                            className="
+      font-semibold
+      text-[#07355E]
+      hover:text-[#164e87]
+      transition-all
+      text-left
+    "
+                          >
+                            {empleado.nombre}
+                          </button>
+                        ) : (
+                          <span className="font-semibold text-[#07355E]">
+                            {empleado.nombre}
+                          </span>
+                        )}
 
                       </div>
 
@@ -221,48 +234,69 @@ export default function Empleados({
 
                       <div className="flex gap-2">
 
-                        <button
-                          onClick={() => {
-                            setShowEmpleadoModal(false)
-                            setEmpleadoSeleccionado(empleado)
-                          }}
-                          className="
-                            border border-[#b8d6ee]
-                            text-[#164e87]
-                            hover:bg-[#EAF4FC]
-                            px-4 py-2
-                            rounded-xl
-                            text-sm
-                            font-medium
-                            transition-all
-                          "
-                        >
-                          Editar
-                        </button>
+                        {canEdit && (
+                          <button
+                            onClick={() => {
+                              setShowEmpleadoModal(false)
+                              setEmpleadoSeleccionado(empleado)
+                            }}
+                            className="
+          border border-[#b8d6ee]
+          text-[#164e87]
+          hover:bg-[#EAF4FC]
+          px-4 py-2
+          rounded-xl
+          text-sm
+          font-medium
+          transition-all
+        "
+                          >
+                            Editar
+                          </button>
+                        )}
 
-                        <button
-                          onClick={() => {
-                            setEmpleadoAEliminar(empleado)
-                            setShowDeleteModal(true)
-                          }}
-                          className="
-                            border border-red-200
-                            text-red-500
-                            hover:bg-red-50
-                            px-4 py-2
-                            rounded-xl
-                            text-sm
-                            font-medium
-                            transition-all
-                          "
-                        >
-                          Eliminar
-                        </button>
+                        {canDelete && (
+                          <button
+                            onClick={() => {
+                              setEmpleadoAEliminar(empleado)
+                              setShowDeleteModal(true)
+                            }}
+                            className="
+          border border-red-200
+          text-red-500
+          hover:bg-red-50
+          px-4 py-2
+          rounded-xl
+          text-sm
+          font-medium
+          transition-all
+        "
+                          >
+                            Eliminar
+                          </button>
+                        )}
+
+                        {!canEdit && (
+                          <button
+                            onClick={() => setEmpleadoSeleccionado(empleado)}
+                            className="
+      border border-[#b8d6ee]
+      text-[#164e87]
+      hover:bg-[#EAF4FC]
+      px-4 py-2
+      rounded-xl
+      text-sm
+      font-medium
+      transition-all
+    "
+                          >
+                            Ver
+                          </button>
+                        )}
 
                       </div>
 
                     </td>
-
                   </tr>
 
                 )
@@ -275,9 +309,9 @@ export default function Empleados({
 
         </div>
 
-      </div>
+      </div >
 
-    </div>
+    </div >
 
   )
 
